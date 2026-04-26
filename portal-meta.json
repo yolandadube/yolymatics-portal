@@ -1,0 +1,57 @@
+[
+  {
+    "id": "ddm_study_plan",
+    "platform": "phd",
+    "subject": "Cosmology",
+    "topic": "Other",
+    "title": "Dynamic Dark Matter — 21-Day Study Plan",
+    "desc": "My own plan for my new research area",
+    "accent": "#a78bfa",
+    "date": "2026-04-26",
+    "filename": "ddm_study_plan.html"
+  },
+  {
+    "id": "phase2_part1",
+    "platform": "phd",
+    "subject": "Dark Energy",
+    "topic": "Theory",
+    "title": "Phase 2 Part 1 — Dark Energy Models: Theory",
+    "desc": "Theoretical foundations: ΛCDM, quintessence, k-essence, and modified gravity.",
+    "accent": "#818cf8",
+    "date": "2026-04-26",
+    "filename": "phase2_part1_dark_energy_theory.html"
+  },
+  {
+    "id": "phase2_part2",
+    "platform": "phd",
+    "subject": "Dark Energy",
+    "topic": "DESI Results",
+    "title": "Phase 2 Part 2 — DESI Results, Observations & Reading",
+    "desc": "DESI 2024 results, observational constraints on dark energy, and curated reading list.",
+    "accent": "#60a5fa",
+    "date": "2026-04-26",
+    "filename": "phase2_part2_observations_reading_list.html"
+  },
+  {
+    "id": "planck_quantities",
+    "platform": "phd",
+    "subject": "Reference",
+    "topic": "Planck Quantities",
+    "title": "Planck Quantities — PhD Cosmology Reference",
+    "desc": "Complete Planck unit system: definitions, derivations, and numerical values.",
+    "accent": "#fbbf24",
+    "date": "2026-04-26",
+    "filename": "planck_quantities.html"
+  },
+  {
+    "id": "standard_model_epochs",
+    "platform": "phd",
+    "subject": "Reference",
+    "topic": "Epochs",
+    "title": "Epochs of the Standard Model — PhD Reference",
+    "desc": "Timeline of cosmic epochs from the Planck era through recombination to the present.",
+    "accent": "#fb923c",
+    "date": "2026-04-26",
+    "filename": "standard_model_epochs.html"
+  }
+]
