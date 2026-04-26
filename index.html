@@ -19,19 +19,9 @@ html,body{width:100%;min-height:100vh;background:var(--bg);color:var(--text);fon
 #app{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh;}
 
 /* HEADER */
-header{
-  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
-  padding:12px 28px;border-bottom:1px solid var(--border);
-  background:rgba(6,8,15,.9);backdrop-filter:blur(14px);
-  position:sticky;top:0;z-index:200;
-}
+header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:12px 28px;border-bottom:1px solid var(--border);background:rgba(6,8,15,.9);backdrop-filter:blur(14px);position:sticky;top:0;z-index:200;}
 .logo{display:flex;align-items:center;gap:11px;}
-.logo-mark{
-  width:36px;height:36px;border-radius:9px;flex-shrink:0;
-  background:linear-gradient(135deg,#480078,#a78bfa);
-  display:flex;align-items:center;justify-content:center;
-  font-family:'Crimson Pro',serif;font-size:19px;font-weight:600;color:#fff;
-}
+.logo-mark{width:36px;height:36px;border-radius:9px;flex-shrink:0;background:linear-gradient(135deg,#480078,#a78bfa);display:flex;align-items:center;justify-content:center;font-family:'Crimson Pro',serif;font-size:19px;font-weight:600;color:#fff;}
 .logo-name{font-family:'Crimson Pro',serif;font-size:18px;font-weight:400;}
 .logo-name span{color:var(--gold);}
 .logo-byline{font-family:'JetBrains Mono',monospace;font-size:7.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);margin-top:2px;}
@@ -40,34 +30,21 @@ header{
 .search-wrap:focus-within{border-color:var(--cyan);}
 .search-wrap input{background:none;border:none;outline:none;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11px;width:155px;}
 .search-wrap input::placeholder{color:var(--dim);}
-.upload-btn{
-  display:flex;align-items:center;gap:6px;
-  background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.3);border-radius:8px;
-  padding:6px 14px;font-size:11.5px;font-weight:500;color:var(--gold);
-  cursor:pointer;transition:all .2s;white-space:nowrap;
-}
+.upload-btn{display:flex;align-items:center;gap:6px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.3);border-radius:8px;padding:6px 14px;font-size:11.5px;font-weight:500;color:var(--gold);cursor:pointer;transition:all .2s;white-space:nowrap;}
 .upload-btn:hover{background:rgba(251,191,36,.18);border-color:var(--gold);}
+.sync-btn{display:flex;align-items:center;gap:6px;background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.25);border-radius:8px;padding:6px 14px;font-size:11.5px;font-weight:500;color:var(--cyan);cursor:pointer;transition:all .2s;white-space:nowrap;}
+.sync-btn:hover{background:rgba(96,165,250,.18);}
+.spin{animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
 
 /* BODY */
 .body-wrap{display:flex;flex:1;}
 
 /* SIDEBAR */
-aside{
-  width:215px;flex-shrink:0;border-right:1px solid var(--border);
-  padding:20px 0;position:sticky;top:57px;
-  height:calc(100vh - 57px);overflow-y:auto;
-  background:rgba(6,8,15,.55);
-}
-.nav-section-label{
-  font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.22em;
-  text-transform:uppercase;color:var(--dim);padding:0 18px;margin-bottom:7px;margin-top:18px;
-}
+aside{width:215px;flex-shrink:0;border-right:1px solid var(--border);padding:20px 0;position:sticky;top:57px;height:calc(100vh - 57px);overflow-y:auto;background:rgba(6,8,15,.55);}
+.nav-section-label{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);padding:0 18px;margin-bottom:7px;margin-top:18px;}
 .nav-section-label:first-child{margin-top:0;}
-.nav-item{
-  display:flex;align-items:center;gap:9px;
-  padding:7px 18px;font-size:12px;color:var(--muted);
-  cursor:pointer;transition:all .15s;border-left:2px solid transparent;user-select:none;
-}
+.nav-item{display:flex;align-items:center;gap:9px;padding:7px 18px;font-size:12px;color:var(--muted);cursor:pointer;transition:all .15s;border-left:2px solid transparent;user-select:none;}
 .nav-item:hover{color:var(--text);background:rgba(140,180,255,.05);}
 .nav-item.active{color:var(--text);border-left-color:var(--nav-accent,var(--cyan));background:rgba(140,180,255,.07);}
 .nav-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;background:var(--nav-accent,var(--dim));}
@@ -77,15 +54,8 @@ aside{
 main{flex:1;padding:28px 28px 60px;min-width:0;}
 
 /* BANNER */
-.section-banner{
-  border-radius:13px;padding:22px 26px;margin-bottom:24px;
-  border:1px solid var(--border2);position:relative;overflow:hidden;
-}
-.section-banner::before{
-  content:'';position:absolute;top:-40px;right:-40px;
-  width:150px;height:150px;border-radius:50%;
-  background:var(--banner-glow,rgba(167,139,250,.07));pointer-events:none;
-}
+.section-banner{border-radius:13px;padding:22px 26px;margin-bottom:24px;border:1px solid var(--border2);position:relative;overflow:hidden;}
+.section-banner::before{content:'';position:absolute;top:-40px;right:-40px;width:150px;height:150px;border-radius:50%;background:var(--banner-glow,rgba(167,139,250,.07));pointer-events:none;}
 .banner-kicker{font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--banner-accent,var(--violet));margin-bottom:7px;}
 .banner-title{font-family:'Crimson Pro',serif;font-size:clamp(1.35rem,2.5vw,1.9rem);font-weight:400;line-height:1.15;margin-bottom:5px;}
 .banner-title em{font-style:italic;color:var(--banner-accent,var(--gold));}
@@ -98,28 +68,16 @@ main{flex:1;padding:28px 28px 60px;min-width:0;}
 /* FILTERS */
 .filters-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;align-items:center;}
 .filter-label{font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-right:3px;}
-.filter-btn{
-  font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.09em;text-transform:uppercase;
-  padding:4px 11px;border-radius:20px;border:1px solid var(--border);
-  background:transparent;color:var(--muted);cursor:pointer;transition:all .18s;
-}
+.filter-btn{font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.09em;text-transform:uppercase;padding:4px 11px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .18s;}
 .filter-btn.active,.filter-btn:hover{border-color:var(--filter-accent,var(--cyan));color:var(--filter-accent,var(--cyan));background:rgba(96,165,250,.06);}
 
 /* CARDS */
 .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(262px,1fr));gap:13px;margin-bottom:28px;}
-.card{
-  background:var(--bg2);border:1px solid var(--border);border-radius:12px;
-  padding:18px;cursor:pointer;transition:all .2s;
-  display:flex;flex-direction:column;gap:9px;position:relative;overflow:hidden;
-}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;gap:9px;position:relative;overflow:hidden;}
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;background:var(--card-accent,var(--cyan));opacity:.8;}
 .card:hover{border-color:rgba(140,180,255,.3);background:var(--bg3);transform:translateY(-2px);box-shadow:0 10px 32px rgba(0,0,0,.4);}
 .card-eyebrow{display:flex;align-items:center;justify-content:space-between;}
-.card-tag{
-  font-family:'JetBrains Mono',monospace;font-size:7.5px;letter-spacing:.12em;text-transform:uppercase;
-  color:var(--card-accent,var(--cyan));background:rgba(96,165,250,.07);
-  border:1px solid rgba(96,165,250,.18);border-radius:10px;padding:2px 8px;
-}
+.card-tag{font-family:'JetBrains Mono',monospace;font-size:7.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--card-accent,var(--cyan));background:rgba(96,165,250,.07);border:1px solid rgba(96,165,250,.18);border-radius:10px;padding:2px 8px;}
 .card-platform-label{font-family:'JetBrains Mono',monospace;font-size:7.5px;color:var(--dim);}
 .card-title{font-family:'Crimson Pro',serif;font-size:1.08rem;font-weight:400;line-height:1.25;color:var(--text);}
 .card-desc{font-size:11px;color:var(--muted);line-height:1.6;flex:1;}
@@ -127,14 +85,11 @@ main{flex:1;padding:28px 28px 60px;min-width:0;}
 .card-date{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--dim);}
 .card-open{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--card-accent,var(--cyan));display:flex;align-items:center;gap:4px;transition:gap .15s;}
 .card:hover .card-open{gap:7px;}
-.card-del{
-  position:absolute;top:9px;right:9px;width:20px;height:20px;border-radius:50%;
-  background:transparent;border:1px solid transparent;
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;color:var(--dim);font-size:10px;opacity:0;transition:all .15s;
-}
+.card-del{position:absolute;top:9px;right:9px;width:20px;height:20px;border-radius:50%;background:transparent;border:1px solid transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--dim);font-size:10px;opacity:0;transition:all .15s;}
 .card:hover .card-del{opacity:1;}
 .card-del:hover{background:rgba(244,63,94,.14);border-color:rgba(244,63,94,.35);color:#f43f5e;}
+.card-source{position:absolute;bottom:9px;right:9px;font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--dim);opacity:0;transition:opacity .15s;}
+.card:hover .card-source{opacity:1;}
 
 /* EMPTY */
 .empty-state{text-align:center;padding:48px 20px;color:var(--muted);}
@@ -143,10 +98,7 @@ main{flex:1;padding:28px 28px 60px;min-width:0;}
 .empty-sub{font-size:12px;line-height:1.65;}
 
 /* UPLOAD ZONE */
-.upload-zone{
-  border:1.5px dashed var(--border2);border-radius:13px;
-  padding:32px 26px;text-align:center;cursor:pointer;transition:all .2s;
-}
+.upload-zone{border:1.5px dashed var(--border2);border-radius:13px;padding:32px 26px;text-align:center;cursor:pointer;transition:all .2s;}
 .upload-zone:hover,.upload-zone.drag-over{border-color:var(--zone-accent,var(--cyan));background:rgba(96,165,250,.04);}
 .uz-icon{font-size:30px;margin-bottom:9px;}
 .uz-title{font-family:'Crimson Pro',serif;font-size:1.2rem;margin-bottom:4px;}
@@ -154,10 +106,27 @@ main{flex:1;padding:28px 28px 60px;min-width:0;}
 .uz-btn{display:inline-flex;align-items:center;gap:6px;background:rgba(96,165,250,.08);border:1px solid var(--border2);border-radius:7px;padding:6px 16px;font-size:11px;color:var(--cyan);cursor:pointer;transition:all .2s;}
 .uz-btn:hover{background:rgba(96,165,250,.18);}
 
+/* TOKEN SETUP BANNER */
+#token-banner{background:linear-gradient(135deg,rgba(251,191,36,.06),rgba(96,165,250,.04));border:1px solid rgba(251,191,36,.25);border-radius:12px;padding:18px 22px;margin-bottom:24px;display:flex;align-items:flex-start;gap:16px;}
+#token-banner.hidden{display:none;}
+.tb-icon{font-size:26px;flex-shrink:0;margin-top:2px;}
+.tb-body{flex:1;}
+.tb-title{font-family:'Crimson Pro',serif;font-size:1.1rem;margin-bottom:4px;color:var(--text);}
+.tb-desc{font-size:11.5px;color:var(--muted);line-height:1.6;margin-bottom:12px;}
+.tb-input-row{display:flex;gap:8px;flex-wrap:wrap;}
+.tb-input{background:var(--bg3);border:1px solid var(--border2);border-radius:7px;padding:7px 12px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11px;outline:none;width:280px;transition:border-color .2s;}
+.tb-input:focus{border-color:var(--gold);}
+.tb-save{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);border-radius:7px;padding:7px 16px;color:var(--gold);cursor:pointer;font-size:11.5px;font-weight:500;transition:all .15s;}
+.tb-save:hover{background:rgba(251,191,36,.2);}
+.tb-dismiss{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--dim);cursor:pointer;text-decoration:underline;margin-top:6px;display:inline-block;}
+.tb-steps{font-size:11px;color:var(--muted);line-height:1.8;margin-bottom:10px;}
+.tb-steps a{color:var(--cyan);text-decoration:none;}
+.tb-steps a:hover{text-decoration:underline;}
+
 /* UPLOAD MODAL */
 #upload-modal{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;padding:20px;}
 #upload-modal.open{display:flex;}
-.um-box{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:30px;width:100%;max-width:480px;}
+.um-box{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:30px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;}
 .um-title{font-family:'Crimson Pro',serif;font-size:1.4rem;margin-bottom:4px;}
 .um-sub{font-size:11.5px;color:var(--muted);margin-bottom:22px;line-height:1.6;}
 .um-field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
@@ -171,6 +140,8 @@ main{flex:1;padding:28px 28px 60px;min-width:0;}
 .um-cancel:hover{color:var(--text);}
 .um-save{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);border-radius:8px;padding:7px 18px;color:var(--gold);cursor:pointer;font-size:12px;font-weight:500;transition:all .15s;}
 .um-save:hover{background:rgba(251,191,36,.2);}
+.um-save:disabled{opacity:.4;cursor:not-allowed;}
+.um-progress{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--teal);margin-top:6px;display:none;}
 
 /* VIEWER */
 #viewer{position:fixed;inset:0;z-index:500;display:none;flex-direction:column;}
@@ -189,6 +160,81 @@ main{flex:1;padding:28px 28px 60px;min-width:0;}
 
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:10px;}
+
+/* ── READING LIST ── */
+.rl-search-row{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.rl-search-wrap{display:flex;align-items:center;gap:7px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:7px 13px;flex:1;min-width:200px;transition:border-color .2s;}
+.rl-search-wrap:focus-within{border-color:var(--rose);}
+.rl-search-wrap svg{color:var(--dim);flex-shrink:0;}
+.rl-search-wrap input{background:none;border:none;outline:none;color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;width:100%;}
+.rl-search-wrap input::placeholder{color:var(--dim);}
+.rl-add-btn{display:flex;align-items:center;gap:6px;background:rgba(244,114,182,.1);border:1px solid rgba(244,114,182,.3);border-radius:8px;padding:7px 16px;font-size:12px;font-weight:500;color:var(--rose);cursor:pointer;transition:all .2s;white-space:nowrap;}
+.rl-add-btn:hover{background:rgba(244,114,182,.2);}
+
+/* RL entry card */
+.rl-entry{
+  background:var(--bg2);border:1px solid var(--border);border-radius:12px;
+  padding:16px 18px;margin-bottom:11px;display:flex;gap:14px;align-items:flex-start;
+  transition:all .18s;position:relative;
+}
+.rl-entry:hover{border-color:rgba(244,114,182,.25);background:var(--bg3);}
+.rl-entry-left{display:flex;flex-direction:column;align-items:center;gap:8px;flex-shrink:0;}
+.rl-type-badge{
+  width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+  font-size:16px;flex-shrink:0;
+}
+.rl-status-btn{
+  width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  font-size:9px;transition:all .18s;background:var(--bg3);color:var(--dim);
+}
+.rl-status-btn:hover{border-color:var(--teal);color:var(--teal);}
+.rl-status-btn.reading{border-color:var(--gold);color:var(--gold);background:rgba(251,191,36,.1);}
+.rl-status-btn.done{border-color:var(--green);color:var(--green);background:rgba(52,211,153,.1);}
+
+.rl-entry-body{flex:1;min-width:0;}
+.rl-entry-title{
+  font-family:'Crimson Pro',serif;font-size:1.05rem;font-weight:400;color:var(--text);
+  line-height:1.3;margin-bottom:4px;cursor:pointer;transition:color .15s;
+}
+.rl-entry-title:hover{color:var(--rose);}
+.rl-entry-authors{font-size:11px;color:var(--muted);margin-bottom:5px;line-height:1.5;}
+.rl-entry-url{
+  font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--cyan);
+  text-decoration:none;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  margin-bottom:6px;transition:color .15s;
+}
+.rl-entry-url:hover{color:var(--teal);}
+.rl-entry-notes{font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:7px;font-style:italic;}
+.rl-entry-footer{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.rl-tag{font-family:'JetBrains Mono',monospace;font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--rose);background:rgba(244,114,182,.08);border:1px solid rgba(244,114,182,.2);border-radius:10px;padding:2px 8px;}
+.rl-date{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--dim);margin-left:auto;}
+.rl-entry-actions{display:flex;gap:6px;position:absolute;top:12px;right:12px;opacity:0;transition:opacity .15s;}
+.rl-entry:hover .rl-entry-actions{opacity:1;}
+.rl-act-btn{width:22px;height:22px;border-radius:6px;border:1px solid var(--border2);background:var(--bg3);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:10px;color:var(--dim);transition:all .15s;}
+.rl-act-btn:hover{color:var(--text);border-color:var(--border2);}
+.rl-act-btn.del:hover{color:#f43f5e;border-color:rgba(244,63,94,.35);background:rgba(244,63,94,.1);}
+
+/* RL modal */
+#rl-modal{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;padding:20px;}
+#rl-modal.open{display:flex;}
+.rl-box{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:30px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;}
+.rl-box-title{font-family:'Crimson Pro',serif;font-size:1.4rem;margin-bottom:4px;}
+.rl-box-sub{font-size:11.5px;color:var(--muted);margin-bottom:22px;line-height:1.6;}
+.rl-field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+.rl-label{font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);}
+.rl-input,.rl-select,.rl-textarea{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:8px 12px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;outline:none;transition:border-color .2s;width:100%;}
+.rl-input:focus,.rl-select:focus,.rl-textarea:focus{border-color:var(--rose);}
+.rl-textarea{resize:vertical;min-height:70px;line-height:1.6;}
+.rl-select option{background:var(--bg3);}
+.rl-url-row{display:flex;gap:8px;}
+.rl-fetch-btn{background:rgba(96,165,250,.1);border:1px solid var(--border2);border-radius:8px;padding:8px 14px;color:var(--cyan);font-size:11.5px;cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0;}
+.rl-fetch-btn:hover{background:rgba(96,165,250,.2);}
+.rl-actions{display:flex;gap:9px;justify-content:flex-end;margin-top:18px;}
+.rl-cancel{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:7px 16px;color:var(--muted);cursor:pointer;font-size:12px;transition:all .15s;}
+.rl-cancel:hover{color:var(--text);}
+.rl-save{background:rgba(244,114,182,.1);border:1px solid rgba(244,114,182,.3);border-radius:8px;padding:7px 18px;color:var(--rose);cursor:pointer;font-size:12px;font-weight:500;transition:all .15s;}
+.rl-save:hover{background:rgba(244,114,182,.2);}
 </style>
 </head>
 <body>
@@ -208,7 +254,11 @@ main{flex:1;padding:28px 28px 60px;min-width:0;}
       <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       <input type="text" id="search-input" placeholder="Search all pages…">
     </div>
-    <button class="upload-btn" onclick="openUploadModal(null)">
+    <button class="sync-btn" onclick="syncFromGitHub()">
+      <svg id="sync-icon" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+      Sync from GitHub
+    </button>
+    <button class="upload-btn" onclick="openUploadModal()">
       <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
       Upload Page
     </button>
@@ -223,13 +273,11 @@ main{flex:1;padding:28px 28px 60px;min-width:0;}
     <div class="nav-dot" style="background:#a78bfa"></div>All Pages
     <span class="nav-count" id="nc-home">0</span>
   </div>
-
   <div class="nav-section-label">🔭 PhD Research</div>
   <div class="nav-item" style="--nav-accent:#a78bfa" onclick="navigate('phd',this)">
     <div class="nav-dot" style="background:#a78bfa"></div>Cosmology Notes
     <span class="nav-count" id="nc-phd">0</span>
   </div>
-
   <div class="nav-section-label">📐 Yolymatics Tutorials</div>
   <div class="nav-item" style="--nav-accent:#fbbf24" onclick="navigate('yt-math',this)">
     <div class="nav-dot" style="background:#fbbf24"></div>Mathematics
@@ -251,7 +299,6 @@ main{flex:1;padding:28px 28px 60px;min-width:0;}
     <div class="nav-dot" style="background:#fbbf24"></div>Chemistry
     <span class="nav-count" id="nc-yt-chemistry">0</span>
   </div>
-
   <div class="nav-section-label">🌐 International Schooling</div>
   <div class="nav-item" style="--nav-accent:#2dd4bf" onclick="navigate('is-math',this)">
     <div class="nav-dot" style="background:#2dd4bf"></div>Mathematics
@@ -281,15 +328,51 @@ main{flex:1;padding:28px 28px 60px;min-width:0;}
     <div class="nav-dot" style="background:#2dd4bf"></div>Comp. Science
     <span class="nav-count" id="nc-is-compsci">0</span>
   </div>
+
+  <div class="nav-section-label">📚 Reading List</div>
+  <div class="nav-item" style="--nav-accent:#f472b6" onclick="navigate('rl-papers',this)">
+    <div class="nav-dot" style="background:#f472b6"></div>arXiv Papers
+    <span class="nav-count" id="nc-rl-papers">0</span>
+  </div>
+  <div class="nav-item" style="--nav-accent:#f472b6" onclick="navigate('rl-books',this)">
+    <div class="nav-dot" style="background:#f472b6"></div>Books
+    <span class="nav-count" id="nc-rl-books">0</span>
+  </div>
+  <div class="nav-item" style="--nav-accent:#f472b6" onclick="navigate('rl-other',this)">
+    <div class="nav-dot" style="background:#f472b6"></div>Other Links
+    <span class="nav-count" id="nc-rl-other">0</span>
+  </div>
 </aside>
 
 <main id="main-content">
-  <!-- HOME -->
+
+  <!-- TOKEN SETUP BANNER -->
+  <div id="token-banner">
+    <div class="tb-icon">🔑</div>
+    <div class="tb-body">
+      <div class="tb-title">Connect to GitHub — One-Time Setup</div>
+      <div class="tb-steps">
+        1. Go to <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens/new</a><br>
+        2. Give it a name (e.g. <em>yolymatics-portal</em>)<br>
+        3. Set expiration to <strong>No expiration</strong><br>
+        4. Under <strong>Scopes</strong>, tick <strong>repo</strong> (first checkbox)<br>
+        5. Click <strong>Generate token</strong> — copy the token and paste it below
+      </div>
+      <div class="tb-desc">Your token is saved only in this browser. It never leaves your device except to talk directly to GitHub.</div>
+      <div class="tb-input-row">
+        <input class="tb-input" type="password" id="token-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+        <button class="tb-save" onclick="saveToken()">Save Token</button>
+      </div>
+      <div class="tb-dismiss" onclick="dismissTokenBanner()">I'll do this later (use local mode only)</div>
+    </div>
+  </div>
+
+  <!-- HOME VIEW -->
   <div id="view-home">
     <div class="section-banner" style="background:linear-gradient(135deg,rgba(167,139,250,.08),rgba(96,165,250,.04));--banner-glow:rgba(167,139,250,.1);--banner-accent:#a78bfa">
       <div class="banner-kicker">Yolymatics Study Portal · 2026</div>
       <div class="banner-title">Your <em>Complete</em> Academic Platform</div>
-      <div class="banner-desc">PhD research notes, Yolymatics tutorial slides, and International Schooling materials — all organised in one place. Upload any HTML page and it lives here permanently.</div>
+      <div class="banner-desc">PhD research notes, Yolymatics tutorial slides, and International Schooling materials — all in one place. Upload any HTML page and it saves to GitHub automatically.</div>
       <div class="banner-stats">
         <div class="bstat"><span class="bstat-val" id="stat-total">0</span><span class="bstat-label">Total Pages</span></div>
         <div class="bstat"><span class="bstat-val" id="stat-phd">0</span><span class="bstat-label">Research</span></div>
@@ -307,13 +390,13 @@ main{flex:1;padding:28px 28px 60px;min-width:0;}
     <div class="cards-grid" id="grid-home"></div>
     <div class="empty-state" id="empty-home" style="display:none">
       <div class="empty-icon">🔭</div>
-      <div class="empty-title">No pages found</div>
-      <div class="empty-sub">Try a different filter, or upload your first page below.</div>
+      <div class="empty-title">No pages yet</div>
+      <div class="empty-sub">Upload your first HTML page below, or sync from GitHub if you've already added files there.</div>
     </div>
-    <div class="upload-zone" style="--zone-accent:#a78bfa" onclick="openUploadModal(null)">
+    <div class="upload-zone" style="--zone-accent:#a78bfa" onclick="openUploadModal()">
       <div class="uz-icon">📄</div>
-      <div class="uz-title">Add a New Page</div>
-      <div class="uz-sub">Drag any HTML study page or lesson slide here, or click to choose a file.<br>You'll pick the platform and subject before saving.</div>
+      <div class="uz-title">Upload a New Page</div>
+      <div class="uz-sub">Drop any HTML study page or lesson slide here, or click to choose a file.<br>It saves to your GitHub repo automatically — visible on every device.</div>
       <div class="uz-btn">Choose File</div>
     </div>
   </div>
@@ -326,23 +409,72 @@ main{flex:1;padding:28px 28px 60px;min-width:0;}
     <div class="empty-state" id="empty-section" style="display:none">
       <div class="empty-icon">✨</div>
       <div class="empty-title">Nothing here yet</div>
-      <div class="empty-sub">Upload your first HTML page for this section using the button above.</div>
+      <div class="empty-sub">Upload your first HTML page for this section.</div>
     </div>
-    <div class="upload-zone" id="zone-sec" style="--zone-accent:#a78bfa" onclick="openUploadModal(null)">
+    <div class="upload-zone" id="zone-sec" style="--zone-accent:#a78bfa" onclick="openUploadModal()">
       <div class="uz-icon">📄</div>
       <div class="uz-title">Upload a Page to This Section</div>
-      <div class="uz-sub">Drop an HTML file here or click to browse.</div>
+      <div class="uz-sub">Drop an HTML file here or click to browse. It will be saved to GitHub and appear here automatically.</div>
       <div class="uz-btn">Choose File</div>
     </div>
   </div>
+
+  <!-- READING LIST VIEW -->
+  <div id="view-reading" style="display:none">
+    <div class="section-banner" style="background:linear-gradient(135deg,rgba(244,114,182,.08),rgba(167,139,250,.04));--banner-glow:rgba(244,114,182,.1);--banner-accent:#f472b6">
+      <div class="banner-kicker">Reading List · Papers & Books</div>
+      <div class="banner-title">Your <em>Reading Library</em></div>
+      <div class="banner-desc">Paste arXiv links, book references, or any URL — add a title and notes, and it lives here forever. Click any entry to open it directly.</div>
+      <div class="banner-stats">
+        <div class="bstat"><span class="bstat-val" id="rl-stat-total">0</span><span class="bstat-label">Total Entries</span></div>
+        <div class="bstat"><span class="bstat-val" id="rl-stat-papers">0</span><span class="bstat-label">arXiv Papers</span></div>
+        <div class="bstat"><span class="bstat-val" id="rl-stat-books">0</span><span class="bstat-label">Books</span></div>
+        <div class="bstat"><span class="bstat-val" id="rl-stat-read">0</span><span class="bstat-label">Read ✓</span></div>
+      </div>
+    </div>
+
+    <!-- RL FILTERS -->
+    <div class="filters-row" id="rl-filters-row">
+      <span class="filter-label">Filter:</span>
+      <button class="filter-btn active" data-rlf="all" style="--filter-accent:#f472b6">All</button>
+      <button class="filter-btn" data-rlf="arxiv" style="--filter-accent:#f472b6">arXiv Papers</button>
+      <button class="filter-btn" data-rlf="book" style="--filter-accent:#f472b6">Books</button>
+      <button class="filter-btn" data-rlf="other" style="--filter-accent:#f472b6">Other Links</button>
+      <button class="filter-btn" data-rlf="unread" style="--filter-accent:#fb923c">Unread</button>
+      <button class="filter-btn" data-rlf="reading" style="--filter-accent:#fbbf24">Reading</button>
+      <button class="filter-btn" data-rlf="done" style="--filter-accent:#34d399">Read ✓</button>
+    </div>
+
+    <!-- RL SEARCH -->
+    <div class="rl-search-row">
+      <div class="rl-search-wrap">
+        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="rl-search" placeholder="Search titles, authors, tags…">
+      </div>
+      <button class="rl-add-btn" onclick="openRLModal()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Entry
+      </button>
+    </div>
+
+    <!-- RL LIST -->
+    <div id="rl-list"></div>
+    <div class="empty-state" id="rl-empty" style="display:none">
+      <div class="empty-icon">📖</div>
+      <div class="empty-title">No entries yet</div>
+      <div class="empty-sub">Click "Add Entry" to paste your first arXiv link, book, or reference.</div>
+    </div>
+  </div>
+
 </main>
+</div>
 </div>
 
 <!-- UPLOAD MODAL -->
 <div id="upload-modal">
   <div class="um-box">
     <div class="um-title">Save a New Page</div>
-    <div class="um-sub">Assign your HTML file to a platform and subject — it will appear in the right section instantly and be saved permanently in this browser.</div>
+    <div class="um-sub">Assign your file to a platform and subject. It will be uploaded to your GitHub repo and appear in the portal on every device.</div>
     <div class="um-field">
       <div class="um-label">HTML File</div>
       <div class="uz-btn" onclick="document.getElementById('file-input').click()" style="width:fit-content">
@@ -361,19 +493,73 @@ main{flex:1;padding:28px 28px 60px;min-width:0;}
     </div>
     <div class="um-field">
       <div class="um-label">Subject</div>
-      <select class="um-select" id="um-subject" onchange="syncSectionSelect()"></select>
+      <select class="um-select" id="um-subject" onchange="syncTopicSelect()"></select>
     </div>
     <div class="um-field">
-      <div class="um-label">Topic / Sub-subject</div>
+      <div class="um-label">Topic</div>
       <select class="um-select" id="um-topic"></select>
     </div>
     <div class="um-field">
       <div class="um-label">Short Description (optional)</div>
       <input class="um-input" id="um-desc" type="text" placeholder="e.g. Acids and Bases — CAPS Grade 11">
     </div>
+    <div class="um-progress" id="um-progress">⏳ Uploading to GitHub…</div>
     <div class="um-actions">
       <button class="um-cancel" onclick="closeUploadModal()">Cancel</button>
-      <button class="um-save" onclick="commitUpload()">Save Page ↗</button>
+      <button class="um-save" id="um-save-btn" onclick="commitUpload()">Save to GitHub ↗</button>
+    </div>
+  </div>
+</div>
+
+<!-- READING LIST MODAL -->
+<div id="rl-modal">
+  <div class="rl-box">
+    <div class="rl-box-title" id="rl-modal-title">Add Reading Entry</div>
+    <div class="rl-box-sub">Paste a link — the title will auto-fill for arXiv. Add authors, notes and tags to keep everything organised.</div>
+    <input type="hidden" id="rl-edit-id">
+    <div class="rl-field">
+      <div class="rl-label">URL (arXiv, book listing, journal, etc.)</div>
+      <div class="rl-url-row">
+        <input class="rl-input" id="rl-url" type="url" placeholder="https://arxiv.org/abs/2511.06962">
+        <button class="rl-fetch-btn" onclick="autoFillFromURL()">Auto-fill ↗</button>
+      </div>
+    </div>
+    <div class="rl-field">
+      <div class="rl-label">Title</div>
+      <input class="rl-input" id="rl-title" type="text" placeholder="e.g. Turnover detection using the power spectrum and bispectrum">
+    </div>
+    <div class="rl-field">
+      <div class="rl-label">Authors</div>
+      <input class="rl-input" id="rl-authors" type="text" placeholder="e.g. Dube, Dinda, Jolicoeur, Maartens (2025)">
+    </div>
+    <div class="rl-field">
+      <div class="rl-label">Type</div>
+      <select class="rl-select" id="rl-type">
+        <option value="arxiv">arXiv Paper</option>
+        <option value="book">Book</option>
+        <option value="journal">Journal Article</option>
+        <option value="other">Other / Website</option>
+      </select>
+    </div>
+    <div class="rl-field">
+      <div class="rl-label">Category / Tag</div>
+      <input class="rl-input" id="rl-tag" type="text" placeholder="e.g. Dark Energy, Cosmology, Textbook, Teaching…">
+    </div>
+    <div class="rl-field">
+      <div class="rl-label">Notes (optional)</div>
+      <textarea class="rl-textarea" id="rl-notes" placeholder="Why you're reading this, key ideas to look for, priority level…"></textarea>
+    </div>
+    <div class="rl-field">
+      <div class="rl-label">Reading Status</div>
+      <select class="rl-select" id="rl-status">
+        <option value="unread">Unread</option>
+        <option value="reading">Currently Reading</option>
+        <option value="done">Read ✓</option>
+      </select>
+    </div>
+    <div class="rl-actions">
+      <button class="rl-cancel" onclick="closeRLModal()">Cancel</button>
+      <button class="rl-save" onclick="saveRLEntry()">Save Entry</button>
     </div>
   </div>
 </div>
@@ -391,11 +577,17 @@ main{flex:1;padding:28px 28px 60px;min-width:0;}
   <iframe id="viewer-frame"></iframe>
 </div>
 
-<!-- TOAST -->
 <div id="toast"><div class="t-dot"></div><span id="toast-msg"></span></div>
 
 <script>
-// ── STARS ───────────────────────────────────────────────────────────────────
+// ── GITHUB CONFIG ─────────────────────────────────────────────────────────────
+const GH_OWNER = 'yolandadube';
+const GH_REPO  = 'yolymatics-portal';
+const GH_BRANCH= 'main';
+const GH_API   = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}`;
+const META_FILE= 'portal-meta.json'; // stores page metadata in repo
+
+// ── STARS ─────────────────────────────────────────────────────────────────────
 (()=>{
   const c=document.getElementById('stars'),ctx=c.getContext('2d');
   const resize=()=>{c.width=innerWidth;c.height=innerHeight;};
@@ -404,101 +596,137 @@ main{flex:1;padding:28px 28px 60px;min-width:0;}
   (function draw(){ctx.clearRect(0,0,c.width,c.height);stars.forEach(s=>{s.a+=s.s;if(s.a>1||s.a<0)s.s*=-1;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(180,210,255,${s.a*.5})`;ctx.fill();});requestAnimationFrame(draw);})();
 })();
 
-// ── CONFIG ───────────────────────────────────────────────────────────────────
-const STORAGE_KEY = 'yolymatics_portal_v3';
-
-// PLATFORM → SUBJECTS → TOPICS
+// ── SCHEMA ────────────────────────────────────────────────────────────────────
 const SCHEMA = {
-  phd:{
-    label:'PhD Research', color:'#a78bfa',
-    bg:'linear-gradient(135deg,rgba(167,139,250,.08),rgba(96,165,250,.04))',
-    glow:'rgba(167,139,250,.1)',
-    subjects:{
-      'Cosmology':       ['General','ΛCDM','Perturbation Theory','Galaxy Survey','Other'],
-      'Dark Energy':     ['Theory','DESI Results','Observations','Reading List','Other'],
-      'Dark Matter':     ['DDM','WDM','CDM','Study Plan','Other'],
-      'Large-Scale Structure':['Power Spectrum','Bispectrum','Turnover','Relativistic Corrections','Other'],
-      'CMB':             ['Temperature','Polarisation','Lensing','Other'],
-      'Reference':       ['Planck Quantities','Standard Model','Epochs','Constants','Other'],
-      'Study Plan':      ['Week 1','Week 2','Week 3','General','Other'],
-      'Other':           ['General'],
-    }
-  },
-  yt:{
-    label:'Yolymatics Tutorials', color:'#fbbf24',
-    bg:'linear-gradient(135deg,rgba(251,191,36,.07),rgba(96,165,250,.03))',
-    glow:'rgba(251,191,36,.1)',
-    subjects:{
-      'Mathematics':  ['Algebra','Geometry','Trigonometry','Functions','Number Theory','Proof','Exam Prep','Worksheet','Other'],
-      'Calculus':     ['Limits','Differentiation','Integration','Series','Multivariable','Differential Equations','Exam Prep','Worksheet','Other'],
-      'Statistics':   ['Descriptive','Probability','Inference','Regression','ANOVA','Multivariate','Exam Prep','Worksheet','Other'],
-      'Physics':      ['Mechanics','Waves & Sound','Electricity','Magnetism','Thermodynamics','Modern Physics','Exam Prep','Worksheet','Other'],
-      'Chemistry':    ['Atomic Theory','Periodicity','Bonding','Reactions','Equilibrium','Acids & Bases','Electrochemistry','Organic','Exam Prep','Worksheet','Other'],
-    }
-  },
-  is:{
-    label:'International Schooling', color:'#2dd4bf',
-    bg:'linear-gradient(135deg,rgba(45,212,191,.07),rgba(96,165,250,.03))',
-    glow:'rgba(45,212,191,.1)',
-    subjects:{
-      'Mathematics':         ['Algebra','Geometry','Functions','Number','Statistics','Exam Prep','Worksheet','Other'],
-      'Science':             ['Comprehensive Science','Just Science','Mixed Topics','Worksheet','Exam Prep','Other'],
-      'Biology':             ['Cells & Tissues','Genetics','Ecology','Evolution','Human Body','Plant Biology','Worksheet','Exam Prep','Other'],
-      'Chemistry':           ['Atoms & Elements','Reactions','Acids & Bases','Organic','Worksheet','Exam Prep','Other'],
-      'Physics':             ['Mechanics','Waves','Electricity & Magnetism','Thermodynamics','Worksheet','Exam Prep','Other'],
-      'Biotechnology':       ['DNA Technology','Cloning & GMOs','Fermentation','Bioremediation','Worksheet','Exam Prep','Other'],
-      'Comp. Science':       ['Algorithms','Data Structures','Programming','Networks','Databases','Worksheet','Exam Prep','Other'],
-    }
-  },
+  phd:{label:'PhD Research',color:'#a78bfa',bg:'linear-gradient(135deg,rgba(167,139,250,.08),rgba(96,165,250,.04))',glow:'rgba(167,139,250,.1)',
+    subjects:{'Cosmology':['General','ΛCDM','Perturbation Theory','Galaxy Survey','Other'],'Dark Energy':['Theory','DESI Results','Observations','Reading List','Other'],'Dark Matter':['DDM','WDM','CDM','Study Plan','Other'],'Large-Scale Structure':['Power Spectrum','Bispectrum','Turnover','Relativistic Corrections','Other'],'CMB':['Temperature','Polarisation','Lensing','Other'],'Reference':['Planck Quantities','Standard Model','Epochs','Constants','Other'],'Study Plan':['Week 1','Week 2','Week 3','General','Other'],'Other':['General']}},
+  yt:{label:'Yolymatics Tutorials',color:'#fbbf24',bg:'linear-gradient(135deg,rgba(251,191,36,.07),rgba(96,165,250,.03))',glow:'rgba(251,191,36,.1)',
+    subjects:{'Mathematics':['Algebra','Geometry','Trigonometry','Functions','Number Theory','Proof','Exam Prep','Worksheet','Other'],'Calculus':['Limits','Differentiation','Integration','Series','Multivariable','Differential Equations','Exam Prep','Worksheet','Other'],'Statistics':['Descriptive','Probability','Inference','Regression','ANOVA','Multivariate','Exam Prep','Worksheet','Other'],'Physics':['Mechanics','Waves & Sound','Electricity','Magnetism','Thermodynamics','Modern Physics','Exam Prep','Worksheet','Other'],'Chemistry':['Atomic Theory','Periodicity','Bonding','Reactions','Equilibrium','Acids & Bases','Electrochemistry','Organic','Exam Prep','Worksheet','Other']}},
+  is:{label:'International Schooling',color:'#2dd4bf',bg:'linear-gradient(135deg,rgba(45,212,191,.07),rgba(96,165,250,.03))',glow:'rgba(45,212,191,.1)',
+    subjects:{'Mathematics':['Algebra','Geometry','Functions','Number','Statistics','Exam Prep','Worksheet','Other'],'Science':['Comprehensive Science','Just Science','Mixed Topics','Worksheet','Exam Prep','Other'],'Biology':['Cells & Tissues','Genetics','Ecology','Evolution','Human Body','Plant Biology','Worksheet','Exam Prep','Other'],'Chemistry':['Atoms & Elements','Reactions','Acids & Bases','Organic','Worksheet','Exam Prep','Other'],'Physics':['Mechanics','Waves','Electricity & Magnetism','Thermodynamics','Worksheet','Exam Prep','Other'],'Biotechnology':['DNA Technology','Cloning & GMOs','Fermentation','Bioremediation','Worksheet','Exam Prep','Other'],'Comp. Science':['Algorithms','Data Structures','Programming','Networks','Databases','Worksheet','Exam Prep','Other']}}
 };
 
-// Section keys (sidebar IDs) → schema lookup
-const SECTION_META = {
-  'phd':         {platform:'phd', subject:null,            label:'Cosmology Notes'},
-  'yt-math':     {platform:'yt',  subject:'Mathematics',   label:'Mathematics'},
-  'yt-calculus': {platform:'yt',  subject:'Calculus',      label:'Calculus'},
-  'yt-stats':    {platform:'yt',  subject:'Statistics',    label:'Statistics'},
-  'yt-physics':  {platform:'yt',  subject:'Physics',       label:'Physics'},
-  'yt-chemistry':{platform:'yt',  subject:'Chemistry',     label:'Chemistry'},
-  'is-math':     {platform:'is',  subject:'Mathematics',   label:'Mathematics'},
-  'is-science':  {platform:'is',  subject:'Science',       label:'Science'},
-  'is-biology':  {platform:'is',  subject:'Biology',       label:'Biology'},
-  'is-chemistry':{platform:'is',  subject:'Chemistry',     label:'Chemistry'},
-  'is-physics':  {platform:'is',  subject:'Physics',       label:'Physics'},
-  'is-biotech':  {platform:'is',  subject:'Biotechnology', label:'Biotechnology'},
-  'is-compsci':  {platform:'is',  subject:'Comp. Science', label:'Comp. Science'},
+const SECTION_META={
+  'phd':         {platform:'phd',subject:null,           label:'Cosmology Notes'},
+  'yt-math':     {platform:'yt', subject:'Mathematics',  label:'Mathematics'},
+  'yt-calculus': {platform:'yt', subject:'Calculus',     label:'Calculus'},
+  'yt-stats':    {platform:'yt', subject:'Statistics',   label:'Statistics'},
+  'yt-physics':  {platform:'yt', subject:'Physics',      label:'Physics'},
+  'yt-chemistry':{platform:'yt', subject:'Chemistry',    label:'Chemistry'},
+  'is-math':     {platform:'is', subject:'Mathematics',  label:'Mathematics'},
+  'is-science':  {platform:'is', subject:'Science',      label:'Science'},
+  'is-biology':  {platform:'is', subject:'Biology',      label:'Biology'},
+  'is-chemistry':{platform:'is', subject:'Chemistry',    label:'Chemistry'},
+  'is-physics':  {platform:'is', subject:'Physics',      label:'Physics'},
+  'is-biotech':  {platform:'is', subject:'Biotechnology',label:'Biotechnology'},
+  'is-compsci':  {platform:'is', subject:'Comp. Science',label:'Comp. Science'},
 };
 
 const ACCENT_POOL=['#60a5fa','#2dd4bf','#a78bfa','#fbbf24','#fb923c','#f472b6','#34d399','#818cf8'];
 
-// ── DATA ─────────────────────────────────────────────────────────────────────
-function load(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY))||[];}catch{return [];}}
-function save(pages){localStorage.setItem(STORAGE_KEY,JSON.stringify(pages));}
+// ── TOKEN ─────────────────────────────────────────────────────────────────────
+function getToken(){return localStorage.getItem('yoly_gh_token')||'';}
+function saveToken(){
+  const t=document.getElementById('token-input').value.trim();
+  if(!t){showToast('⚠️ Please paste your token first.');return;}
+  localStorage.setItem('yoly_gh_token',t);
+  showToast('✅ Token saved! You can now upload directly to GitHub.');
+  document.getElementById('token-banner').classList.add('hidden');
+}
+function dismissTokenBanner(){document.getElementById('token-banner').classList.add('hidden');}
 
-const SEEDS=[
-  {id:'ddm_study_plan',       platform:'phd',subject:'Study Plan',  topic:'General',       title:'Dynamic Dark Matter — 21-Day Study Plan',               desc:'Structured 21-day roadmap through DDM: theory, formalism, observational signatures, and model constraints.',   accent:'#a78bfa',date:'2026-04-26',seedFile:'ddm_study_plan.html',                         content:null},
-  {id:'phase2_part1',         platform:'phd',subject:'Dark Energy',  topic:'Theory',        title:'Phase 2 Part 1 — Dark Energy Models: Theory',           desc:'Theoretical foundations: ΛCDM, quintessence, k-essence, and modified gravity.',                             accent:'#818cf8',date:'2026-04-26',seedFile:'phase2_part1_dark_energy_theory.html',        content:null},
-  {id:'phase2_part2',         platform:'phd',subject:'Dark Energy',  topic:'DESI Results',  title:'Phase 2 Part 2 — DESI Results, Observations & Reading', desc:'DESI 2024 results, observational constraints on dark energy, and curated reading list.',                     accent:'#60a5fa',date:'2026-04-26',seedFile:'phase2_part2_observations_reading_list.html', content:null},
-  {id:'planck_quantities',    platform:'phd',subject:'Reference',    topic:'Planck Quantities',title:'Planck Quantities — PhD Cosmology Reference',         desc:'Complete Planck unit system: definitions, derivations, and numerical values.',                               accent:'#fbbf24',date:'2026-04-26',seedFile:'planck_quantities.html',                      content:null},
-  {id:'standard_model_epochs',platform:'phd',subject:'Reference',    topic:'Epochs',        title:'Epochs of the Standard Model — PhD Reference',          desc:'Timeline of cosmic epochs from the Planck era through recombination to the present.',                       accent:'#fb923c',date:'2026-04-26',seedFile:'standard_model_epochs.html',                  content:null},
-];
+// ── DATA: pages metadata lives in portal-meta.json in the repo ────────────────
+let pages=[];
+let metaSha=null; // sha of portal-meta.json for updates
 
-let pages=load();
-SEEDS.forEach(s=>{if(!pages.find(p=>p.id===s.id))pages.unshift(s);});
-save(pages);
+async function fetchMeta(){
+  try{
+    const r=await fetch(`${GH_API}/contents/${META_FILE}`,{headers:ghHeaders()});
+    if(r.status===404){pages=seedPages();return;}
+    const j=await r.json();
+    metaSha=j.sha;
+    pages=JSON.parse(atob(j.content.replace(/\n/g,'')));
+  } catch(e){
+    // fallback to localStorage
+    const ls=localStorage.getItem('yoly_pages_local');
+    pages=ls?JSON.parse(ls):seedPages();
+  }
+}
+
+async function saveMeta(){
+  const content=btoa(unescape(encodeURIComponent(JSON.stringify(pages,null,2))));
+  const body={message:'Update portal metadata',content,branch:GH_BRANCH};
+  if(metaSha)body.sha=metaSha;
+  const token=getToken();
+  if(!token){
+    // save locally only
+    localStorage.setItem('yoly_pages_local',JSON.stringify(pages));
+    return;
+  }
+  const r=await fetch(`${GH_API}/contents/${META_FILE}`,{
+    method:'PUT',headers:ghHeaders(),body:JSON.stringify(body)
+  });
+  const j=await r.json();
+  if(j.content)metaSha=j.content.sha;
+}
+
+function ghHeaders(){
+  const t=getToken();
+  const h={'Content-Type':'application/json','Accept':'application/vnd.github+json'};
+  if(t)h['Authorization']=`Bearer ${t}`;
+  return h;
+}
+
+function seedPages(){
+  return [
+    {id:'ddm_study_plan',     platform:'phd',subject:'Study Plan',         topic:'General',          title:'Dynamic Dark Matter — 21-Day Study Plan',               desc:'Structured 21-day roadmap through DDM: theory, formalism, observational signatures, and model constraints.',   accent:'#a78bfa',date:'2026-04-26',filename:'ddm_study_plan.html'},
+    {id:'phase2_part1',       platform:'phd',subject:'Dark Energy',         topic:'Theory',           title:'Phase 2 Part 1 — Dark Energy Models: Theory',           desc:'Theoretical foundations: ΛCDM, quintessence, k-essence, and modified gravity.',                             accent:'#818cf8',date:'2026-04-26',filename:'phase2_part1_dark_energy_theory.html'},
+    {id:'phase2_part2',       platform:'phd',subject:'Dark Energy',         topic:'DESI Results',     title:'Phase 2 Part 2 — DESI Results, Observations & Reading', desc:'DESI 2024 results, observational constraints on dark energy, and curated reading list.',                     accent:'#60a5fa',date:'2026-04-26',filename:'phase2_part2_observations_reading_list.html'},
+    {id:'planck_quantities',  platform:'phd',subject:'Reference',           topic:'Planck Quantities', title:'Planck Quantities — PhD Cosmology Reference',           desc:'Complete Planck unit system: definitions, derivations, and numerical values.',                               accent:'#fbbf24',date:'2026-04-26',filename:'planck_quantities.html'},
+    {id:'standard_model_epochs',platform:'phd',subject:'Reference',         topic:'Epochs',           title:'Epochs of the Standard Model — PhD Reference',          desc:'Timeline of cosmic epochs from the Planck era through recombination to the present.',                       accent:'#fb923c',date:'2026-04-26',filename:'standard_model_epochs.html'},
+  ];
+}
+
+// ── UPLOAD FILE TO GITHUB ─────────────────────────────────────────────────────
+async function uploadFileToGitHub(filename, htmlContent){
+  const token=getToken();
+  if(!token) throw new Error('NO_TOKEN');
+  // check if file exists (to get sha for update)
+  let sha=undefined;
+  try{
+    const check=await fetch(`${GH_API}/contents/${filename}`,{headers:ghHeaders()});
+    if(check.ok){const j=await check.json();sha=j.sha;}
+  }catch(e){}
+  const body={message:`Add ${filename} via Yolymatics Portal`,content:btoa(unescape(encodeURIComponent(htmlContent))),branch:GH_BRANCH};
+  if(sha)body.sha=sha;
+  const r=await fetch(`${GH_API}/contents/${filename}`,{method:'PUT',headers:ghHeaders(),body:JSON.stringify(body)});
+  if(!r.ok){const e=await r.json();throw new Error(e.message||'GitHub upload failed');}
+}
+
+// ── SYNC FROM GITHUB ──────────────────────────────────────────────────────────
+async function syncFromGitHub(){
+  const icon=document.getElementById('sync-icon');
+  icon.classList.add('spin');
+  showToast('🔄 Syncing from GitHub…');
+  await fetchMeta();
+  renderAll();
+  icon.classList.remove('spin');
+  showToast('✅ Synced! Portal is up to date.');
+}
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
-let currentSection='home', homeFilter='all', secTopic='all', searchQ='', pendingFile=null;
+let currentSection='home',homeFilter='all',secTopic='all',searchQ='',pendingFile=null;
 
-// ── NAVIGATION ────────────────────────────────────────────────────────────────
+// ── NAVIGATION (overridden below after Reading List code) ──────────────────────
 function navigate(sec,el){
-  currentSection=sec; secTopic='all';
+  currentSection=sec;secTopic='all';
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   if(el)el.classList.add('active');
   const isHome=sec==='home';
   document.getElementById('view-home').style.display=isHome?'':'none';
   document.getElementById('view-section').style.display=isHome?'none':'';
-  if(!isHome) buildSectionBanner(sec);
+  document.getElementById('view-reading').style.display='none';
+  if(!isHome)buildSectionBanner(sec);
   renderAll();
 }
 
@@ -507,7 +735,7 @@ document.querySelectorAll('[data-hf]').forEach(b=>{
   b.addEventListener('click',()=>{
     homeFilter=b.dataset.hf;
     document.querySelectorAll('[data-hf]').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active'); renderHome();
+    b.classList.add('active');renderHome();
   });
 });
 
@@ -515,28 +743,15 @@ document.querySelectorAll('[data-hf]').forEach(b=>{
 document.getElementById('search-input').addEventListener('input',e=>{searchQ=e.target.value.toLowerCase();renderAll();});
 
 // ── RENDER ────────────────────────────────────────────────────────────────────
-function renderAll(){
-  updateCounts(); updateStats();
-  if(currentSection==='home') renderHome();
-  else renderSection(currentSection);
-}
+function renderAll(){updateCounts();updateStats();if(currentSection==='home')renderHome();else renderSection(currentSection);}
 
-function matchQ(p){
-  if(!searchQ)return true;
-  return(p.title+' '+p.subject+' '+p.topic+' '+p.desc+' '+p.platform).toLowerCase().includes(searchQ);
-}
-
-function sectionKey(p){
-  if(p.platform==='phd')return'phd';
-  const s=SECTION_META;
-  return Object.keys(s).find(k=>s[k].platform===p.platform&&s[k].subject===p.subject)||p.platform;
-}
+function matchQ(p){if(!searchQ)return true;return(p.title+' '+p.subject+' '+p.topic+' '+p.desc+' '+p.platform).toLowerCase().includes(searchQ);}
 
 function renderHome(){
   let list=pages.filter(p=>{
     if(homeFilter==='phd')return p.platform==='phd';
-    if(homeFilter==='yt') return p.platform==='yt';
-    if(homeFilter==='is') return p.platform==='is';
+    if(homeFilter==='yt')return p.platform==='yt';
+    if(homeFilter==='is')return p.platform==='is';
     return true;
   }).filter(matchQ);
   drawGrid('grid-home','empty-home',list);
@@ -545,8 +760,7 @@ function renderHome(){
 function renderSection(sec){
   const meta=SECTION_META[sec];
   let list=pages.filter(p=>{
-    if(!meta)return false;
-    if(p.platform!==meta.platform)return false;
+    if(!meta||p.platform!==meta.platform)return false;
     if(meta.subject&&p.subject!==meta.subject)return false;
     return true;
   }).filter(matchQ);
@@ -558,13 +772,12 @@ function drawGrid(gid,eid,list){
   const g=document.getElementById(gid),e=document.getElementById(eid);
   if(!list.length){g.innerHTML='';e.style.display='';return;}
   e.style.display='none';
-  const pm=p=>{const pl=SCHEMA[p.platform];return pl?pl.label:'';};
   g.innerHTML=list.map(p=>`
     <div class="card" style="--card-accent:${p.accent||'#60a5fa'}" onclick="openPage('${p.id}')">
       <div class="card-del" title="Remove" onclick="event.stopPropagation();deletePage('${p.id}')">✕</div>
       <div class="card-eyebrow">
         <div class="card-tag" style="color:${p.accent};border-color:${p.accent}25;background:${p.accent}12">${p.subject||'General'}</div>
-        <div class="card-platform-label">${pm(p)}</div>
+        <div class="card-platform-label">${SCHEMA[p.platform]?.label||''}</div>
       </div>
       <div class="card-title">${p.title}</div>
       <div class="card-desc">${p.desc||'Click to open this page.'}</div>
@@ -572,72 +785,46 @@ function drawGrid(gid,eid,list){
         <span class="card-date">${p.date||''}</span>
         <span class="card-open">Open →</span>
       </div>
+      <div class="card-source">📁 ${p.filename||''}</div>
     </div>`).join('');
 }
 
 function buildSectionBanner(sec){
   const meta=SECTION_META[sec]||{};
   const pl=SCHEMA[meta.platform]||{};
-  const count=pages.filter(p=>{
-    if(p.platform!==meta.platform)return false;
-    if(meta.subject&&p.subject!==meta.subject)return false;
-    return true;
-  }).length;
+  const count=pages.filter(p=>p.platform===meta.platform&&(!meta.subject||p.subject===meta.subject)).length;
   const accent=pl.color||'#60a5fa';
-
   document.getElementById('sec-banner').style.cssText=`background:${pl.bg};--banner-glow:${pl.glow};--banner-accent:${accent}`;
   document.getElementById('sec-banner').innerHTML=`
     <div class="banner-kicker">${pl.label||''}</div>
     <div class="banner-title">${meta.label||sec}</div>
     <div class="banner-desc">All your HTML pages for ${meta.label||sec} — searchable and ready to open.</div>
     <div class="banner-stats"><div class="bstat"><span class="bstat-val">${count}</span><span class="bstat-label">Pages</span></div></div>`;
-
-  // topic filters
-  const subj=meta.subject;
-  const topics=subj&&pl.subjects?pl.subjects[subj]||[]:[];
+  const subj=meta.subject,topics=subj&&pl.subjects?pl.subjects[subj]||[]:[];
   const fr=document.getElementById('sec-filters');
-  if(topics.length){
-    fr.innerHTML=`<span class="filter-label">Topic:</span>`+
-      ['all',...topics].map(t=>`<button class="filter-btn ${secTopic===t?'active':''}" style="--filter-accent:${accent}" onclick="filterTopic('${t}',this)">${t==='all'?'All':t}</button>`).join('');
-  } else {
-    fr.innerHTML='';
-  }
+  fr.innerHTML=topics.length?`<span class="filter-label">Topic:</span>`+['all',...topics].map(t=>`<button class="filter-btn ${secTopic===t?'active':''}" style="--filter-accent:${accent}" onclick="filterTopic('${t}',this)">${t==='all'?'All':t}</button>`).join(''):'';
   document.getElementById('zone-sec').style.setProperty('--zone-accent',accent);
 }
 
-function filterTopic(t,el){
-  secTopic=t;
-  document.querySelectorAll('#sec-filters .filter-btn').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');
-  renderSection(currentSection);
-}
+function filterTopic(t,el){secTopic=t;document.querySelectorAll('#sec-filters .filter-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderSection(currentSection);}
 
-// ── COUNTS & STATS ────────────────────────────────────────────────────────────
 function updateCounts(){
   document.getElementById('nc-home').textContent=pages.length;
   Object.keys(SECTION_META).forEach(sec=>{
-    const el=document.getElementById('nc-'+sec); if(!el)return;
+    const el=document.getElementById('nc-'+sec);if(!el)return;
     const m=SECTION_META[sec];
     el.textContent=pages.filter(p=>p.platform===m.platform&&(!m.subject||p.subject===m.subject)).length;
   });
 }
 function updateStats(){
   document.getElementById('stat-total').textContent=pages.length;
-  document.getElementById('stat-phd').textContent=pages.filter(p=>p.platform==='phd').length;
-  document.getElementById('stat-yt').textContent=pages.filter(p=>p.platform==='yt').length;
-  document.getElementById('stat-is').textContent=pages.filter(p=>p.platform==='is').length;
+  ['phd','yt','is'].forEach(pl=>document.getElementById('stat-'+pl).textContent=pages.filter(p=>p.platform===pl).length);
 }
 
 // ── UPLOAD MODAL ──────────────────────────────────────────────────────────────
-function openUploadModal(presetSection){
-  if(presetSection){
-    const m=SECTION_META[presetSection]||{};
-    if(m.platform)document.getElementById('um-platform').value=m.platform;
-  } else if(currentSection!=='home'){
-    const m=SECTION_META[currentSection]||{};
-    if(m.platform)document.getElementById('um-platform').value=m.platform;
-  }
-  syncSubjectSelect(); 
+function openUploadModal(){
+  if(currentSection!=='home'){const m=SECTION_META[currentSection]||{};if(m.platform)document.getElementById('um-platform').value=m.platform;}
+  syncSubjectSelect();
   document.getElementById('upload-modal').classList.add('open');
 }
 function closeUploadModal(){
@@ -645,6 +832,8 @@ function closeUploadModal(){
   pendingFile=null;
   document.getElementById('um-filename').textContent='No file chosen';
   document.getElementById('um-desc').value='';
+  document.getElementById('um-progress').style.display='none';
+  document.getElementById('um-save-btn').disabled=false;
 }
 
 function syncSubjectSelect(){
@@ -652,24 +841,17 @@ function syncSubjectSelect(){
   const subjects=Object.keys(SCHEMA[plat]?.subjects||{});
   const sel=document.getElementById('um-subject');
   sel.innerHTML=subjects.map(s=>`<option value="${s}">${s}</option>`).join('');
-  // pre-select based on current section
-  if(currentSection!=='home'){
-    const m=SECTION_META[currentSection]||{};
-    if(m.subject&&subjects.includes(m.subject))sel.value=m.subject;
-  }
+  if(currentSection!=='home'){const m=SECTION_META[currentSection]||{};if(m.subject&&subjects.includes(m.subject))sel.value=m.subject;}
   syncTopicSelect();
 }
-function syncSectionSelect(){syncTopicSelect();}
 function syncTopicSelect(){
-  const plat=document.getElementById('um-platform').value;
-  const subj=document.getElementById('um-subject').value;
+  const plat=document.getElementById('um-platform').value,subj=document.getElementById('um-subject').value;
   const topics=SCHEMA[plat]?.subjects[subj]||['General'];
-  const sel=document.getElementById('um-topic');
-  sel.innerHTML=topics.map(t=>`<option value="${t}">${t}</option>`).join('');
+  document.getElementById('um-topic').innerHTML=topics.map(t=>`<option value="${t}">${t}</option>`).join('');
 }
 
 document.getElementById('file-input').addEventListener('change',e=>{
-  const file=e.target.files[0]; if(!file)return;
+  const file=e.target.files[0];if(!file)return;
   const reader=new FileReader();
   reader.onload=ev=>{
     const html=ev.target.result;
@@ -679,43 +861,68 @@ document.getElementById('file-input').addEventListener('change',e=>{
     // auto-guess platform
     const txt=(file.name+pendingFile.title).toLowerCase();
     let gp='yt';
-    if(/ddm|planck|epoch|cosm|dark_energy|dark_matter|phase2|turnover|megamapper|euclid|bispectrum|power.spec|relativistic/i.test(txt)) gp='phd';
-    else if(/intl|international|is[-_]|comp.?sci|biotech/i.test(txt)) gp='is';
+    if(/ddm|planck|epoch|cosm|dark.energy|dark.matter|phase2|turnover|megamapper|euclid|bispectrum|power.spec|relativistic/i.test(txt))gp='phd';
+    else if(/intl|international|biotech|comp.sci/i.test(txt))gp='is';
     document.getElementById('um-platform').value=gp;
     syncSubjectSelect();
-    openUploadModal(null);
+    openUploadModal();
   };
-  reader.readAsText(file);
-  e.target.value='';
+  reader.readAsText(file);e.target.value='';
 });
 
-function commitUpload(){
+async function commitUpload(){
   if(!pendingFile){showToast('⚠️ Please choose an HTML file first.');return;}
   const platform=document.getElementById('um-platform').value;
   const subject=document.getElementById('um-subject').value;
   const topic=document.getElementById('um-topic').value;
   const desc=document.getElementById('um-desc').value.trim();
   const accent=SCHEMA[platform]?.color||ACCENT_POOL[pages.length%ACCENT_POOL.length];
+  const btn=document.getElementById('um-save-btn');
+  const prog=document.getElementById('um-progress');
+  btn.disabled=true;prog.style.display='block';
 
-  const seedIdx=pages.findIndex(p=>p.seedFile===pendingFile.filename);
-  if(seedIdx>=0){
-    Object.assign(pages[seedIdx],{content:pendingFile.content,date:today(),platform,subject,topic});
-    if(desc)pages[seedIdx].desc=desc;
-    showToast(`Updated: ${pages[seedIdx].title}`);
-  } else {
-    pages.unshift({
-      id:'pg_'+Date.now()+'_'+Math.random().toString(36).slice(2,5),
-      platform,subject,topic,title:pendingFile.title,
-      desc,accent,date:today(),content:pendingFile.content,
-    });
-    showToast(`Saved to ${SCHEMA[platform]?.label} › ${subject}!`);
+  // sanitise filename
+  const safeFilename=pendingFile.filename.replace(/[^a-zA-Z0-9._-]/g,'_');
+
+  try{
+    const token=getToken();
+    if(token){
+      prog.textContent='⏳ Uploading HTML file to GitHub…';
+      await uploadFileToGitHub(safeFilename,pendingFile.content);
+      prog.textContent='⏳ Saving metadata…';
+    } else {
+      prog.textContent='⏳ Saving locally (no token set)…';
+    }
+
+    // update pages metadata
+    const existing=pages.findIndex(p=>p.filename===safeFilename);
+    if(existing>=0){
+      Object.assign(pages[existing],{platform,subject,topic,date:today()});
+      if(desc)pages[existing].desc=desc;
+      showToast(`✅ Updated: ${pages[existing].title}`);
+    } else {
+      pages.unshift({
+        id:'pg_'+Date.now()+'_'+Math.random().toString(36).slice(2,5),
+        platform,subject,topic,
+        title:pendingFile.title,
+        desc,accent,date:today(),
+        filename:safeFilename,
+      });
+      showToast(token?`✅ Saved to GitHub → ${SCHEMA[platform]?.label} › ${subject}!`:`✅ Saved locally → ${SCHEMA[platform]?.label} › ${subject}`);
+    }
+
+    await saveMeta();
+    closeUploadModal();renderAll();
+  } catch(err){
+    prog.textContent='❌ Error: '+(err.message||'Upload failed');
+    btn.disabled=false;
+    if(err.message==='NO_TOKEN') showToast('⚠️ No GitHub token — set one to upload to GitHub.');
   }
-  save(pages); closeUploadModal(); renderAll();
 }
 
 function today(){return new Date().toISOString().slice(0,10);}
 
-// drag & drop on upload zones
+// drag & drop
 document.querySelectorAll('.upload-zone').forEach(zone=>{
   zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag-over');});
   zone.addEventListener('dragleave',()=>zone.classList.remove('drag-over'));
@@ -729,37 +936,37 @@ document.querySelectorAll('.upload-zone').forEach(zone=>{
       const tm=html.match(/<title>([^<]*)<\/title>/i);
       pendingFile={content:html,filename:file.name,title:tm?tm[1].trim():file.name.replace('.html','')};
       document.getElementById('um-filename').textContent=file.name;
-      openUploadModal(null);
+      openUploadModal();
     };
     reader.readAsText(file);
   });
 });
 
 // ── VIEWER ────────────────────────────────────────────────────────────────────
-function openPage(id){
+async function openPage(id){
   const p=pages.find(x=>x.id===id);if(!p)return;
   document.getElementById('vtitle').textContent=p.title;
   document.getElementById('vtag').textContent=(p.subject||'')+(p.topic&&p.topic!=='General'?' › '+p.topic:'');
   document.getElementById('viewer').classList.add('open');
   const frame=document.getElementById('viewer-frame');
-  if(p.content){
-    frame.src=URL.createObjectURL(new Blob([p.content],{type:'text/html'}));
-  } else {
-    frame.src=URL.createObjectURL(new Blob([`<html><body style="background:#06080f;color:#8399bb;font-family:sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:14px;text-align:center;padding:40px"><div style="font-size:46px">📂</div><div style="font-family:Georgia,serif;font-size:1.5rem;color:#dde6f5">${p.title}</div><p style="max-width:420px;line-height:1.7;font-size:13px">This is a seed entry. Re-upload <code style="color:#60a5fa">${p.seedFile||p.id+'.html'}</code> using the Upload Page button — it will replace this placeholder permanently.</p></body></html>`],{type:'text/html'}));
+
+  // try to load from GitHub raw
+  try{
+    const rawUrl=`https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${p.filename}`;
+    frame.src=rawUrl;
+  } catch(e){
+    frame.src=URL.createObjectURL(new Blob([`<html><body style="background:#06080f;color:#8399bb;font-family:sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:14px;text-align:center;padding:40px"><div style="font-size:40px">📂</div><div style="font-family:Georgia,serif;font-size:1.4rem;color:#dde6f5">${p.title}</div><p style="max-width:400px;font-size:12px;line-height:1.7">Upload this file to your GitHub repo to view it here.</p></body></html>`],{type:'text/html'}));
   }
 }
-function closeViewer(){
-  document.getElementById('viewer').classList.remove('open');
-  const f=document.getElementById('viewer-frame');
-  URL.revokeObjectURL(f.src);f.src='';
-}
+
+function closeViewer(){document.getElementById('viewer').classList.remove('open');document.getElementById('viewer-frame').src='';}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeViewer();});
 
 // ── DELETE ────────────────────────────────────────────────────────────────────
-function deletePage(id){
-  if(!confirm('Remove this page from your portal?'))return;
+async function deletePage(id){
+  if(!confirm('Remove this page from the portal?'))return;
   pages=pages.filter(p=>p.id!==id);
-  save(pages);renderAll();showToast('Page removed.');
+  await saveMeta();renderAll();showToast('Page removed.');
 }
 
 // ── TOAST ─────────────────────────────────────────────────────────────────────
@@ -767,12 +974,231 @@ function showToast(msg){
   const t=document.getElementById('toast');
   document.getElementById('toast-msg').textContent=msg;
   t.classList.add('show');clearTimeout(t._t);
-  t._t=setTimeout(()=>t.classList.remove('show'),3200);
+  t._t=setTimeout(()=>t.classList.remove('show'),3500);
 }
+
+// ── TOKEN BANNER ──────────────────────────────────────────────────────────────
+if(getToken())document.getElementById('token-banner').classList.add('hidden');
+
+// ── READING LIST ──────────────────────────────────────────────────────────────
+const RL_KEY = 'yolymatics_reading_list_v1';
+let rlFilter = 'all';
+let rlSearch = '';
+let rlEditId = null;
+
+function loadRL(){try{return JSON.parse(localStorage.getItem(RL_KEY))||[];}catch{return[];}}
+function saveRL(list){localStorage.setItem(RL_KEY,JSON.stringify(list));}
+let readingList = loadRL();
+
+// Filter buttons
+document.querySelectorAll('[data-rlf]').forEach(b=>{
+  b.addEventListener('click',()=>{
+    rlFilter=b.dataset.rlf;
+    document.querySelectorAll('[data-rlf]').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    renderRL();
+  });
+});
+
+document.getElementById('rl-search').addEventListener('input',e=>{rlSearch=e.target.value.toLowerCase();renderRL();});
+
+function renderRL(){
+  updateRLCounts();
+  const list=readingList.filter(e=>{
+    // section filter from sidebar
+    if(currentSection==='rl-papers'&&e.type!=='arxiv')return false;
+    if(currentSection==='rl-books'&&e.type!=='book')return false;
+    if(currentSection==='rl-other'&&(e.type==='arxiv'||e.type==='book'))return false;
+    // filter row
+    if(rlFilter==='arxiv'&&e.type!=='arxiv')return false;
+    if(rlFilter==='book'&&e.type!=='book')return false;
+    if(rlFilter==='other'&&(e.type==='arxiv'||e.type==='book'))return false;
+    if(rlFilter==='unread'&&e.status!=='unread')return false;
+    if(rlFilter==='reading'&&e.status!=='reading')return false;
+    if(rlFilter==='done'&&e.status!=='done')return false;
+    // search
+    if(rlSearch&&!(e.title+' '+e.authors+' '+e.tag+' '+e.notes).toLowerCase().includes(rlSearch))return false;
+    return true;
+  });
+
+  const container=document.getElementById('rl-list');
+  const empty=document.getElementById('rl-empty');
+  if(!list.length){container.innerHTML='';empty.style.display='';return;}
+  empty.style.display='none';
+
+  const typeIcon={arxiv:'📄',book:'📘',journal:'📰',other:'🔗'};
+  const typeBg={arxiv:'rgba(244,114,182,.12)',book:'rgba(96,165,250,.12)',journal:'rgba(167,139,250,.12)',other:'rgba(45,212,191,.12)'};
+  const statusLabel={unread:'○ Unread',reading:'◑ Reading',done:'✓ Read'};
+  const statusClass={unread:'',reading:'reading',done:'done'};
+
+  container.innerHTML=list.map(e=>`
+    <div class="rl-entry" id="rle-${e.id}">
+      <div class="rl-entry-left">
+        <div class="rl-type-badge" style="background:${typeBg[e.type]||typeBg.other}">${typeIcon[e.type]||'🔗'}</div>
+        <div class="rl-status-btn ${statusClass[e.status]||''}" title="Cycle status" onclick="cycleStatus('${e.id}')">${e.status==='done'?'✓':e.status==='reading'?'◑':'○'}</div>
+      </div>
+      <div class="rl-entry-body">
+        <div class="rl-entry-title" onclick="window.open('${e.url}','_blank')">${e.title||'Untitled'}</div>
+        ${e.authors?`<div class="rl-entry-authors">${e.authors}</div>`:''}
+        <a class="rl-entry-url" href="${e.url}" target="_blank" rel="noopener">${e.url}</a>
+        ${e.notes?`<div class="rl-entry-notes">${e.notes}</div>`:''}
+        <div class="rl-entry-footer">
+          ${e.tag?`<span class="rl-tag">${e.tag}</span>`:''}
+          <span class="rl-date">${e.date||''}</span>
+        </div>
+      </div>
+      <div class="rl-entry-actions">
+        <div class="rl-act-btn" title="Edit" onclick="editRLEntry('${e.id}')">✎</div>
+        <div class="rl-act-btn del" title="Delete" onclick="deleteRLEntry('${e.id}')">✕</div>
+      </div>
+    </div>`).join('');
+}
+
+function updateRLCounts(){
+  const total=readingList.length;
+  const papers=readingList.filter(e=>e.type==='arxiv').length;
+  const books=readingList.filter(e=>e.type==='book').length;
+  const done=readingList.filter(e=>e.status==='done').length;
+  const other=readingList.filter(e=>e.type!=='arxiv'&&e.type!=='book').length;
+  const safe=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  safe('rl-stat-total',total);
+  safe('rl-stat-papers',papers);
+  safe('rl-stat-books',books);
+  safe('rl-stat-read',done);
+  safe('nc-rl-papers',papers);
+  safe('nc-rl-books',books);
+  safe('nc-rl-other',other);
+}
+
+function openRLModal(prefill){
+  rlEditId=null;
+  document.getElementById('rl-modal-title').textContent='Add Reading Entry';
+  document.getElementById('rl-edit-id').value='';
+  ['url','title','authors','tag','notes'].forEach(f=>document.getElementById('rl-'+f).value='');
+  document.getElementById('rl-type').value='arxiv';
+  document.getElementById('rl-status').value='unread';
+  // pre-select type based on sidebar
+  if(currentSection==='rl-books')document.getElementById('rl-type').value='book';
+  if(currentSection==='rl-other')document.getElementById('rl-type').value='other';
+  if(prefill){document.getElementById('rl-url').value=prefill;}
+  document.getElementById('rl-modal').classList.add('open');
+}
+function closeRLModal(){document.getElementById('rl-modal').classList.remove('open');rlEditId=null;}
+
+function editRLEntry(id){
+  const e=readingList.find(x=>x.id===id);if(!e)return;
+  rlEditId=id;
+  document.getElementById('rl-modal-title').textContent='Edit Entry';
+  document.getElementById('rl-edit-id').value=id;
+  document.getElementById('rl-url').value=e.url||'';
+  document.getElementById('rl-title').value=e.title||'';
+  document.getElementById('rl-authors').value=e.authors||'';
+  document.getElementById('rl-type').value=e.type||'arxiv';
+  document.getElementById('rl-tag').value=e.tag||'';
+  document.getElementById('rl-notes').value=e.notes||'';
+  document.getElementById('rl-status').value=e.status||'unread';
+  document.getElementById('rl-modal').classList.add('open');
+}
+
+function saveRLEntry(){
+  const url=document.getElementById('rl-url').value.trim();
+  const title=document.getElementById('rl-title').value.trim();
+  if(!url&&!title){showToast('⚠️ Please enter at least a URL or title.');return;}
+  const entry={
+    id:rlEditId||('rl_'+Date.now()+'_'+Math.random().toString(36).slice(2,5)),
+    url,title:title||url,
+    authors:document.getElementById('rl-authors').value.trim(),
+    type:document.getElementById('rl-type').value,
+    tag:document.getElementById('rl-tag').value.trim(),
+    notes:document.getElementById('rl-notes').value.trim(),
+    status:document.getElementById('rl-status').value,
+    date:today(),
+  };
+  if(rlEditId){
+    const idx=readingList.findIndex(x=>x.id===rlEditId);
+    if(idx>=0)readingList[idx]=entry;
+    showToast('✅ Entry updated.');
+  } else {
+    readingList.unshift(entry);
+    showToast('✅ Added to Reading List!');
+  }
+  saveRL(readingList);
+  closeRLModal();
+  renderRL();
+}
+
+function cycleStatus(id){
+  const e=readingList.find(x=>x.id===id);if(!e)return;
+  const cycle={unread:'reading',reading:'done',done:'unread'};
+  e.status=cycle[e.status]||'unread';
+  saveRL(readingList);renderRL();
+}
+
+function deleteRLEntry(id){
+  if(!confirm('Remove this entry from your reading list?'))return;
+  readingList=readingList.filter(x=>x.id!==id);
+  saveRL(readingList);renderRL();showToast('Entry removed.');
+}
+
+// Auto-fill from arXiv URL
+async function autoFillFromURL(){
+  const url=document.getElementById('rl-url').value.trim();
+  if(!url){showToast('⚠️ Paste a URL first.');return;}
+  // arXiv pattern: extract ID and call arXiv API
+  const arxivMatch=url.match(/arxiv\.org\/(?:abs|pdf)\/([0-9]{4}\.[0-9]+)/i);
+  if(arxivMatch){
+    const arxivId=arxivMatch[1];
+    showToast('🔄 Fetching arXiv metadata…');
+    try{
+      const r=await fetch(`https://export.arxiv.org/api/query?id_list=${arxivId}`);
+      const text=await r.text();
+      const parser=new DOMParser();
+      const xml=parser.parseFromString(text,'application/xml');
+      const title=xml.querySelector('entry > title')?.textContent?.trim().replace(/\s+/g,' ')||'';
+      const authors=[...xml.querySelectorAll('author > name')].map(a=>a.textContent.trim()).join(', ');
+      if(title){document.getElementById('rl-title').value=title;}
+      if(authors){document.getElementById('rl-authors').value=authors;}
+      document.getElementById('rl-type').value='arxiv';
+      showToast('✅ arXiv metadata fetched!');
+    }catch(e){showToast('⚠️ Could not fetch metadata — fill in manually.');}
+  } else {
+    showToast('ℹ️ Auto-fill works for arXiv links. Fill in title manually for other sources.');
+  }
+}
+
+// ── INIT (extend navigate) ────────────────────────────────────────────────────
+const _origNavigate=navigate;
+// patch navigate to handle reading list sections
+window.navigate=function(sec,el){
+  const rlSections=['rl-papers','rl-books','rl-other'];
+  const isRL=rlSections.includes(sec)||sec==='reading';
+  currentSection=sec;secTopic='all';rlFilter='all';rlSearch='';
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el)el.classList.add('active');
+  document.getElementById('view-home').style.display='none';
+  document.getElementById('view-section').style.display='none';
+  document.getElementById('view-reading').style.display='none';
+  if(sec==='home'){
+    document.getElementById('view-home').style.display='';
+    renderHome();
+  } else if(isRL){
+    document.getElementById('view-reading').style.display='';
+    // reset filter buttons
+    document.querySelectorAll('[data-rlf]').forEach(b=>{b.classList.remove('active');if(b.dataset.rlf==='all')b.classList.add('active');});
+    document.getElementById('rl-search').value='';
+    renderRL();
+  } else {
+    document.getElementById('view-section').style.display='';
+    buildSectionBanner(sec);
+    renderSection(sec);
+  }
+  updateCounts();updateStats();
+};
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 syncSubjectSelect();
-renderAll();
+fetchMeta().then(()=>renderAll());
+updateRLCounts();
 </script>
 </body>
 </html>
