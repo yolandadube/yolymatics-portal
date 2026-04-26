@@ -299,6 +299,18 @@ main{flex:1;padding:28px 28px 60px;min-width:0;}
     <div class="nav-dot" style="background:#fbbf24"></div>Chemistry
     <span class="nav-count" id="nc-yt-chemistry">0</span>
   </div>
+  <div class="nav-item" style="--nav-accent:#fbbf24" onclick="navigate('yt-biology',this)">
+    <div class="nav-dot" style="background:#fbbf24"></div>Biology
+    <span class="nav-count" id="nc-yt-biology">0</span>
+  </div>
+  <div class="nav-item" style="--nav-accent:#fbbf24" onclick="navigate('yt-science',this)">
+    <div class="nav-dot" style="background:#fbbf24"></div>Science
+    <span class="nav-count" id="nc-yt-science">0</span>
+  </div>
+  <div class="nav-item" style="--nav-accent:#fbbf24" onclick="navigate('yt-biotech',this)">
+    <div class="nav-dot" style="background:#fbbf24"></div>Biotechnology
+    <span class="nav-count" id="nc-yt-biotech">0</span>
+  </div>
   <div class="nav-section-label">🌐 International Schooling</div>
   <div class="nav-item" style="--nav-accent:#2dd4bf" onclick="navigate('is-math',this)">
     <div class="nav-dot" style="background:#2dd4bf"></div>Mathematics
@@ -327,6 +339,14 @@ main{flex:1;padding:28px 28px 60px;min-width:0;}
   <div class="nav-item" style="--nav-accent:#2dd4bf" onclick="navigate('is-compsci',this)">
     <div class="nav-dot" style="background:#2dd4bf"></div>Comp. Science
     <span class="nav-count" id="nc-is-compsci">0</span>
+  </div>
+  <div class="nav-item" style="--nav-accent:#2dd4bf" onclick="navigate('is-calculus',this)">
+    <div class="nav-dot" style="background:#2dd4bf"></div>Calculus
+    <span class="nav-count" id="nc-is-calculus">0</span>
+  </div>
+  <div class="nav-item" style="--nav-accent:#2dd4bf" onclick="navigate('is-stats',this)">
+    <div class="nav-dot" style="background:#2dd4bf"></div>Statistics
+    <span class="nav-count" id="nc-is-stats">0</span>
   </div>
 
   <div class="nav-section-label">📚 Reading List</div>
@@ -599,27 +619,63 @@ const META_FILE= 'portal-meta.json'; // stores page metadata in repo
 // ── SCHEMA ────────────────────────────────────────────────────────────────────
 const SCHEMA = {
   phd:{label:'PhD Research',color:'#a78bfa',bg:'linear-gradient(135deg,rgba(167,139,250,.08),rgba(96,165,250,.04))',glow:'rgba(167,139,250,.1)',
-    subjects:{'Cosmology':['General','ΛCDM','Perturbation Theory','Galaxy Survey','Other'],'Dark Energy':['Theory','DESI Results','Observations','Reading List','Other'],'Dark Matter':['DDM','WDM','CDM','Study Plan','Other'],'Large-Scale Structure':['Power Spectrum','Bispectrum','Turnover','Relativistic Corrections','Other'],'CMB':['Temperature','Polarisation','Lensing','Other'],'Reference':['Planck Quantities','Standard Model','Epochs','Constants','Other'],'Study Plan':['Week 1','Week 2','Week 3','General','Other'],'Other':['General']}},
+    subjects:{
+      'Cosmology':              ['General','LCDM','Perturbation Theory','Galaxy Survey','Other'],
+      'Dark Energy':            ['Theory','DESI Results','Observations','Reading List','Other'],
+      'Dark Matter':            ['DDM','WDM','CDM','Study Plan','Other'],
+      'Large-Scale Structure':  ['Power Spectrum','Bispectrum','Turnover','Relativistic Corrections','Other'],
+      'CMB':                    ['Temperature','Polarisation','Lensing','Other'],
+      'Reference':              ['Planck Quantities','Standard Model','Epochs','Constants','Other'],
+      'Study Plan':             ['Week 1','Week 2','Week 3','General','Other'],
+      'Other':                  ['General'],
+    }
+  },
   yt:{label:'Yolymatics Tutorials',color:'#fbbf24',bg:'linear-gradient(135deg,rgba(251,191,36,.07),rgba(96,165,250,.03))',glow:'rgba(251,191,36,.1)',
-    subjects:{'Mathematics':['Algebra','Geometry','Trigonometry','Functions','Number Theory','Proof','Exam Prep','Worksheet','Other'],'Calculus':['Limits','Differentiation','Integration','Series','Multivariable','Differential Equations','Exam Prep','Worksheet','Other'],'Statistics':['Descriptive','Probability','Inference','Regression','ANOVA','Multivariate','Exam Prep','Worksheet','Other'],'Physics':['Mechanics','Waves & Sound','Electricity','Magnetism','Thermodynamics','Modern Physics','Exam Prep','Worksheet','Other'],'Chemistry':['Atomic Theory','Periodicity','Bonding','Reactions','Equilibrium','Acids & Bases','Electrochemistry','Organic','Exam Prep','Worksheet','Other']}},
+    subjects:{
+      'Mathematics':   ['Algebra','Geometry','Trigonometry','Functions','Number Theory','Proof','Exam Prep','Worksheet','Other'],
+      'Calculus':      ['Limits','Differentiation','Integration','Series','Multivariable','Differential Equations','Exam Prep','Worksheet','Other'],
+      'Statistics':    ['Descriptive','Probability','Inference','Regression','ANOVA','Multivariate','Exam Prep','Worksheet','Other'],
+      'Physics':       ['Mechanics','Waves and Sound','Electricity','Magnetism','Thermodynamics','Modern Physics','Exam Prep','Worksheet','Other'],
+      'Chemistry':     ['Atomic Theory','Periodicity','Bonding','Reactions','Equilibrium','Acids and Bases','Electrochemistry','Organic','Exam Prep','Worksheet','Other'],
+      'Biology':       ['Cells','Genetics','Ecology','Evolution','Human Body','Plant Biology','Exam Prep','Worksheet','Other'],
+      'Science':       ['Comprehensive Science','Just Science','Mixed Topics','Exam Prep','Worksheet','Other'],
+      'Biotechnology': ['DNA Technology','Cloning and GMOs','Fermentation','Bioremediation','Exam Prep','Worksheet','Other'],
+    }
+  },
   is:{label:'International Schooling',color:'#2dd4bf',bg:'linear-gradient(135deg,rgba(45,212,191,.07),rgba(96,165,250,.03))',glow:'rgba(45,212,191,.1)',
-    subjects:{'Mathematics':['Algebra','Geometry','Functions','Number','Statistics','Exam Prep','Worksheet','Other'],'Science':['Comprehensive Science','Just Science','Mixed Topics','Worksheet','Exam Prep','Other'],'Biology':['Cells & Tissues','Genetics','Ecology','Evolution','Human Body','Plant Biology','Worksheet','Exam Prep','Other'],'Chemistry':['Atoms & Elements','Reactions','Acids & Bases','Organic','Worksheet','Exam Prep','Other'],'Physics':['Mechanics','Waves','Electricity & Magnetism','Thermodynamics','Worksheet','Exam Prep','Other'],'Biotechnology':['DNA Technology','Cloning & GMOs','Fermentation','Bioremediation','Worksheet','Exam Prep','Other'],'Comp. Science':['Algorithms','Data Structures','Programming','Networks','Databases','Worksheet','Exam Prep','Other']}}
+    subjects:{
+      'Mathematics':   ['Algebra','Geometry','Functions','Number','Statistics','Exam Prep','Worksheet','Other'],
+      'Science':       ['Comprehensive Science','Just Science','Mixed Topics','Exam Prep','Worksheet','Other'],
+      'Biology':       ['Cells','Genetics','Ecology','Evolution','Human Body','Plant Biology','Exam Prep','Worksheet','Other'],
+      'Chemistry':     ['Atoms and Elements','Reactions','Acids and Bases','Organic','Exam Prep','Worksheet','Other'],
+      'Physics':       ['Mechanics','Waves','Electricity and Magnetism','Thermodynamics','Exam Prep','Worksheet','Other'],
+      'Biotechnology': ['DNA Technology','Cloning and GMOs','Fermentation','Bioremediation','Exam Prep','Worksheet','Other'],
+      'Comp. Science': ['Algorithms','Data Structures','Programming','Networks','Databases','Exam Prep','Worksheet','Other'],
+      'Calculus':      ['Limits','Differentiation','Integration','Series','Exam Prep','Worksheet','Other'],
+      'Statistics':    ['Descriptive','Probability','Inference','Regression','Exam Prep','Worksheet','Other'],
+    }
+  },
 };
 
 const SECTION_META={
-  'phd':         {platform:'phd',subject:null,           label:'Cosmology Notes'},
-  'yt-math':     {platform:'yt', subject:'Mathematics',  label:'Mathematics'},
-  'yt-calculus': {platform:'yt', subject:'Calculus',     label:'Calculus'},
-  'yt-stats':    {platform:'yt', subject:'Statistics',   label:'Statistics'},
-  'yt-physics':  {platform:'yt', subject:'Physics',      label:'Physics'},
-  'yt-chemistry':{platform:'yt', subject:'Chemistry',    label:'Chemistry'},
-  'is-math':     {platform:'is', subject:'Mathematics',  label:'Mathematics'},
-  'is-science':  {platform:'is', subject:'Science',      label:'Science'},
-  'is-biology':  {platform:'is', subject:'Biology',      label:'Biology'},
-  'is-chemistry':{platform:'is', subject:'Chemistry',    label:'Chemistry'},
-  'is-physics':  {platform:'is', subject:'Physics',      label:'Physics'},
-  'is-biotech':  {platform:'is', subject:'Biotechnology',label:'Biotechnology'},
-  'is-compsci':  {platform:'is', subject:'Comp. Science',label:'Comp. Science'},
+  'phd':          {platform:'phd', subject:null,            label:'Cosmology Notes'},
+  'yt-math':      {platform:'yt',  subject:'Mathematics',   label:'Mathematics'},
+  'yt-calculus':  {platform:'yt',  subject:'Calculus',      label:'Calculus'},
+  'yt-stats':     {platform:'yt',  subject:'Statistics',    label:'Statistics'},
+  'yt-physics':   {platform:'yt',  subject:'Physics',       label:'Physics'},
+  'yt-chemistry': {platform:'yt',  subject:'Chemistry',     label:'Chemistry'},
+  'yt-biology':   {platform:'yt',  subject:'Biology',       label:'Biology'},
+  'yt-science':   {platform:'yt',  subject:'Science',       label:'Science'},
+  'yt-biotech':   {platform:'yt',  subject:'Biotechnology', label:'Biotechnology'},
+  'is-math':      {platform:'is',  subject:'Mathematics',   label:'Mathematics'},
+  'is-science':   {platform:'is',  subject:'Science',       label:'Science'},
+  'is-biology':   {platform:'is',  subject:'Biology',       label:'Biology'},
+  'is-chemistry': {platform:'is',  subject:'Chemistry',     label:'Chemistry'},
+  'is-physics':   {platform:'is',  subject:'Physics',       label:'Physics'},
+  'is-biotech':   {platform:'is',  subject:'Biotechnology', label:'Biotechnology'},
+  'is-compsci':   {platform:'is',  subject:'Comp. Science', label:'Comp. Science'},
+  'is-calculus':  {platform:'is',  subject:'Calculus',      label:'Calculus'},
+  'is-stats':     {platform:'is',  subject:'Statistics',    label:'Statistics'},
 };
 
 const ACCENT_POOL=['#60a5fa','#2dd4bf','#a78bfa','#fbbf24','#fb923c','#f472b6','#34d399','#818cf8'];
