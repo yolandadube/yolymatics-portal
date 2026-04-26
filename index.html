@@ -708,10 +708,11 @@ async function syncFromGitHub(){
   const icon=document.getElementById('sync-icon');
   icon.classList.add('spin');
   showToast('🔄 Syncing from GitHub…');
-  await fetchMeta();
+  await Promise.all([fetchMeta(), fetchRL()]);
   renderAll();
+  renderRL();
   icon.classList.remove('spin');
-  showToast('✅ Synced! Portal is up to date.');
+  showToast('✅ Synced! Portal and reading list are up to date.');
 }
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
@@ -943,20 +944,27 @@ document.querySelectorAll('.upload-zone').forEach(zone=>{
 });
 
 // ── VIEWER ────────────────────────────────────────────────────────────────────
+// Opens pages in a new tab — works in all browsers (Firefox blocks raw.githubusercontent in iframes)
 async function openPage(id){
   const p=pages.find(x=>x.id===id);if(!p)return;
-  document.getElementById('vtitle').textContent=p.title;
-  document.getElementById('vtag').textContent=(p.subject||'')+(p.topic&&p.topic!=='General'?' › '+p.topic:'');
-  document.getElementById('viewer').classList.add('open');
-  const frame=document.getElementById('viewer-frame');
 
-  // try to load from GitHub raw
+  // Best option: fetch the HTML from GitHub and open as a blob URL in a new tab
+  const token=getToken();
   try{
-    const rawUrl=`https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${p.filename}`;
-    frame.src=rawUrl;
-  } catch(e){
-    frame.src=URL.createObjectURL(new Blob([`<html><body style="background:#06080f;color:#8399bb;font-family:sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:14px;text-align:center;padding:40px"><div style="font-size:40px">📂</div><div style="font-family:Georgia,serif;font-size:1.4rem;color:#dde6f5">${p.title}</div><p style="max-width:400px;font-size:12px;line-height:1.7">Upload this file to your GitHub repo to view it here.</p></body></html>`],{type:'text/html'}));
-  }
+    const headers=ghHeaders();
+    const r=await fetch(`${GH_API}/contents/${p.filename}`,{headers});
+    if(r.ok){
+      const j=await r.json();
+      const html=decodeURIComponent(escape(atob(j.content.replace(/\n/g,''))));
+      const blob=new Blob([html],{type:'text/html'});
+      window.open(URL.createObjectURL(blob),'_blank');
+      return;
+    }
+  } catch(e){}
+
+  // Fallback: open via GitHub Pages URL (works once the file is deployed)
+  const ghPagesUrl=`https://${GH_OWNER}.github.io/${GH_REPO}/${p.filename}`;
+  window.open(ghPagesUrl,'_blank');
 }
 
 function closeViewer(){document.getElementById('viewer').classList.remove('open');document.getElementById('viewer-frame').src='';}
@@ -981,14 +989,59 @@ function showToast(msg){
 if(getToken())document.getElementById('token-banner').classList.add('hidden');
 
 // ── READING LIST ──────────────────────────────────────────────────────────────
-const RL_KEY = 'yolymatics_reading_list_v1';
+const RL_KEY      = 'yolymatics_reading_list_v1';
+const RL_GH_FILE  = 'reading-list.json';   // stored in your GitHub repo
 let rlFilter = 'all';
 let rlSearch = '';
 let rlEditId = null;
+let rlSha    = null;   // GitHub sha of reading-list.json (needed for updates)
 
-function loadRL(){try{return JSON.parse(localStorage.getItem(RL_KEY))||[];}catch{return[];}}
-function saveRL(list){localStorage.setItem(RL_KEY,JSON.stringify(list));}
-let readingList = loadRL();
+// ── Local fallback ──
+function loadRLLocal(){try{return JSON.parse(localStorage.getItem(RL_KEY))||[];}catch{return[];}}
+function saveRLLocal(list){localStorage.setItem(RL_KEY,JSON.stringify(list));}
+
+// ── GitHub-backed load ──
+async function fetchRL(){
+  try{
+    const r=await fetch(`${GH_API}/contents/${RL_GH_FILE}`,{headers:ghHeaders()});
+    if(r.status===404){
+      // file doesn't exist yet — start from local cache
+      readingList=loadRLLocal();
+      return;
+    }
+    const j=await r.json();
+    rlSha=j.sha;
+    const data=JSON.parse(atob(j.content.replace(/\n/g,'')));
+    readingList=data;
+    // keep local in sync
+    saveRLLocal(readingList);
+  } catch(e){
+    // offline / no token — fall back to localStorage
+    readingList=loadRLLocal();
+  }
+}
+
+// ── GitHub-backed save ──
+async function saveRL(list){
+  // always save locally first so nothing is ever lost
+  saveRLLocal(list);
+  const token=getToken();
+  if(!token) return;   // no token → local only, that's fine
+  try{
+    const content=btoa(unescape(encodeURIComponent(JSON.stringify(list,null,2))));
+    const body={message:'Update reading list via Yolymatics Portal',content,branch:GH_BRANCH};
+    if(rlSha) body.sha=rlSha;
+    const r=await fetch(`${GH_API}/contents/${RL_GH_FILE}`,{
+      method:'PUT',headers:ghHeaders(),body:JSON.stringify(body)
+    });
+    if(r.ok){const j=await r.json();if(j.content)rlSha=j.content.sha;}
+  } catch(e){
+    // silently keep local copy safe — no error shown to user
+    console.warn('RL GitHub save failed, kept locally:',e);
+  }
+}
+
+let readingList = loadRLLocal();  // initial paint from local; fetchRL() called at init
 
 // Filter buttons
 document.querySelectorAll('[data-rlf]').forEach(b=>{
@@ -1100,7 +1153,7 @@ function editRLEntry(id){
   document.getElementById('rl-modal').classList.add('open');
 }
 
-function saveRLEntry(){
+async function saveRLEntry(){
   const url=document.getElementById('rl-url').value.trim();
   const title=document.getElementById('rl-title').value.trim();
   if(!url&&!title){showToast('⚠️ Please enter at least a URL or title.');return;}
@@ -1117,27 +1170,31 @@ function saveRLEntry(){
   if(rlEditId){
     const idx=readingList.findIndex(x=>x.id===rlEditId);
     if(idx>=0)readingList[idx]=entry;
-    showToast('✅ Entry updated.');
+    showToast('✅ Entry updated — saving to GitHub…');
   } else {
     readingList.unshift(entry);
-    showToast('✅ Added to Reading List!');
+    showToast('✅ Added — saving to GitHub…');
   }
-  saveRL(readingList);
   closeRLModal();
   renderRL();
+  await saveRL(readingList);
+  showToast(getToken()?'✅ Reading list saved to GitHub!':'✅ Saved locally (set a token to back up to GitHub).');
 }
 
-function cycleStatus(id){
+async function cycleStatus(id){
   const e=readingList.find(x=>x.id===id);if(!e)return;
   const cycle={unread:'reading',reading:'done',done:'unread'};
   e.status=cycle[e.status]||'unread';
-  saveRL(readingList);renderRL();
+  renderRL();
+  await saveRL(readingList);
 }
 
-function deleteRLEntry(id){
+async function deleteRLEntry(id){
   if(!confirm('Remove this entry from your reading list?'))return;
   readingList=readingList.filter(x=>x.id!==id);
-  saveRL(readingList);renderRL();showToast('Entry removed.');
+  renderRL();
+  await saveRL(readingList);
+  showToast('Entry removed and GitHub updated.');
 }
 
 // Auto-fill from arXiv URL
@@ -1197,8 +1254,11 @@ window.navigate=function(sec,el){
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 syncSubjectSelect();
-fetchMeta().then(()=>renderAll());
-updateRLCounts();
+// Load everything from GitHub (falls back to localStorage if offline/no token)
+Promise.all([fetchMeta(), fetchRL()]).then(()=>{
+  renderAll();
+  updateRLCounts();
+});
 </script>
 </body>
 </html>
