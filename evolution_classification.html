@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4.6.2.2–4.6.4 Evolution, Genetics & Classification</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0B1A2E;
+    --cyan: #00D4FF;
+    --gold: #FFD166;
+    --coral: #FF6B6B;
+    --mint: #06D6A0;
+    --purple: #C77DFF;
+    --soft-white: #E8F4FD;
+    --card-bg: rgba(255,255,255,0.05);
+    --card-border: rgba(255,255,255,0.1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--navy);
+    font-family: 'Nunito', sans-serif;
+    color: var(--soft-white);
+    height: 100vh;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  #progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--mint), var(--cyan), var(--purple));
+    transition: width 0.4s ease;
+    z-index: 100;
+    box-shadow: 0 0 10px var(--mint);
+  }
+
+  .slides-wrapper {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .slide {
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    padding: 50px 70px;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .slide.active { display: flex; }
+
+  .scroll-slide {
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    padding: 50px 70px;
+    flex-direction: column;
+    justify-content: flex-start;
+    position: relative;
+    overflow-y: auto;
+  }
+
+  .scroll-slide.active { display: flex; }
+  .scroll-slide::-webkit-scrollbar { width: 6px; }
+  .scroll-slide::-webkit-scrollbar-track { background: transparent; }
+  .scroll-slide::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.3); border-radius: 3px; }
+
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.13;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-22px) rotate(180deg); }
+  }
+
+  .section-label {
+    position: absolute;
+    top: 20px;
+    right: 70px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--mint);
+    opacity: 0.7;
+  }
+
+  .slide-num {
+    position: absolute;
+    bottom: 20px;
+    right: 70px;
+    font-size: 0.8rem;
+    opacity: 0.4;
+    font-family: 'Fredoka One', sans-serif;
+  }
+
+  /* Cover */
+  .cover-slide {
+    background: radial-gradient(ellipse at 25% 60%, rgba(6,214,160,0.08) 0%, transparent 55%),
+                radial-gradient(ellipse at 75% 20%, rgba(199,125,255,0.08) 0%, transparent 50%),
+                var(--navy);
+    align-items: center;
+    text-align: center;
+  }
+
+  .cover-bg {
+    position: absolute;
+    width: 100%; height: 100%;
+    top: 0; left: 0;
+  }
+
+  .cover-topic {
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 1rem;
+    color: var(--mint);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+    opacity: 0.85;
+  }
+
+  .cover-title {
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 3.5rem;
+    line-height: 1.1;
+    background: linear-gradient(135deg, var(--mint), var(--cyan), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 20px;
+  }
+
+  .cover-subtitle {
+    font-size: 1.05rem;
+    color: var(--soft-white);
+    opacity: 0.65;
+    margin-bottom: 38px;
+  }
+
+  .cover-credit {
+    font-size: 0.85rem;
+    color: var(--gold);
+    opacity: 0.8;
+    letter-spacing: 1px;
+  }
+
+  .cover-badge {
+    display: inline-flex;
+    gap: 16px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .badge {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 30px;
+    padding: 7px 18px;
+    font-size: 0.78rem;
+    color: var(--mint);
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  h1 {
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 2.7rem;
+    color: var(--cyan);
+    margin-bottom: 10px;
+  }
+
+  h2 {
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 1.85rem;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+
+  h3 {
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 1.25rem;
+    color: var(--mint);
+    margin-bottom: 10px;
+  }
+
+  .topic-tag {
+    display: inline-block;
+    background: rgba(6,214,160,0.1);
+    border: 1px solid rgba(6,214,160,0.3);
+    border-radius: 20px;
+    padding: 4px 16px;
+    font-size: 0.78rem;
+    color: var(--mint);
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 18px 22px;
+    margin-bottom: 14px;
+    backdrop-filter: blur(8px);
+  }
+
+  .card-cyan  { border-left: 4px solid var(--cyan); }
+  .card-gold  { border-left: 4px solid var(--gold); }
+  .card-coral { border-left: 4px solid var(--coral); }
+  .card-mint  { border-left: 4px solid var(--mint); }
+  .card-purple{ border-left: 4px solid var(--purple); }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-top: 10px;
+  }
+
+  .three-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+    margin-top: 10px;
+  }
+
+  p, li {
+    font-size: 0.97rem;
+    line-height: 1.65;
+    color: var(--soft-white);
+    opacity: 0.9;
+  }
+
+  ul { padding-left: 20px; }
+  li { margin-bottom: 6px; }
+
+  .highlight { color: var(--gold); font-weight: 800; }
+  .hl-cyan   { color: var(--cyan);   font-weight: 700; }
+  .hl-mint   { color: var(--mint);   font-weight: 700; }
+  .hl-coral  { color: var(--coral);  font-weight: 700; }
+  .hl-purple { color: var(--purple); font-weight: 700; }
+  .hl-gold   { color: var(--gold);   font-weight: 700; }
+
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 14px;
+    font-size: 0.9rem;
+  }
+
+  .compare-table th {
+    background: rgba(6,214,160,0.15);
+    color: var(--mint);
+    padding: 10px 14px;
+    text-align: left;
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 1rem;
+    border-bottom: 2px solid rgba(6,214,160,0.3);
+  }
+
+  .compare-table td {
+    padding: 8px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    color: var(--soft-white);
+    opacity: 0.9;
+  }
+
+  .compare-table tr:nth-child(even) td {
+    background: rgba(255,255,255,0.03);
+  }
+
+  /* Taxonomy ladder */
+  .taxon-ladder {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 12px;
+  }
+
+  .taxon-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .taxon-label {
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 1rem;
+    width: 90px;
+    text-align: right;
+  }
+
+  .taxon-bar {
+    height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    padding-left: 14px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--navy);
+    transition: width 0.5s;
+  }
+
+  /* Quiz */
+  .quiz-box {
+    background: rgba(255,209,102,0.07);
+    border: 2px solid rgba(255,209,102,0.3);
+    border-radius: 18px;
+    padding: 28px 36px;
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .quiz-q {
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 1.45rem;
+    color: var(--gold);
+    margin-bottom: 22px;
+    line-height: 1.3;
+  }
+
+  .quiz-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .quiz-btn {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 13px 18px;
+    color: var(--soft-white);
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.93rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.22s;
+    text-align: left;
+  }
+
+  .quiz-btn:hover { background: rgba(255,255,255,0.12); transform: translateY(-2px); }
+  .quiz-btn.correct { background: rgba(6,214,160,0.2); border-color: var(--mint); color: var(--mint); }
+  .quiz-btn.wrong   { background: rgba(255,107,107,0.2); border-color: var(--coral); color: var(--coral); }
+
+  .quiz-feedback {
+    margin-top: 16px;
+    font-size: 0.97rem;
+    font-weight: 700;
+    min-height: 26px;
+  }
+
+  .feedback-correct { color: var(--mint); }
+  .feedback-wrong   { color: var(--coral); }
+
+  /* Nav */
+  .nav-btns {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    z-index: 200;
+  }
+
+  .nav-btn {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 50px;
+    padding: 10px 26px;
+    color: var(--soft-white);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .nav-btn:hover { background: rgba(6,214,160,0.15); border-color: var(--mint); }
+
+  .svg-wrap {
+    display: flex;
+    justify-content: center;
+    margin: 8px 0;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { filter: drop-shadow(0 0 4px currentColor); }
+    50%       { filter: drop-shadow(0 0 14px currentColor); }
+  }
+
+  .glow-anim { animation: pulse-glow 2.5s ease-in-out infinite; }
+
+  .fade-in {
+    animation: fadeIn 0.55s ease forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Step boxes for natural selection */
+  .step-flow {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+
+  .step-box {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-align: center;
+    flex: 1;
+    min-width: 110px;
+  }
+
+  .step-arrow {
+    color: var(--gold);
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<div class="slides-wrapper">
+
+<!-- ===================== SLIDE 1: COVER ===================== -->
+<div class="slide cover-slide active" id="slide-1">
+  <svg class="cover-bg" viewBox="0 0 1200 700" xmlns="http://www.w3.org/2000/svg" opacity="0.1">
+    <!-- Evolutionary tree silhouette -->
+    <line x1="600" y1="650" x2="600" y2="400" stroke="#06D6A0" stroke-width="4"/>
+    <line x1="600" y1="500" x2="400" y2="300" stroke="#06D6A0" stroke-width="3"/>
+    <line x1="600" y1="500" x2="800" y2="300" stroke="#06D6A0" stroke-width="3"/>
+    <line x1="400" y1="300" x2="280" y2="150" stroke="#00D4FF" stroke-width="2.5"/>
+    <line x1="400" y1="300" x2="500" y2="150" stroke="#00D4FF" stroke-width="2.5"/>
+    <line x1="800" y1="300" x2="700" y2="150" stroke="#00D4FF" stroke-width="2.5"/>
+    <line x1="800" y1="300" x2="920" y2="150" stroke="#00D4FF" stroke-width="2.5"/>
+    <line x1="280" y1="150" x2="200" y2="60" stroke="#C77DFF" stroke-width="2"/>
+    <line x1="280" y1="150" x2="340" y2="60" stroke="#C77DFF" stroke-width="2"/>
+    <line x1="500" y1="150" x2="450" y2="60" stroke="#C77DFF" stroke-width="2"/>
+    <line x1="500" y1="150" x2="560" y2="60" stroke="#C77DFF" stroke-width="2"/>
+    <line x1="700" y1="150" x2="640" y2="60" stroke="#C77DFF" stroke-width="2"/>
+    <line x1="700" y1="150" x2="760" y2="60" stroke="#C77DFF" stroke-width="2"/>
+    <line x1="920" y1="150" x2="860" y2="60" stroke="#C77DFF" stroke-width="2"/>
+    <line x1="920" y1="150" x2="980" y2="60" stroke="#C77DFF" stroke-width="2"/>
+    <!-- fossil circles scattered -->
+    <circle cx="100" cy="550" r="30" fill="#FFD166"/>
+    <circle cx="1100" cy="400" r="25" fill="#FF6B6B"/>
+    <circle cx="150" cy="200" r="20" fill="#06D6A0"/>
+    <circle cx="1050" cy="600" r="35" fill="#C77DFF"/>
+    <circle cx="950" cy="100" r="18" fill="#00D4FF"/>
+    <circle cx="250" cy="620" r="22" fill="#FFD166"/>
+    <!-- bacteria shapes -->
+    <ellipse cx="80" cy="350" rx="28" ry="14" fill="#06D6A0" transform="rotate(-30,80,350)"/>
+    <ellipse cx="1120" cy="200" rx="28" ry="14" fill="#FF6B6B" transform="rotate(20,1120,200)"/>
+    <ellipse cx="400" cy="620" rx="22" ry="11" fill="#C77DFF"/>
+    <ellipse cx="850" cy="630" rx="22" ry="11" fill="#00D4FF" transform="rotate(15,850,630)"/>
+  </svg>
+
+  <div class="cover-topic">AQA Biology · Topic 4.6 (Part 2)</div>
+  <div class="cover-title">Evolution, Evidence<br>&amp; Classification</div>
+  <div class="cover-subtitle">Natural Selection · Selective Breeding · Genetic Engineering · Fossils · Antibiotic Resistance · Classification</div>
+  <div class="cover-credit">Prepared by: Yolanda Dube © 2026</div>
+  <div class="cover-badge">
+    <span class="badge">🌿 Evolution</span>
+    <span class="badge">🦠 Bacteria</span>
+    <span class="badge">🪨 Fossils</span>
+    <span class="badge">🔬 AQA GCSE · Foundation</span>
+  </div>
+</div>
+
+<!-- ===================== SLIDE 2: Overview ===================== -->
+<div class="slide" id="slide-2" style="display:none;">
+  <div class="particle" style="width:120px;height:120px;background:var(--mint);top:5%;right:5%;animation-delay:0s;"></div>
+  <div class="section-label">Overview</div>
+  <div class="slide-num">2</div>
+  <div class="topic-tag">🗺 Topic Map</div>
+  <h1>What We Will Cover</h1>
+  <div class="three-col" style="margin-top:18px;">
+    <div class="card card-mint">
+      <h3>🌿 Evolution</h3>
+      <ul>
+        <li>4.6.2.2 Evolution & Natural Selection</li>
+        <li>4.6.2.3 Selective Breeding</li>
+        <li>4.6.2.4 Genetic Engineering</li>
+      </ul>
+    </div>
+    <div class="card card-gold">
+      <h3>🪨 Evidence</h3>
+      <ul>
+        <li>4.6.3.1 Evidence for Evolution</li>
+        <li>4.6.3.2 Fossils</li>
+        <li>4.6.3.3 Extinction</li>
+        <li>4.6.3.4 Resistant Bacteria</li>
+      </ul>
+    </div>
+    <div class="card card-purple">
+      <h3>🔬 Classification</h3>
+      <ul>
+        <li>4.6.4 Linnaeus & Binomial System</li>
+        <li>Three-Domain System (Woese)</li>
+        <li>Evolutionary Trees</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card card-cyan" style="margin-top:16px;">
+    <p>💡 This deck continues directly from <span class="hl-cyan">Part 1 (4.6.1 – 4.6.2.1)</span>. Together they complete the full AQA 4.6 topic.</p>
+  </div>
+</div>
+
+<!-- ===================== SLIDE 3: Evolution — Definition ===================== -->
+<div class="slide" id="slide-3" style="display:none;">
+  <div class="particle" style="width:100px;height:100px;background:var(--cyan);bottom:10%;left:5%;animation-delay:1s;"></div>
+  <div class="section-label">4.6.2.2 Evolution</div>
+  <div class="slide-num">3</div>
+  <div class="topic-tag">🌿 Evolution</div>
+  <h1>What Is Evolution?</h1>
+  <div class="card card-mint" style="margin-bottom:18px;">
+    <p style="font-size:1.1rem;"><span class="hl-mint">Evolution</span> is a change in the <span class="hl-gold">inherited characteristics</span> of a population over time through a process of <span class="hl-cyan">natural selection</span>, which may result in the formation of a <span class="hl-coral">new species</span>.</p>
+  </div>
+  <div class="two-col">
+    <div class="card card-cyan">
+      <h3>The Big Idea</h3>
+      <ul>
+        <li>All species of living things have <span class="hl-cyan">evolved</span> from simple life forms</li>
+        <li>Life first developed <span class="hl-gold">more than 3 billion years ago</span></li>
+        <li>Over time, populations change as the environment changes</li>
+        <li>This is the theory of <span class="hl-mint">evolution by natural selection</span></li>
+      </ul>
+    </div>
+    <div class="card card-gold">
+      <h3>New Species</h3>
+      <ul>
+        <li>If two populations of one species become <span class="hl-gold">very different in phenotype</span>...</li>
+        <li>...and can <span class="hl-coral">no longer interbreed</span> to produce fertile offspring...</li>
+        <li>...they have formed <span class="hl-mint">two new species</span></li>
+        <li>This process is called <span class="hl-purple">speciation</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="card card-coral" style="margin-top:14px;">
+    <p>💡 <span class="highlight">Key phrase to remember:</span> Evolution is a change in <em>inherited</em> characteristics — only changes in DNA (not learned behaviours) can be passed on and drive evolution.</p>
+  </div>
+</div>
+
+<!-- ===================== SLIDE 4: Natural Selection ===================== -->
+<div class="slide" id="slide-4" style="display:none;">
+  <div class="particle" style="width:90px;height:90px;background:var(--gold);top:5%;right:8%;animation-delay:0.5s;"></div>
+  <div class="section-label">4.6.2.2 Natural Selection</div>
+  <div class="slide-num">4</div>
+  <div class="topic-tag">🌿 Natural Selection</div>
+  <h1>How Natural Selection Works</h1>
+  <div class="step-flow">
+    <div class="step-box" style="border-color:var(--cyan);color:var(--cyan);">🧬 Variation exists in population</div>
+    <div class="step-arrow">→</div>
+    <div class="step-box" style="border-color:var(--gold);color:var(--gold);">🌍 Environment creates pressure (predation, disease, competition)</div>
+    <div class="step-arrow">→</div>
+    <div class="step-box" style="border-color:var(--mint);color:var(--mint);">✅ Some variants are better suited — they survive</div>
+    <div class="step-arrow">→</div>
+    <div class="step-box" style="border-color:var(--purple);color:var(--purple);">👶 Survivors reproduce and pass on favourable alleles</div>
+    <div class="step-arrow">→</div>
+    <div class="step-box" style="border-color:var(--coral);color:var(--coral);">📈 Favourable trait becomes more common over generations</div>
+  </div>
+  <div class="two-col" style="margin-top:18px;">
+    <div class="card card-mint">
+      <h3>In Simple Terms</h3>
+      <p>Natural selection is often summarised as <span class="hl-gold">"survival of the fittest"</span> — but <span class="hl-coral">fittest means best adapted to the environment</span>, not strongest or fastest!</p>
+    </div>
+    <div class="card card-cyan">
+      <h3>Variants that give rise to better phenotypes</h3>
+      <ul>
+        <li>Arise through <span class="hl-cyan">mutations</span></li>
+        <li>Are heritable — passed on in genes</li>
+        <li>Become more common over many generations</li>
+        <li>Can eventually lead to a <span class="hl-mint">new species</span></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SLIDE 5: Selective Breeding ===================== -->
+<div class="slide" id="slide-5" style="display:none;">
+  <div class="particle" style="width:95px;height:95px;background:var(--purple);bottom:12%;right:5%;animation-delay:0.8s;"></div>
+  <div class="section-label">4.6.2.3 Selective Breeding</div>
+  <div class="slide-num">5</div>
+  <div class="topic-tag">🌾 Selective Breeding</div>
+  <h1>Selective Breeding</h1>
+  <div class="card card-gold" style="margin-bottom:16px;">
+    <p><span class="hl-gold">Selective breeding</span> (artificial selection) is the process by which humans breed plants and animals for <span class="hl-cyan">particular genetic characteristics</span>. Humans have been doing this for <span class="hl-mint">thousands of years</span> — since they first bred food crops from wild plants and domesticated animals.</p>
+  </div>
+  <div class="two-col">
+    <div>
+      <div class="card card-cyan">
+        <h3>How It Works</h3>
+        <ul>
+          <li>Choose parents with the <span class="hl-cyan">desired characteristic</span> from a mixed population</li>
+          <li>Breed them together</li>
+          <li>From offspring, select those with the best expression of the trait</li>
+          <li>Breed those together</li>
+          <li>Repeat over <span class="hl-gold">many generations</span> until all offspring show the desired characteristic</li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="card card-mint">
+        <h3>Examples</h3>
+        <ul>
+          <li>🌾 <span class="hl-mint">Disease resistance</span> in food crops</li>
+          <li>🐄 Animals that produce <span class="hl-gold">more meat or milk</span></li>
+          <li>🐕 Domestic dogs with a <span class="hl-cyan">gentle nature</span></li>
+          <li>🌸 <span class="hl-purple">Large or unusual flowers</span></li>
+        </ul>
+      </div>
+      <div class="card card-coral" style="margin-top:14px;">
+        <h3>⚠ Risk: Inbreeding</h3>
+        <ul>
+          <li>Selective breeding reduces <span class="hl-coral">genetic diversity</span></li>
+          <li>Can cause <span class="hl-coral">inbreeding</span> — some breeds become prone to disease or inherited defects</li>
+          <li>e.g. hip dysplasia in certain dog breeds</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SLIDE 6: Genetic Engineering ===================== -->
+<div class="slide" id="slide-6" style="display:none;">
+  <div class="particle" style="width:85px;height:85px;background:var(--coral);top:5%;left:8%;animation-delay:1.2s;"></div>
+  <div class="section-label">4.6.2.4 Genetic Engineering</div>
+  <div class="slide-num">6</div>
+  <div class="topic-tag">🧬 Genetic Engineering</div>
+  <h1>Genetic Engineering</h1>
+  <div class="card card-purple" style="margin-bottom:16px;">
+    <p><span class="hl-purple">Genetic engineering</span> involves modifying the genome of an organism by <span class="hl-gold">introducing a gene from another organism</span> to give a desired characteristic. Genes from humans and other organisms can be cut out and transferred to cells of other organisms.</p>
+  </div>
+  <div class="two-col">
+    <div>
+      <div class="card card-mint">
+        <h3>Examples in Agriculture</h3>
+        <ul>
+          <li>🌾 Crops engineered to be <span class="hl-mint">resistant to diseases</span></li>
+          <li>🌾 Crops resistant to <span class="hl-gold">insect attack or herbicides</span></li>
+          <li>🌾 GM crops show <span class="hl-cyan">increased yields</span></li>
+          <li>🍅 Produce <span class="hl-gold">bigger, better fruits</span></li>
+        </ul>
+      </div>
+      <div class="card card-cyan" style="margin-top:14px;">
+        <h3>Examples in Medicine</h3>
+        <ul>
+          <li>🦠 Bacteria engineered to produce <span class="hl-cyan">human insulin</span> (to treat diabetes)</li>
+          <li>🧬 Research into overcoming <span class="hl-mint">inherited disorders</span></li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="card card-gold">
+        <h3>✅ Benefits</h3>
+        <ul>
+          <li>Crops resistant to disease and pests</li>
+          <li>Higher food yields → tackle food shortages</li>
+          <li>Cheap production of medicines like insulin</li>
+          <li>Potential to treat genetic disorders</li>
+        </ul>
+      </div>
+      <div class="card card-coral" style="margin-top:14px;">
+        <h3>⚠ Concerns</h3>
+        <ul>
+          <li>Effect on populations of <span class="hl-coral">wild flowers and insects</span></li>
+          <li>Long-term effects on human health <span class="hl-coral">not fully explored</span></li>
+          <li>Some people have ethical and moral objections</li>
+          <li>Remains <span class="hl-coral">highly controversial</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SLIDE 7: QUIZ 1 ===================== -->
+<div class="slide" id="slide-7" style="display:none;align-items:center;justify-content:center;flex-direction:column;">
+  <div class="section-label">Quiz Checkpoint</div>
+  <div class="slide-num">7</div>
+  <div class="quiz-box">
+    <div class="quiz-q">🎯 What is the correct order of steps in selective breeding?</div>
+    <div class="quiz-options">
+      <button class="quiz-btn" onclick="checkQ1(this,false)">A. Breed all organisms together, then pick the best offspring at the end</button>
+      <button class="quiz-btn" onclick="checkQ1(this,true)">B. Select parents with desired trait → breed → select best offspring → repeat over many generations</button>
+      <button class="quiz-btn" onclick="checkQ1(this,false)">C. Modify the genome of the organism using a gene from another species</button>
+      <button class="quiz-btn" onclick="checkQ1(this,false)">D. Allow nature to select the best-adapted individuals over time</button>
+    </div>
+    <div class="quiz-feedback" id="qf1"></div>
+  </div>
+</div>
+
+<!-- ===================== SLIDE 8: Evidence for Evolution ===================== -->
+<div class="slide" id="slide-8" style="display:none;">
+  <div class="particle" style="width:100px;height:100px;background:var(--gold);top:5%;right:5%;animation-delay:0.4s;"></div>
+  <div class="section-label">4.6.3.1 Evidence for Evolution</div>
+  <div class="slide-num">8</div>
+  <div class="topic-tag">🔍 Evidence for Evolution</div>
+  <h1>Evidence for Evolution</h1>
+  <div class="card card-mint" style="margin-bottom:16px;">
+    <p>The theory of evolution by natural selection is now <span class="hl-mint">widely accepted</span>. Evidence comes from multiple sources.</p>
+  </div>
+  <div class="three-col">
+    <div class="card card-cyan" style="text-align:center;">
+      <p style="font-size:2rem;">🧬</p>
+      <h3>Genes</h3>
+      <p>It has been shown that <span class="hl-cyan">characteristics are passed on to offspring in genes</span> — this supports Darwin's idea that traits are inherited</p>
+    </div>
+    <div class="card card-gold" style="text-align:center;">
+      <p style="font-size:2rem;">🪨</p>
+      <h3>Fossil Record</h3>
+      <p>Fossils show how organisms have <span class="hl-gold">changed over millions of years</span> — we can trace changes in body structure through time</p>
+    </div>
+    <div class="card card-coral" style="text-align:center;">
+      <p style="font-size:2rem;">🦠</p>
+      <h3>Antibiotic Resistance</h3>
+      <p>We can observe <span class="hl-coral">evolution happening in real time</span> through bacteria developing resistance to antibiotics</p>
+    </div>
+  </div>
+  <div class="card card-purple" style="margin-top:16px;">
+    <p>💡 Darwin originally proposed his theory in 1859 — <span class="hl-purple">before genes were even discovered</span>. The discovery of genetics and DNA later provided further strong support for his theory.</p>
+  </div>
+</div>
+
+<!-- ===================== SLIDE 9: Fossils ===================== -->
+<div class="scroll-slide" id="slide-9" style="display:none;">
+  <div class="section-label">4.6.3.2 Fossils</div>
+  <div class="slide-num">9</div>
+  <div class="topic-tag">🪨 Fossils</div>
+  <h1>Fossils</h1>
+  <div class="card card-gold" style="margin-bottom:14px;">
+    <p>Fossils are the <span class="hl-gold">remains of organisms from millions of years ago</span>, found in rocks. They give us a window into how life has changed over time.</p>
+  </div>
+  <div class="two-col">
+    <div>
+      <div class="card card-cyan">
+        <h3>How Fossils Form</h3>
+        <ul>
+          <li>🦴 From parts of organisms that <span class="hl-cyan">did not decay</span> (one or more conditions for decay were absent)</li>
+          <li>🪨 When parts of the organism are <span class="hl-gold">replaced by minerals</span> as they decay</li>
+          <li>👣 As <span class="hl-mint">preserved traces</span> — footprints, burrows, rootlet traces</li>
+        </ul>
+      </div>
+      <div class="card card-mint" style="margin-top:14px;">
+        <h3>What Fossils Tell Us</h3>
+        <ul>
+          <li>How much or how little organisms have <span class="hl-mint">changed over time</span></li>
+          <li>The sequence in which different organisms appeared on Earth</li>
+          <li>Relationships between extinct and living species</li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="card card-coral">
+        <h3>⚠ Why the Fossil Record is Incomplete</h3>
+        <ul>
+          <li>Many early life forms were <span class="hl-coral">soft-bodied</span> → left few traces</li>
+          <li>Traces that did form were often <span class="hl-coral">destroyed by geological activity</span> (heat, pressure, movement of tectonic plates)</li>
+          <li>Therefore scientists <span class="hl-gold">cannot be certain</span> how life began on Earth</li>
+        </ul>
+      </div>
+      <div class="card card-purple" style="margin-top:14px;">
+        <h3>Evolutionary Trees</h3>
+        <ul>
+          <li>Scientists use <span class="hl-purple">evolutionary trees</span> to show how organisms are related</li>
+          <li>Use current classification data for living organisms</li>
+          <li>Use fossil data for extinct organisms</li>
+          <li>You should be able to <span class="hl-gold">read and interpret</span> evolutionary trees</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SLIDE 10: Extinction ===================== -->
+<div class="slide" id="slide-10" style="display:none;">
+  <div class="particle" style="width:90px;height:90px;background:var(--coral);top:5%;right:8%;animation-delay:0.6s;"></div>
+  <div class="section-label">4.6.3.3 Extinction</div>
+  <div class="slide-num">10</div>
+  <div class="topic-tag">💀 Extinction</div>
+  <h1>Extinction</h1>
+  <div class="card card-coral" style="margin-bottom:18px;">
+    <p><span class="hl-coral">Extinction</span> occurs when there are <span class="hl-gold">no remaining individuals</span> of a species still alive.</p>
+  </div>
+  <div class="two-col">
+    <div class="card card-gold">
+      <h3>Factors That May Cause Extinction</h3>
+      <ul>
+        <li>🌡 <span class="hl-gold">Climate change</span> — the environment changes faster than a species can adapt</li>
+        <li>🦠 <span class="hl-coral">New diseases</span> — a pathogen the species has no resistance to</li>
+        <li>🐅 <span class="hl-mint">New predators</span> — introduced species that prey on the organism</li>
+        <li>🌾 <span class="hl-cyan">Loss of habitat</span> — destruction of the ecosystem the species depends on</li>
+        <li>🍽 <span class="hl-purple">Loss of food source</span> — if prey or food plants disappear</li>
+        <li>🏭 <span class="hl-coral">Human activity</span> — hunting, pollution, deforestation</li>
+        <li>🌋 <span class="hl-gold">Catastrophic events</span> — asteroid impact, massive volcanic eruption</li>
+      </ul>
+    </div>
+    <div>
+      <div class="card card-cyan">
+        <h3>Key Point</h3>
+        <p>A species becomes extinct when it can <span class="hl-cyan">no longer successfully reproduce</span> and its population drops to zero. Extinction is <span class="hl-coral">permanent</span> — once a species is gone it is gone forever.</p>
+      </div>
+      <div class="svg-wrap" style="margin-top:16px;">
+        <svg viewBox="0 0 280 160" width="260" xmlns="http://www.w3.org/2000/svg">
+          <text x="140" y="20" text-anchor="middle" fill="#FFD166" font-family="Fredoka One" font-size="13">Population Over Time</text>
+          <!-- axes -->
+          <line x1="30" y1="130" x2="260" y2="130" stroke="#E8F4FD" stroke-width="1.5" opacity="0.4"/>
+          <line x1="30" y1="130" x2="30" y2="30" stroke="#E8F4FD" stroke-width="1.5" opacity="0.4"/>
+          <text x="145" y="148" text-anchor="middle" fill="#E8F4FD" font-family="Nunito" font-size="10" opacity="0.6">Time →</text>
+          <text x="12" y="85" fill="#E8F4FD" font-family="Nunito" font-size="10" opacity="0.6" transform="rotate(-90,12,85)">Pop.</text>
+          <!-- declining line -->
+          <polyline points="30,50 80,55 120,65 160,85 200,110 230,128 255,131" fill="none" stroke="#FF6B6B" stroke-width="3"/>
+          <!-- extinction point -->
+          <circle cx="255" cy="131" r="6" fill="#FF6B6B" class="glow-anim"/>
+          <text x="255" y="124" text-anchor="middle" fill="#FF6B6B" font-family="Fredoka One" font-size="10">EXTINCT</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SLIDE 11: Antibiotic Resistant Bacteria ===================== -->
+<div class="slide" id="slide-11" style="display:none;">
+  <div class="particle" style="width:80px;height:80px;background:var(--mint);bottom:10%;left:5%;animation-delay:1s;"></div>
+  <div class="section-label">4.6.3.4 Resistant Bacteria</div>
+  <div class="slide-num">11</div>
+  <div class="topic-tag">🦠 Antibiotic Resistance</div>
+  <h1>Antibiotic Resistant Bacteria</h1>
+  <div class="two-col">
+    <div>
+      <div class="card card-coral">
+        <h3>How Resistance Develops</h3>
+        <ul>
+          <li>Bacteria <span class="hl-coral">reproduce rapidly</span> → evolve fast</li>
+          <li>Mutations produce <span class="hl-gold">new strains</span></li>
+          <li>Some strains are <span class="hl-coral">resistant to antibiotics</span> → not killed</li>
+          <li>Resistant bacteria <span class="hl-mint">survive and reproduce</span></li>
+          <li>Population of resistant strain <span class="hl-gold">rises</span></li>
+          <li>Resistant strain spreads — people are not immune and there is <span class="hl-coral">no effective treatment</span></li>
+        </ul>
+      </div>
+      <div class="card card-gold" style="margin-top:14px;">
+        <h3>Example: MRSA</h3>
+        <p><span class="hl-gold">MRSA</span> (Methicillin-resistant <em>Staphylococcus aureus</em>) is resistant to many antibiotics — a serious problem in hospitals.</p>
+      </div>
+    </div>
+    <div>
+      <div class="card card-mint">
+        <h3>✅ How to Reduce Resistance</h3>
+        <ul>
+          <li>🩺 Doctors should <span class="hl-mint">not prescribe antibiotics inappropriately</span> (e.g. for viral infections or non-serious cases)</li>
+          <li>💊 Patients must <span class="hl-cyan">complete their full course</span> of antibiotics — so all bacteria are killed and none survive to mutate</li>
+          <li>🌾 <span class="hl-gold">Agricultural use of antibiotics</span> should be restricted</li>
+        </ul>
+      </div>
+      <div class="card card-cyan" style="margin-top:14px;">
+        <h3>The Challenge</h3>
+        <p>Developing <span class="hl-cyan">new antibiotics</span> is <span class="hl-coral">costly and slow</span>. It is unlikely to keep up with the emergence of new resistant strains.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SLIDE 12: QUIZ 2 ===================== -->
+<div class="slide" id="slide-12" style="display:none;align-items:center;justify-content:center;flex-direction:column;">
+  <div class="section-label">Quiz Checkpoint</div>
+  <div class="slide-num">12</div>
+  <div class="quiz-box">
+    <div class="quiz-q">🎯 Why should patients always complete their full course of antibiotics?</div>
+    <div class="quiz-options">
+      <button class="quiz-btn" onclick="checkQ2(this,false)">A. To make sure the antibiotic spreads through the whole body</button>
+      <button class="quiz-btn" onclick="checkQ2(this,false)">B. Because stopping early causes the infection to spread to others immediately</button>
+      <button class="quiz-btn" onclick="checkQ2(this,true)">C. So all bacteria are killed — surviving bacteria could mutate and form resistant strains</button>
+      <button class="quiz-btn" onclick="checkQ2(this,false)">D. To prevent the patient from getting a viral infection afterwards</button>
+    </div>
+    <div class="quiz-feedback" id="qf2"></div>
+  </div>
+</div>
+
+<!-- ===================== SLIDE 13: Antibiotic Resistance — Natural Selection Link ===================== -->
+<div class="slide" id="slide-13" style="display:none;">
+  <div class="particle" style="width:95px;height:95px;background:var(--purple);top:5%;right:5%;animation-delay:0.3s;"></div>
+  <div class="section-label">4.6.3.4 Resistant Bacteria</div>
+  <div class="slide-num">13</div>
+  <div class="topic-tag">🔗 Linking to Natural Selection</div>
+  <h1>Resistance = Evolution in Action</h1>
+  <p style="margin-bottom:16px;">Antibiotic resistance is a <span class="hl-cyan">real-life example of natural selection</span> happening very quickly:</p>
+  <div class="step-flow">
+    <div class="step-box" style="border-color:var(--cyan);color:var(--cyan);">🦠 Large population of bacteria — with natural variation</div>
+    <div class="step-arrow">→</div>
+    <div class="step-box" style="border-color:var(--gold);color:var(--gold);">💊 Antibiotic introduced — acts as selection pressure</div>
+    <div class="step-arrow">→</div>
+    <div class="step-box" style="border-color:var(--coral);color:var(--coral);">☠ Most bacteria killed — but a few have a resistance mutation</div>
+    <div class="step-arrow">→</div>
+    <div class="step-box" style="border-color:var(--mint);color:var(--mint);">✅ Resistant bacteria survive and reproduce rapidly</div>
+    <div class="step-arrow">→</div>
+    <div class="step-box" style="border-color:var(--purple);color:var(--purple);">📈 New resistant strain dominates — antibiotic no longer works</div>
+  </div>
+  <div class="two-col" style="margin-top:18px;">
+    <div class="card card-gold">
+      <p>💡 This is exactly the same process as any other natural selection — <span class="hl-gold">variation → selection pressure → survival of fittest → reproduction → change in population</span>. Bacteria just do it much faster because they reproduce so quickly!</p>
+    </div>
+    <div class="card card-mint">
+      <p>🌍 This is why antibiotic resistance is a <span class="hl-mint">global health crisis</span> — and why scientists are urgently working to develop new antibiotics and alternative treatments.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SLIDE 14: Classification — Linnaeus ===================== -->
+<div class="slide" id="slide-14" style="display:none;">
+  <div class="particle" style="width:90px;height:90px;background:var(--cyan);bottom:10%;right:5%;animation-delay:0.7s;"></div>
+  <div class="section-label">4.6.4 Classification</div>
+  <div class="slide-num">14</div>
+  <div class="topic-tag">🔬 Classification</div>
+  <h1>Classification — The Linnaean System</h1>
+  <div class="two-col">
+    <div>
+      <div class="card card-cyan">
+        <h3>Carl Linnaeus</h3>
+        <ul>
+          <li>Developed a system of classifying living things based on <span class="hl-cyan">structure and characteristics</span></li>
+          <li>Used a hierarchy of groups</li>
+          <li>Each organism given a <span class="hl-gold">two-part Latin name</span> — the <span class="hl-mint">binomial system</span></li>
+          <li>Name = <span class="hl-purple">Genus + species</span> (e.g. <em>Homo sapiens</em>)</li>
+        </ul>
+      </div>
+      <div class="card card-gold" style="margin-top:14px;">
+        <h3>Binomial System</h3>
+        <ul>
+          <li>Genus — <span class="hl-gold">always capitalised</span> (e.g. <em>Homo</em>)</li>
+          <li>species — <span class="hl-cyan">always lowercase</span> (e.g. <em>sapiens</em>)</li>
+          <li>Written in <span class="hl-mint">italics</span> (or underlined when handwritten)</li>
+          <li>Used universally by scientists worldwide</li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <h3 style="color:var(--mint);font-family:'Fredoka One',sans-serif;margin-bottom:12px;">The Linnaean Hierarchy</h3>
+      <div class="taxon-ladder">
+        <div class="taxon-row">
+          <div class="taxon-label" style="color:var(--coral);">Kingdom</div>
+          <div class="taxon-bar" style="width:260px;background:var(--coral);">Broadest group — e.g. Animalia</div>
+        </div>
+        <div class="taxon-row">
+          <div class="taxon-label" style="color:#FF8C42;">Phylum</div>
+          <div class="taxon-bar" style="width:230px;background:#FF8C42;">e.g. Chordata</div>
+        </div>
+        <div class="taxon-row">
+          <div class="taxon-label" style="color:var(--gold);">Class</div>
+          <div class="taxon-bar" style="width:200px;background:var(--gold);">e.g. Mammalia</div>
+        </div>
+        <div class="taxon-row">
+          <div class="taxon-label" style="color:#A8E063;">Order</div>
+          <div class="taxon-bar" style="width:170px;background:#A8E063;">e.g. Primates</div>
+        </div>
+        <div class="taxon-row">
+          <div class="taxon-label" style="color:var(--mint);">Family</div>
+          <div class="taxon-bar" style="width:140px;background:var(--mint);">e.g. Hominidae</div>
+        </div>
+        <div class="taxon-row">
+          <div class="taxon-label" style="color:var(--cyan);">Genus</div>
+          <div class="taxon-bar" style="width:110px;background:var(--cyan);">e.g. Homo</div>
+        </div>
+        <div class="taxon-row">
+          <div class="taxon-label" style="color:var(--purple);">species</div>
+          <div class="taxon-bar" style="width:80px;background:var(--purple);">sapiens ← most specific</div>
+        </div>
+      </div>
+      <p style="margin-top:10px;font-size:0.8rem;opacity:0.6;">Memory aid: <span style="color:var(--gold);font-weight:700;">K</span>eep <span style="color:var(--gold);font-weight:700;">P</span>onds <span style="color:var(--gold);font-weight:700;">C</span>lean <span style="color:var(--gold);font-weight:700;">O</span>r <span style="color:var(--gold);font-weight:700;">F</span>rogs <span style="color:var(--gold);font-weight:700;">G</span>et <span style="color:var(--gold);font-weight:700;">S</span>ick</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SLIDE 15: Three-Domain System ===================== -->
+<div class="slide" id="slide-15" style="display:none;">
+  <div class="particle" style="width:100px;height:100px;background:var(--gold);top:5%;right:5%;animation-delay:0.9s;"></div>
+  <div class="section-label">4.6.4 Classification</div>
+  <div class="slide-num">15</div>
+  <div class="topic-tag">🔬 Three-Domain System</div>
+  <h1>The Three-Domain System</h1>
+  <div class="card card-gold" style="margin-bottom:16px;">
+    <p>As <span class="hl-gold">microscopes improved</span> and understanding of <span class="hl-cyan">biochemical processes</span> grew, scientists proposed new models of classification. Carl Woese developed the <span class="hl-mint">three-domain system</span> using evidence from chemical analysis.</p>
+  </div>
+  <div class="three-col">
+    <div class="card card-coral" style="text-align:center;">
+      <p style="font-size:2rem;">🌋</p>
+      <h3>Archaea</h3>
+      <p><span class="hl-coral">Primitive bacteria</span> — usually living in <span class="hl-gold">extreme environments</span> (very hot, very salty, very acidic)</p>
+      <p style="margin-top:8px;font-size:0.85rem;">e.g. bacteria in hot springs, deep ocean vents</p>
+    </div>
+    <div class="card card-cyan" style="text-align:center;">
+      <p style="font-size:2rem;">🦠</p>
+      <h3>Bacteria</h3>
+      <p><span class="hl-cyan">True bacteria</span> — the more familiar group of bacteria</p>
+      <p style="margin-top:8px;font-size:0.85rem;">e.g. <em>E. coli</em>, <em>Staphylococcus</em>, <em>Lactobacillus</em></p>
+    </div>
+    <div class="card card-mint" style="text-align:center;">
+      <p style="font-size:2rem;">🌿</p>
+      <h3>Eukaryota</h3>
+      <p>Includes <span class="hl-mint">protists, fungi, plants and animals</span> — all organisms with a true nucleus</p>
+      <p style="margin-top:8px;font-size:0.85rem;">e.g. humans, oak trees, mushrooms, amoeba</p>
+    </div>
+  </div>
+  <div class="card card-purple" style="margin-top:18px;">
+    <p>💡 <span class="hl-purple">Why did classification change?</span> New evidence from chemical analysis (comparing DNA and cell chemistry) showed that Archaea and Bacteria are more different from each other than either is from Eukaryota. Science evolves as new evidence emerges!</p>
+  </div>
+</div>
+
+<!-- ===================== SLIDE 16: Evolutionary Trees ===================== -->
+<div class="slide" id="slide-16" style="display:none;">
+  <div class="section-label">4.6.4 Evolutionary Trees</div>
+  <div class="slide-num">16</div>
+  <div class="topic-tag">🌳 Evolutionary Trees</div>
+  <h1>Evolutionary Trees</h1>
+  <div class="two-col">
+    <div>
+      <div class="card card-mint">
+        <h3>What Are They?</h3>
+        <ul>
+          <li>Diagrams used by scientists to show how <span class="hl-mint">organisms are related</span> to one another</li>
+          <li>Show which species share a <span class="hl-gold">common ancestor</span></li>
+          <li>Use <span class="hl-cyan">current classification data</span> for living organisms</li>
+          <li>Use <span class="hl-purple">fossil data</span> for extinct organisms</li>
+        </ul>
+      </div>
+      <div class="card card-gold" style="margin-top:14px;">
+        <h3>How to Read Them</h3>
+        <ul>
+          <li>A <span class="hl-gold">branch point</span> (node) = a common ancestor</li>
+          <li>Organisms at the <span class="hl-cyan">tips of branches</span> = living or extinct species</li>
+          <li>The <span class="hl-mint">closer two organisms</span> share a branch point, the more closely related they are</li>
+          <li>Longer branches = more evolutionary change</li>
+        </ul>
+      </div>
+    </div>
+    <div class="svg-wrap" style="align-items:center;">
+      <svg viewBox="0 0 280 320" width="260" xmlns="http://www.w3.org/2000/svg">
+        <text x="140" y="20" text-anchor="middle" fill="#06D6A0" font-family="Fredoka One" font-size="13">Evolutionary Tree (Example)</text>
+        <!-- trunk -->
+        <line x1="140" y1="290" x2="140" y2="220" stroke="#FFD166" stroke-width="3"/>
+        <text x="140" y="308" text-anchor="middle" fill="#FFD166" font-family="Nunito" font-size="10" font-weight="700">Common ancestor</text>
+        <!-- split 1 -->
+        <line x1="140" y1="220" x2="70" y2="160" stroke="#06D6A0" stroke-width="2.5"/>
+        <line x1="140" y1="220" x2="210" y2="160" stroke="#06D6A0" stroke-width="2.5"/>
+        <circle cx="140" cy="220" r="5" fill="#FFD166"/>
+        <!-- left branch splits -->
+        <line x1="70" y1="160" x2="40" y2="100" stroke="#00D4FF" stroke-width="2"/>
+        <line x1="70" y1="160" x2="100" y2="100" stroke="#00D4FF" stroke-width="2"/>
+        <circle cx="70" cy="160" r="5" fill="#06D6A0"/>
+        <!-- right branch splits -->
+        <line x1="210" y1="160" x2="175" y2="100" stroke="#C77DFF" stroke-width="2"/>
+        <line x1="210" y1="160" x2="240" y2="100" stroke="#C77DFF" stroke-width="2"/>
+        <circle cx="210" cy="160" r="5" fill="#06D6A0"/>
+        <!-- left-left splits -->
+        <line x1="40" y1="100" x2="25" y2="55" stroke="#00D4FF" stroke-width="1.5"/>
+        <line x1="40" y1="100" x2="55" y2="55" stroke="#00D4FF" stroke-width="1.5"/>
+        <circle cx="40" cy="100" r="4" fill="#00D4FF"/>
+        <!-- left-right -->
+        <circle cx="100" cy="100" r="8" fill="#FF6B6B"/>
+        <text x="100" y="88" text-anchor="middle" fill="#FF6B6B" font-family="Nunito" font-size="9" font-weight="700">Species C</text>
+        <!-- tips left-left -->
+        <circle cx="25" cy="55" r="8" fill="#06D6A0"/>
+        <text x="25" y="43" text-anchor="middle" fill="#06D6A0" font-family="Nunito" font-size="9" font-weight="700">Species A</text>
+        <circle cx="55" cy="55" r="8" fill="#00D4FF"/>
+        <text x="55" y="43" text-anchor="middle" fill="#00D4FF" font-family="Nunito" font-size="9" font-weight="700">Species B</text>
+        <!-- right tips -->
+        <circle cx="175" cy="100" r="8" fill="#C77DFF"/>
+        <text x="175" y="88" text-anchor="middle" fill="#C77DFF" font-family="Nunito" font-size="9" font-weight="700">Species D</text>
+        <circle cx="240" cy="100" r="8" fill="#FFD166"/>
+        <text x="240" y="88" text-anchor="middle" fill="#FFD166" font-family="Nunito" font-size="9" font-weight="700">Species E</text>
+        <!-- labels -->
+        <text x="60" y="195" fill="#E8F4FD" font-family="Nunito" font-size="9" opacity="0.6">← branch point</text>
+        <text x="140" y="245" text-anchor="middle" fill="#E8F4FD" font-family="Nunito" font-size="9" opacity="0.6">(shared ancestor)</text>
+        <!-- A & B are most closely related label -->
+        <rect x="5" y="25" width="75" height="14" rx="4" fill="rgba(6,214,160,0.15)"/>
+        <text x="43" y="35" text-anchor="middle" fill="#06D6A0" font-family="Nunito" font-size="8" font-weight="700">Most closely related</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SLIDE 17: QUIZ 3 ===================== -->
+<div class="slide" id="slide-17" style="display:none;align-items:center;justify-content:center;flex-direction:column;">
+  <div class="section-label">Quiz Checkpoint</div>
+  <div class="slide-num">17</div>
+  <div class="quiz-box">
+    <div class="quiz-q">🎯 Which domain would humans belong to in the three-domain system?</div>
+    <div class="quiz-options">
+      <button class="quiz-btn" onclick="checkQ3(this,false)">A. Archaea — because we live in extreme conditions sometimes</button>
+      <button class="quiz-btn" onclick="checkQ3(this,false)">B. Bacteria — because we contain bacteria in our gut</button>
+      <button class="quiz-btn" onclick="checkQ3(this,true)">C. Eukaryota — because humans are organisms with a true nucleus in their cells</button>
+      <button class="quiz-btn" onclick="checkQ3(this,false)">D. None — humans are not included in the three-domain system</button>
+    </div>
+    <div class="quiz-feedback" id="qf3"></div>
+  </div>
+</div>
+
+<!-- ===================== SLIDE 18: Summary ===================== -->
+<div class="scroll-slide" id="slide-18" style="display:none;">
+  <div class="section-label">Summary</div>
+  <div class="slide-num">18</div>
+  <div class="topic-tag">📋 Topic Summary</div>
+  <h1>4.6.2.2 – 4.6.4 Summary</h1>
+  <div class="two-col" style="margin-top:14px;">
+    <div>
+      <div class="card card-mint">
+        <h3>🌿 Evolution & Natural Selection</h3>
+        <ul>
+          <li>Evolution = change in inherited characteristics over time via natural selection</li>
+          <li>All life evolved from simple forms &gt;3 billion years ago</li>
+          <li>New species form when populations can no longer interbreed</li>
+          <li>Variation → selection pressure → survival of fittest → reproduction → evolution</li>
+        </ul>
+      </div>
+      <div class="card card-gold" style="margin-top:12px;">
+        <h3>🌾 Selective Breeding vs Genetic Engineering</h3>
+        <ul>
+          <li>Selective breeding: choose parents, breed, select, repeat — over many generations</li>
+          <li>Genetic engineering: directly insert a gene from another organism</li>
+          <li>Both: reduce genetic diversity; carry ethical concerns</li>
+          <li>Both: have benefits in agriculture and medicine</li>
+        </ul>
+      </div>
+      <div class="card card-purple" style="margin-top:12px;">
+        <h3>🪨 Fossils & Extinction</h3>
+        <ul>
+          <li>Fossils = remains in rock; show change over millions of years</li>
+          <li>Record is incomplete — soft bodies, geological destruction</li>
+          <li>Extinction = no individuals left; permanent</li>
+          <li>Caused by: climate change, disease, predators, habitat loss, catastrophes</li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="card card-coral">
+        <h3>🦠 Antibiotic Resistance</h3>
+        <ul>
+          <li>Bacteria evolve fast — rapid reproduction = rapid evolution</li>
+          <li>Mutation → resistant strain → survives antibiotics → reproduces → spreads</li>
+          <li>MRSA = key example</li>
+          <li>Reduce resistance: don't prescribe unnecessarily; complete full course; restrict agricultural use</li>
+          <li>New antibiotic development is slow and costly</li>
+        </ul>
+      </div>
+      <div class="card card-cyan" style="margin-top:12px;">
+        <h3>🔬 Classification</h3>
+        <ul>
+          <li>Linnaeus: Kingdom → Phylum → Class → Order → Family → Genus → species</li>
+          <li>Binomial system: Genus species (e.g. <em>Homo sapiens</em>)</li>
+          <li>Three-domain system (Woese): Archaea, Bacteria, Eukaryota</li>
+          <li>Based on chemical/biochemical evidence</li>
+          <li>Evolutionary trees show relationships and common ancestors</li>
+        </ul>
+      </div>
+      <div class="card card-gold" style="margin-top:12px;">
+        <h3>📸 Image Suggestions</h3>
+        <ul>
+          <li>🖼 Fossil photos (trilobite, ammonite)</li>
+          <li>🖼 Evolutionary tree diagram (vertebrates)</li>
+          <li>🖼 MRSA bacteria microscope image</li>
+          <li>🖼 GM crop comparison photo</li>
+          <li>🖼 Dog breed variety (selective breeding)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end slides-wrapper -->
+
+<!-- Navigation -->
+<div class="nav-btns">
+  <button class="nav-btn" onclick="changeSlide(-1)">← Prev</button>
+  <button class="nav-btn" id="slide-counter">1 / 18</button>
+  <button class="nav-btn" onclick="changeSlide(1)">Next →</button>
+</div>
+
+<script>
+  const totalSlides = 18;
+  let current = 1;
+
+  function getSlide(n) { return document.getElementById('slide-' + n); }
+
+  function updateProgress() {
+    const pct = ((current - 1) / (totalSlides - 1)) * 100;
+    document.getElementById('progress-bar').style.width = pct + '%';
+    document.getElementById('slide-counter').textContent = current + ' / ' + totalSlides;
+  }
+
+  function changeSlide(dir) {
+    const old = getSlide(current);
+    old.style.display = 'none';
+    old.classList.remove('active');
+    current = Math.max(1, Math.min(totalSlides, current + dir));
+    const next = getSlide(current);
+    next.style.display = 'flex';
+    next.classList.add('active');
+    next.classList.add('fade-in');
+    setTimeout(() => next.classList.remove('fade-in'), 650);
+    updateProgress();
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changeSlide(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   changeSlide(-1);
+  });
+
+  updateProgress();
+  getSlide(1).style.display = 'flex';
+
+  function checkQ1(btn, correct) {
+    btn.parentElement.querySelectorAll('.quiz-btn').forEach(b => b.disabled = true);
+    const fb = document.getElementById('qf1');
+    if (correct) {
+      btn.classList.add('correct');
+      fb.innerHTML = '<span class="feedback-correct">✅ Correct! Selective breeding always involves selecting parents, breeding, choosing the best offspring, and repeating over many generations.</span>';
+    } else {
+      btn.classList.add('wrong');
+      btn.parentElement.querySelectorAll('.quiz-btn')[1].classList.add('correct');
+      fb.innerHTML = '<span class="feedback-wrong">❌ Not quite. Option B is correct — selective breeding is a repeated process of selecting and breeding the best offspring each generation.</span>';
+    }
+  }
+
+  function checkQ2(btn, correct) {
+    btn.parentElement.querySelectorAll('.quiz-btn').forEach(b => b.disabled = true);
+    const fb = document.getElementById('qf2');
+    if (correct) {
+      btn.classList.add('correct');
+      fb.innerHTML = '<span class="feedback-correct">✅ Correct! If some bacteria survive because the course was stopped early, those survivors could be resistant mutants — and they will reproduce and spread.</span>';
+    } else {
+      btn.classList.add('wrong');
+      btn.parentElement.querySelectorAll('.quiz-btn')[2].classList.add('correct');
+      fb.innerHTML = '<span class="feedback-wrong">❌ Not quite. The key reason is C — surviving bacteria may be resistant mutants that will reproduce and create a resistant strain.</span>';
+    }
+  }
+
+  function checkQ3(btn, correct) {
+    btn.parentElement.querySelectorAll('.quiz-btn').forEach(b => b.disabled = true);
+    const fb = document.getElementById('qf3');
+    if (correct) {
+      btn.classList.add('correct');
+      fb.innerHTML = '<span class="feedback-correct">✅ Correct! Humans are Eukaryotes — our cells have a true nucleus containing our DNA, which is the defining feature of the Eukaryota domain.</span>';
+    } else {
+      btn.classList.add('wrong');
+      btn.parentElement.querySelectorAll('.quiz-btn')[2].classList.add('correct');
+      fb.innerHTML = '<span class="feedback-wrong">❌ Not quite. Humans belong to Eukaryota — organisms whose cells have a true nucleus. Archaea and Bacteria are both prokaryotes (no nucleus).</span>';
+    }
+  }
+</script>
+</body>
+</html>
