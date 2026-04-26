@@ -625,13 +625,10 @@ const SECTION_META={
 const ACCENT_POOL=['#60a5fa','#2dd4bf','#a78bfa','#fbbf24','#fb923c','#f472b6','#34d399','#818cf8'];
 
 // ── TOKEN ─────────────────────────────────────────────────────────────────────
-function getToken(){return localStorage.getItem('yoly_gh_token')||'';}
-function saveToken(){
-  const t=document.getElementById('token-input').value.trim();
-  if(!t){showToast('⚠️ Please paste your token first.');return;}
-  localStorage.setItem('yoly_gh_token',t);
-  showToast('✅ Token saved! You can now upload directly to GitHub.');
-  document.getElementById('token-banner').classList.add('hidden');
+function getToken(){
+  const raw=localStorage.getItem('yoly_gh_token')||'';
+  // Sanitise on every read — strips non-ASCII that breaks HTTP headers
+  return raw.replace(/[^\x20-\x7E]/g,'').trim();
 }
 function dismissTokenBanner(){document.getElementById('token-banner').classList.add('hidden');}
 
@@ -671,10 +668,22 @@ async function saveMeta(){
 }
 
 function ghHeaders(){
-  const t=getToken();
+  const raw=getToken();
+  // Strip any whitespace, newlines, or non-ASCII characters that break HTTP headers
+  const t=raw.replace(/[^\x20-\x7E]/g,'').trim();
   const h={'Content-Type':'application/json','Accept':'application/vnd.github+json'};
   if(t)h['Authorization']=`Bearer ${t}`;
   return h;
+}
+
+function saveToken(){
+  const raw=document.getElementById('token-input').value;
+  // Sanitise before saving — strip anything that isn't a printable ASCII character
+  const t=raw.replace(/[^\x20-\x7E]/g,'').trim();
+  if(!t){showToast('⚠️ Please paste your token first.');return;}
+  localStorage.setItem('yoly_gh_token',t);
+  showToast('✅ Token saved! You can now upload directly to GitHub.');
+  document.getElementById('token-banner').classList.add('hidden');
 }
 
 function seedPages(){
