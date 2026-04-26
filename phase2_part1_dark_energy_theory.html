@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 2 Part 1 — Dark Energy Models: Theory</title>
+
+<script>
+MathJax = {
+  tex: { inlineMath:[['\\(','\\)']], displayMath:[['\\[','\\]']], packages:{'[+]':['ams']} },
+  options: { skipHtmlTags:['script','noscript','style','textarea','pre'] },
+  startup: { ready(){ MathJax.startup.defaultReady(); } }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden}
+:root{
+  --bg:#06080f; --bg2:#0d1525; --bg3:#121e33; --bg4:#1a2a45;
+  --border:rgba(140,180,255,.13); --border2:rgba(140,180,255,.25);
+  --text:#dde6f5; --muted:#8399bb; --dim:#4a5e7a;
+  --c1:#fbbf24; --c2:#60a5fa; --c3:#f43f5e; --c4:#a78bfa;
+  --c5:#2dd4bf; --c6:#fb923c; --c7:#f472b6; --c8:#34d399;
+  --c9:#818cf8; --c10:#e2e8f0;
+}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;font-weight:300}
+mjx-container{color:var(--text)!important;max-width:100%}
+mjx-container[display="true"]{overflow-x:visible!important;white-space:normal!important;margin:.3rem 0!important}
+#stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+.deck{position:fixed;inset:0;z-index:1}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .35s ease;overflow:hidden}
+.slide.active{opacity:1;pointer-events:all}
+#progress-bar{position:fixed;top:0;left:0;height:3px;z-index:200;transition:width .3s ease,background .3s ease}
+#dots{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:200}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--border2);cursor:pointer;transition:background .2s,transform .2s}
+.dot.active{transform:scale(1.5)}
+.arrow{position:fixed;top:50%;transform:translateY(-50%);z-index:200;background:var(--bg2);border:.5px solid var(--border2);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:14px;transition:background .2s,color .2s}
+.arrow:hover{background:var(--bg3);color:var(--text)}
+#prev{left:12px}#next{right:12px}
+
+.slide-inner{flex:1;display:flex;flex-direction:column;padding:26px 54px 56px;max-width:1080px;margin:0 auto;width:100%;overflow:hidden;min-height:0;height:100%}
+.slide-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-shrink:0}
+.slide-eyebrow{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+.slide-count{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--dim)}
+.title-block{margin-bottom:10px;flex-shrink:0}
+.accent-line{display:flex;align-items:center;gap:12px}
+.accent-bar{width:4px;border-radius:2px;flex-shrink:0}
+.slide-title{font-family:'Crimson Pro',serif;font-size:clamp(1.5rem,2.8vw,2.3rem);font-weight:400;line-height:1.12;color:var(--text)}
+.slide-sub{font-size:clamp(11px,1.25vw,13px);color:var(--muted);margin-top:3px;font-weight:300}
+.slide-footer{flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--dim);letter-spacing:.08em;text-align:center;padding:4px 0 0;border-top:.5px solid var(--border);margin-top:6px}
+
+/* formula box */
+.fbox{background:var(--bg2);border:.5px solid var(--border2);border-radius:12px;padding:10px 20px;margin-bottom:10px;flex-shrink:0;overflow:hidden;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.fbox-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);flex-shrink:0;min-width:55px}
+.fbox-expr{font-size:clamp(1rem,2vw,1.25rem);color:var(--text);flex:1}
+
+/* metrics */
+.metrics-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px;flex-shrink:0}
+.metric{background:var(--bg2);border:.5px solid var(--border);border-radius:7px;padding:5px 11px;display:flex;flex-direction:column;gap:1px;overflow:hidden}
+.metric-label{font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.metric-val{font-size:clamp(10px,1.15vw,12px);color:var(--text)}
+
+/* content grid */
+.content-grid{display:grid;grid-template-columns:1.08fr 1fr;gap:9px;flex:1;min-height:0;overflow:hidden}
+.content-grid.single{grid-template-columns:1fr}
+
+/* panel */
+.panel{background:var(--bg2);border:.5px solid var(--border);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-height:0;overflow:hidden;height:100%}
+.panel-label{font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);flex-shrink:0}
+.panel-body{font-family:'Crimson Pro',serif;font-size:clamp(12px,1.35vw,14px);font-weight:300;color:var(--muted);line-height:1.7;flex:1;overflow:hidden;min-height:0}
+.panel-body strong{color:var(--text);font-weight:400}
+.panel-body em{font-style:italic}
+
+/* items list */
+.items-list{display:flex;flex-direction:column;gap:5px;flex:1;overflow:hidden;min-height:0}
+.item{display:flex;align-items:flex-start;gap:8px;background:var(--bg3);border:.5px solid var(--border);border-radius:7px;padding:6px 10px;flex-shrink:0;overflow:hidden}
+.item-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.item-text{font-size:clamp(10px,1.15vw,12px);color:var(--muted);line-height:1.5;overflow:hidden}
+.item-text strong{color:var(--text);font-weight:500}
+
+.openq{border-left:2px solid var(--border2);padding:6px 11px;flex-shrink:0;overflow:hidden;font-size:clamp(10px,1.1vw,11.5px);color:var(--dim);font-style:italic;line-height:1.5}
+.openq strong{color:var(--muted);font-style:normal;font-weight:400}
+
+/* cover */
+.cover{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px;padding:28px 54px;overflow:hidden}
+.cover-kicker{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);display:flex;align-items:center;gap:12px;flex-shrink:0}
+.cover-kicker::before,.cover-kicker::after{content:'';width:30px;height:1px;background:var(--border2);display:inline-block}
+.cover h1{font-family:'Crimson Pro',serif;font-size:clamp(2rem,5vw,3.4rem);font-weight:400;line-height:1.08;color:var(--text);flex-shrink:0}
+.cover h1 em{font-style:italic;color:var(--c1)}
+.cover-sub{font-size:clamp(12px,1.35vw,14px);color:var(--muted);max-width:560px;line-height:1.65;flex-shrink:0}
+.cover-hint{font-family:'JetBrains Mono',monospace;font-size:8.5px;color:var(--dim);letter-spacing:.1em;flex-shrink:0}
+.topic-pills{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:700px;flex-shrink:0}
+.tpill{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:100px;border:.5px solid}
+
+/* derivation box — for step-by-step derivations */
+.deriv-box{background:var(--bg3);border:.5px solid var(--border);border-radius:10px;padding:10px 14px;flex-shrink:0;overflow:hidden;margin-bottom:8px}
+.deriv-step{font-size:clamp(11px,1.25vw,13px);color:var(--muted);line-height:1.65;margin-bottom:6px}
+.deriv-step:last-child{margin-bottom:0}
+.deriv-step strong{color:var(--text);font-weight:400}
+.deriv-note{font-size:clamp(10px,1.1vw,11px);color:var(--dim);font-style:italic;line-height:1.5}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.slide.active .slide-inner>*{animation:fadeUp .4s ease both}
+.slide.active .slide-inner>*:nth-child(1){animation-delay:.03s}
+.slide.active .slide-inner>*:nth-child(2){animation-delay:.07s}
+.slide.active .slide-inner>*:nth-child(3){animation-delay:.11s}
+.slide.active .slide-inner>*:nth-child(4){animation-delay:.15s}
+.slide.active .slide-inner>*:nth-child(5){animation-delay:.19s}
+.slide.active .slide-inner>*:nth-child(6){animation-delay:.23s}
+.slide.active .slide-inner>*:nth-child(7){animation-delay:.27s}
+::-webkit-scrollbar{display:none}
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+<div id="progress-bar"></div>
+<div id="dots"></div>
+<button class="arrow" id="prev">&#8592;</button>
+<button class="arrow" id="next">&#8594;</button>
+<div class="deck" id="deck">
+
+<!-- ══ SLIDE 0 — COVER ══ -->
+<div class="slide active" data-color="#fbbf24">
+<div class="cover">
+  <div class="cover-kicker">Phase 2 &nbsp;·&nbsp; Part 1 of 2 &nbsp;·&nbsp; DDM Study Plan</div>
+  <h1>Dark Energy Models:<br><em>Theory</em></h1>
+  <p class="cover-sub">The cosmological constant, its problems, quintessence, k-essence, phantom dark energy, and the CPL parametrisation — every equation derived from first principles.</p>
+  <div class="topic-pills">
+    <span class="tpill" style="color:var(--c1);border-color:var(--c1)">Cosmological constant</span>
+    <span class="tpill" style="color:var(--c3);border-color:var(--c3)">Fine-tuning problem</span>
+    <span class="tpill" style="color:var(--c2);border-color:var(--c2)">Quintessence</span>
+    <span class="tpill" style="color:var(--c4);border-color:var(--c4)">k-essence</span>
+    <span class="tpill" style="color:var(--c7);border-color:var(--c7)">Phantom dark energy</span>
+    <span class="tpill" style="color:var(--c6);border-color:var(--c6)">CPL parametrisation</span>
+    <span class="tpill" style="color:var(--c5);border-color:var(--c5)">Thawing &amp; freezing</span>
+    <span class="tpill" style="color:var(--c8);border-color:var(--c8)">\(w_0 w_a\)CDM</span>
+  </div>
+  <div class="cover-hint">10 slides &nbsp;·&nbsp; Part 2 (DESI results, observations, reading list) follows separately</div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 1 — THE COSMOLOGICAL CONSTANT ══ -->
+<div class="slide" data-color="#fbbf24">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--c1)">&#9679; Topic 1 &nbsp;&mdash;&nbsp; The cosmological constant \(\Lambda\)</span>
+    <span class="slide-count">2 / 10</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--c1);height:40px"></div>
+      <div>
+        <div class="slide-title">The Cosmological Constant \(\Lambda\)</div>
+        <div class="slide-sub">The simplest dark energy model — a constant energy density filling all of spacetime</div>
+      </div>
+    </div>
+  </div>
+  <div class="fbox">
+    <div class="fbox-label">Einstein field eqs</div>
+    <div class="fbox-expr">\(\displaystyle G_{\mu\nu} + \Lambda g_{\mu\nu} = 8\pi G\, T_{\mu\nu}\)</div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">What \(\Lambda\) is — from Einstein's equations</div>
+      <div class="panel-body">
+        Einstein introduced \(\Lambda\) in 1917 to obtain a static universe. When expansion was discovered (Hubble, 1929), he called it his "greatest blunder." It was revived in 1998 when Type Ia supernovae showed the expansion is <strong>accelerating</strong> (Riess et al. 1998; Perlmutter et al. 1999 — Nobel Prize 2011).<br><br>
+        Moving \(\Lambda g_{\mu\nu}\) to the right-hand side of Einstein's equation, it acts as a <strong>perfect fluid</strong> with constant energy density and negative pressure:
+        \[\rho_\Lambda = \frac{\Lambda c^2}{8\pi G}, \qquad p_\Lambda = -\rho_\Lambda c^2\]
+        The equation of state is therefore <strong>exactly \(w = p/\rho c^2 = -1\)</strong> — constant in time and space. This negative pressure is what drives the accelerated expansion: from the second Friedmann equation,
+        \[\frac{\ddot{a}}{a} = -\frac{4\pi G}{3}\left(\rho + \frac{3p}{c^2}\right) + \frac{\Lambda}{3}\]
+        acceleration (\(\ddot{a} > 0\)) occurs when \(\Lambda/3 > (4\pi G/3)(\rho + 3p/c^2)\), which is satisfied when \(\Lambda\) dominates over matter.
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Key equations and properties</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--c1)"></div><div class="item-text"><strong>Friedmann equation with \(\Lambda\):</strong><br>\(H^2 = \frac{8\pi G}{3}\rho_m - \frac{k}{a^2} + \frac{\Lambda}{3}\)</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c1)"></div><div class="item-text"><strong>Energy density parameters:</strong><br>\(\Omega_m + \Omega_\Lambda + \Omega_k = 1\) where \(\Omega_\Lambda = \Lambda/(3H_0^2)\)</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c1)"></div><div class="item-text"><strong>Observed value (Planck 2018):</strong><br>\(\Omega_\Lambda \approx 0.685\), so \(\rho_\Lambda \approx 5.96 \times 10^{-27}\ \mathrm{kg\,m^{-3}}\)</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c1)"></div><div class="item-text"><strong>\(\Lambda\) does not dilute:</strong><br>\(\rho_\Lambda = \mathrm{const}\), while \(\rho_m \propto a^{-3}\) and \(\rho_r \propto a^{-4}\). This is why \(\Lambda\) dominates at late times.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c1)"></div><div class="item-text"><strong>de Sitter limit:</strong> When \(\Lambda\) fully dominates: \(a(t) \propto e^{Ht}\) with \(H = \sqrt{\Lambda/3}\) — exponential expansion forever</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 2 — THE COSMOLOGICAL CONSTANT PROBLEM ══ -->
+<div class="slide" data-color="#f43f5e">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--c3)">&#9679; Topic 2 &nbsp;&mdash;&nbsp; The cosmological constant problem</span>
+    <span class="slide-count">3 / 10</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--c3);height:40px"></div>
+      <div>
+        <div class="slide-title">The Cosmological Constant Problem</div>
+        <div class="slide-sub">The worst fine-tuning problem in all of physics — 120 orders of magnitude</div>
+      </div>
+    </div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">The old cosmological constant problem</div>
+      <div class="panel-body">
+        In quantum field theory, every field has a <strong>zero-point energy</strong> — vacuum fluctuations that contribute to the energy density of empty space. For a scalar field of mass \(m\), each mode \(k\) contributes \(\frac{1}{2}\hbar\omega_k\). Summing over all modes up to a cutoff \(\Lambda_{\rm UV}\):
+        \[\rho_{\rm vac}^{\rm QFT} \sim \frac{\Lambda_{\rm UV}^4}{16\pi^2 \hbar^3 c^3}\]
+        If we take the cutoff at the Planck scale \(\Lambda_{\rm UV} \sim m_{\mathrm{P}} c\):
+        \[\rho_{\rm vac}^{\rm QFT} \sim m_{\mathrm{P}}^4 c^3 / \hbar^3 \sim 10^{96}\ \mathrm{kg\,m^{-3}}\]
+        But the <strong>observed</strong> vacuum energy density from cosmology is:
+        \[\rho_\Lambda^{\rm obs} \approx 5.96 \times 10^{-27}\ \mathrm{kg\,m^{-3}}\]
+        The discrepancy is <strong>\(\sim 10^{123}\) orders of magnitude</strong> — the largest disagreement between theory and experiment in the history of physics (Weinberg 1989, Rev. Mod. Phys. 61, 1).<br><br>
+        Even using the electroweak scale \(\Lambda_{\rm UV} \sim 100\ \mathrm{GeV}\), the prediction is \(\sim 10^{55}\) times too large.
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">The new cosmological constant problem &amp; coincidence problem</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--c3)"></div><div class="item-text"><strong>The new problem (Weinberg 2000):</strong> Even if we accept \(\rho_\Lambda\) is small, why is it of the <em>same order</em> as \(\rho_m\) today? Since \(\rho_m \propto a^{-3}\) but \(\rho_\Lambda = \mathrm{const}\), they are equal only at one epoch — and we happen to live in it.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c3)"></div><div class="item-text"><strong>Coincidence problem:</strong> \(\Omega_\Lambda/\Omega_m \approx 2.2\) today. For most of cosmic history this ratio was either \(\sim 0\) (matter dominated) or \(\to \infty\) (far future). Why now?</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c3)"></div><div class="item-text"><strong>Five approaches (Weinberg 1989):</strong> (1) Symmetry principle forcing \(\Lambda = 0\), (2) Supersymmetry (boson-fermion cancellation), (3) Quintessence (dynamical DE), (4) Anthropic principle, (5) Quantum cosmology</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c3)"></div><div class="item-text"><strong>SUSY does not solve it:</strong> In exact SUSY, \(\rho_{\rm vac} = 0\) (bosons cancel fermions). But SUSY is broken at \(\Lambda_{\rm SUSY} \gtrsim 1\ \mathrm{TeV}\), so \(\rho_{\rm vac} \sim \Lambda_{\rm SUSY}^4 \sim 10^{60}\times\rho_\Lambda^{\rm obs}\)</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c3)"></div><div class="item-text"><strong>This problem is the primary motivation for dynamical dark energy</strong> — if DE is not \(\Lambda\) but a field that evolves, the coincidence problem may find a dynamical explanation</div></div>
+      </div>
+      <div class="openq"><strong>Key reference:</strong> Weinberg (1989), "The Cosmological Constant Problem", Rev. Mod. Phys. 61, 1 — the foundational paper. Also: Carroll (2001), "The Cosmological Constant", Living Rev. Relativity 4, 1.</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 3 — QUINTESSENCE: THE ACTION ══ -->
+<div class="slide" data-color="#60a5fa">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--c2)">&#9679; Topic 3 &nbsp;&mdash;&nbsp; Quintessence — the action and field equations</span>
+    <span class="slide-count">4 / 10</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--c2);height:40px"></div>
+      <div>
+        <div class="slide-title">Quintessence — From the Action</div>
+        <div class="slide-sub">A canonical scalar field \(\phi\) with potential \(V(\phi)\) — the simplest dynamical dark energy model</div>
+      </div>
+    </div>
+  </div>
+  <div class="fbox">
+    <div class="fbox-label">Action</div>
+    <div class="fbox-expr">\(\displaystyle S = \int d^4x\,\sqrt{-g}\left[\frac{R}{16\pi G} - \frac{1}{2}g^{\mu\nu}\partial_\mu\phi\,\partial_\nu\phi - V(\phi)\right] + S_m\)</div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">Derivation of the field equations</div>
+      <div class="panel-body">
+        The quintessence field \(\phi\) is a real scalar field minimally coupled to gravity with a canonical kinetic term. Varying the action with respect to \(\phi\) gives the <strong>Klein-Gordon equation</strong> in an expanding FLRW background:
+        \[\ddot\phi + 3H\dot\phi + V'(\phi) = 0\]
+        where \(V'(\phi) = dV/d\phi\) and \(H = \dot{a}/a\). The term \(3H\dot\phi\) is <strong>Hubble friction</strong> — the expansion of the universe slows the field's evolution.<br><br>
+        The energy-momentum tensor of the scalar field takes the form of a <strong>perfect fluid</strong>:
+        \[\rho_\phi = \frac{1}{2}\dot\phi^2 + V(\phi), \qquad p_\phi = \frac{1}{2}\dot\phi^2 - V(\phi)\]
+        The equation of state is therefore:
+        \[w_\phi = \frac{p_\phi}{\rho_\phi} = \frac{\dot\phi^2/2 - V(\phi)}{\dot\phi^2/2 + V(\phi)}\]
+        When the field rolls slowly (\(\dot\phi^2 \ll V\)): \(w_\phi \to -1\) — mimics a cosmological constant. When the kinetic energy dominates (\(\dot\phi^2 \gg V\)): \(w_\phi \to +1\) — stiff matter.<br><br>
+        For <strong>any</strong> canonical scalar field: \(-1 \leq w_\phi \leq +1\). Quintessence cannot cross the phantom divide \(w = -1\) — this is a fundamental theoretical constraint.
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Key equations — derive these from scratch</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--c2)"></div><div class="item-text"><strong>Klein-Gordon:</strong> \(\ddot\phi + 3H\dot\phi + V'(\phi) = 0\) — equation of motion for \(\phi\) in FLRW</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c2)"></div><div class="item-text"><strong>Friedmann with \(\phi\):</strong> \(H^2 = \frac{8\pi G}{3}\bigl[\rho_m + \frac{1}{2}\dot\phi^2 + V(\phi)\bigr]\) — scalar field enters on the right</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c2)"></div><div class="item-text"><strong>Continuity:</strong> \(\dot\rho_\phi + 3H(1 + w_\phi)\rho_\phi = 0\) — follows from \(\nabla_\mu T^{\mu\nu} = 0\)</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c2)"></div><div class="item-text"><strong>Slow-roll conditions:</strong> \(\dot\phi^2 \ll V(\phi)\) and \(\ddot\phi \ll 3H\dot\phi\) — then \(w_\phi \approx -1\) and \(3H\dot\phi \approx -V'(\phi)\)</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c2)"></div><div class="item-text"><strong>Slow-roll parameter:</strong> \(\epsilon_V = \frac{m_{\mathrm{P}}^2}{16\pi}\left(\frac{V'}{V}\right)^2 \ll 1\) — ensures \(w_\phi \approx -1 + \frac{2}{3}\epsilon_V\)</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c2)"></div><div class="item-text"><strong>Fundamental bound:</strong> \(-1 \leq w_\phi \leq +1\) for canonical scalar fields — no phantom crossing is possible</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 4 — QUINTESSENCE POTENTIALS ══ -->
+<div class="slide" data-color="#60a5fa">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--c2)">&#9679; Topic 4 &nbsp;&mdash;&nbsp; Quintessence potentials and their dynamics</span>
+    <span class="slide-count">5 / 10</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--c2);height:40px"></div>
+      <div>
+        <div class="slide-title">Quintessence Potentials</div>
+        <div class="slide-sub">The potential \(V(\phi)\) determines all the dynamics — here are the most studied forms</div>
+      </div>
+    </div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">The major quintessence potentials</div>
+      <div class="panel-body">
+        <strong>1. Exponential potential (Ratra &amp; Peebles 1988):</strong>
+        \[V(\phi) = V_0\, e^{-\lambda\phi/m_{\mathrm{P}}}\]
+        Has an exact <strong>scaling solution</strong> where \(\Omega_\phi\) tracks \(\Omega_m\) during matter domination with \(w_\phi = w_m\) if \(\lambda^2 > 3(1 + w_m)\). This naturally addresses the coincidence problem. Arises in string theory compactifications.<br><br>
+        <strong>2. Inverse power-law (Ratra &amp; Peebles 1988):</strong>
+        \[V(\phi) = M^{4+\alpha}\phi^{-\alpha}, \quad \alpha > 0\]
+        A <strong>tracker potential</strong> — solutions from very different initial conditions converge to a common evolutionary track. This removes the fine-tuning of initial conditions. The field freezes when \(V(\phi)\) flattens sufficiently.<br><br>
+        <strong>3. SUGRA potential (Brax &amp; Martin 1999):</strong>
+        \[V(\phi) = M^{4+\alpha}\phi^{-\alpha}\,e^{4\pi\phi^2/m_{\mathrm{P}}^2}\]
+        The exponential correction from supergravity causes the field to freeze earlier, bringing \(w_\phi\) closer to \(-1\) today.<br><br>
+        <strong>4. Hilltop / thawing potentials:</strong>
+        \[V(\phi) = V_0\bigl[1 + (\phi/\mu)^n\bigr]^{-1}\quad \text{or}\quad V(\phi) = V_0\bigl[1 - (\phi/f)^2 + \ldots\bigr]\]
+        The field is initially frozen at \(w \approx -1\) on a flat hilltop and only recently begins to roll (thaw).
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Tracking vs thawing — the two classes</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--c5)"></div><div class="item-text"><strong>Tracking (freezing) models:</strong> The field tracks the dominant energy component (\(\rho_r\) or \(\rho_m\)) during early epochs, then freezes at late times as \(V(\phi)\) flattens. The EoS <em>decreases</em> toward \(-1\). Examples: inverse power-law, exponential, SUGRA.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c5)"></div><div class="item-text"><strong>Thawing models:</strong> The field is frozen at \(w \approx -1\) early on (Hubble friction dominates). As \(H\) decreases, the field starts to roll and \(w\) <em>increases</em> away from \(-1\). Examples: hilltop, pseudo-Nambu-Goldstone boson (axion-like).</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c5)"></div><div class="item-text"><strong>Caldwell &amp; Linder (2005)</strong> showed these two classes occupy distinct regions in \((w_0, w_a)\) space. Thawing: \(w_a \approx -3(1 + w_0)\). Freezing: \(w_a \approx 3w_0(1 + w_0)\).</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c5)"></div><div class="item-text"><strong>Observational status (Planck 2018):</strong> Tracking freezing models are nearly indistinguishable from \(\Lambda\)CDM. Thawing models are constrained to \(w_0 < -0.7\) at 95% CL (Tsujikawa 2013 review).</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c5)"></div><div class="item-text"><strong>DESI 2024/2025 hint:</strong> The best-fit \(w_0 \approx -0.73\), \(w_a \approx -1.05\) — this is in the <em>thawing</em> region with phantom crossing, which is <strong>not possible</strong> for canonical quintessence. This motivates phantom or multi-field models.</div></div>
+      </div>
+      <div class="openq"><strong>Key references:</strong> Ratra &amp; Peebles (1988) PRD 37, 3406. Caldwell &amp; Linder (2005) PRL 95, 141301. Tsujikawa (2013) CQG 30, 214003 [arXiv:1304.1961].</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 5 — K-ESSENCE ══ -->
+<div class="slide" data-color="#a78bfa">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--c4)">&#9679; Topic 5 &nbsp;&mdash;&nbsp; k-essence — non-canonical kinetic terms</span>
+    <span class="slide-count">6 / 10</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--c4);height:40px"></div>
+      <div>
+        <div class="slide-title">k-Essence</div>
+        <div class="slide-sub">Generalising the kinetic term — dark energy from non-canonical scalar field dynamics</div>
+      </div>
+    </div>
+  </div>
+  <div class="fbox">
+    <div class="fbox-label">Action</div>
+    <div class="fbox-expr">\(\displaystyle S = \int d^4x\,\sqrt{-g}\left[\frac{R}{16\pi G} + \mathcal{L}(\phi, X)\right] + S_m, \qquad X \equiv -\tfrac{1}{2}g^{\mu\nu}\partial_\mu\phi\,\partial_\nu\phi\)</div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">The k-essence framework</div>
+      <div class="panel-body">
+        k-Essence generalises quintessence by allowing a <strong>non-canonical kinetic term</strong>. The Lagrangian is a general function \(\mathcal{L}(\phi, X)\) of the field \(\phi\) and its kinetic energy \(X = -\frac{1}{2}(\partial\phi)^2\). Quintessence is the special case \(\mathcal{L} = X - V(\phi)\).<br><br>
+        The energy density and pressure are:
+        \[\rho = 2X\mathcal{L}_X - \mathcal{L}, \qquad p = \mathcal{L}\]
+        where \(\mathcal{L}_X \equiv \partial\mathcal{L}/\partial X\). The equation of state is:
+        \[w = \frac{\mathcal{L}}{2X\mathcal{L}_X - \mathcal{L}}\]
+        The <strong>sound speed</strong> of perturbations is:
+        \[c_s^2 = \frac{\mathcal{L}_X}{\mathcal{L}_X + 2X\mathcal{L}_{XX}}\]
+        For quintessence: \(c_s^2 = 1\). For general k-essence: \(c_s^2\) can be different from 1, which modifies the growth of perturbations and the matter power spectrum.<br><br>
+        <strong>Stability requires:</strong> \(\mathcal{L}_X > 0\) (no ghosts) and \(c_s^2 > 0\) (no gradient instabilities). These are non-trivial constraints that restrict the allowed Lagrangians.
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Key facts and examples</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--c4)"></div><div class="item-text"><strong>DBI (Dirac-Born-Infeld) k-essence:</strong><br>\(\mathcal{L} = -f(\phi)^{-1}\sqrt{1 - 2f(\phi)X} + f(\phi)^{-1} - V(\phi)\)<br>Arises from D-brane dynamics in string theory. Sound speed: \(c_s^2 = 1 - 2fX\).</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c4)"></div><div class="item-text"><strong>Purely kinetic k-essence:</strong> \(\mathcal{L} = \mathcal{L}(X)\) only (no potential). Can produce tracking behaviour and late-time acceleration purely from kinetic energy dynamics.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c4)"></div><div class="item-text"><strong>Why it matters for your research:</strong> k-essence modifies the sound speed \(c_s\) of DE perturbations. This changes the ISW effect, the matter power spectrum \(P(k)\) at large scales, and the bispectrum — all directly relevant to Euclid and MegaMapper.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c4)"></div><div class="item-text"><strong>General framework:</strong> k-essence is a subset of <strong>Horndeski gravity</strong> — the most general scalar-tensor theory with second-order field equations (Horndeski 1974). The EFT of dark energy (Gubitosi, Piazza &amp; Vernizzi 2013) parametrises all such theories.</div></div>
+      </div>
+      <div class="openq"><strong>Key references:</strong> Armendariz-Picon et al. (2001) PRD 63, 103510 [arXiv:astro-ph/0006373]. Copeland, Sami &amp; Tsujikawa (2006) IJMPD 15, 1753 [arXiv:hep-th/0603057] — comprehensive DE review.</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 6 — PHANTOM DARK ENERGY ══ -->
+<div class="slide" data-color="#f472b6">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--c7)">&#9679; Topic 6 &nbsp;&mdash;&nbsp; Phantom dark energy (\(w < -1\))</span>
+    <span class="slide-count">7 / 10</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--c7);height:40px"></div>
+      <div>
+        <div class="slide-title">Phantom Dark Energy</div>
+        <div class="slide-sub">When the equation of state crosses the phantom divide \(w = -1\) — and why DESI hints at this</div>
+      </div>
+    </div>
+  </div>
+  <div class="fbox">
+    <div class="fbox-label">Phantom action</div>
+    <div class="fbox-expr">\(\displaystyle S_{\rm phantom} = \int d^4x\,\sqrt{-g}\left[\frac{R}{16\pi G} \,\mathbf{+}\, \frac{1}{2}g^{\mu\nu}\partial_\mu\phi\,\partial_\nu\phi - V(\phi)\right]\) &nbsp;&nbsp;(note the + sign on the kinetic term)</div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">What phantom dark energy is</div>
+      <div class="panel-body">
+        A phantom field has a <strong>wrong-sign kinetic term</strong>: the kinetic energy is \(-\frac{1}{2}\dot\phi^2\) instead of \(+\frac{1}{2}\dot\phi^2\). This gives:
+        \[\rho_\phi = -\frac{1}{2}\dot\phi^2 + V(\phi), \qquad p_\phi = -\frac{1}{2}\dot\phi^2 - V(\phi)\]
+        \[w_\phi = \frac{-\dot\phi^2/2 - V}{-\dot\phi^2/2 + V} = \frac{\dot\phi^2/2 + V}{\dot\phi^2/2 - V}\]
+        When \(V > \dot\phi^2/2\): \(w_\phi < -1\) — the phantom regime. The dark energy density <strong>grows</strong> with time: \(\rho_\phi \propto a^{-3(1+w)}\) with \(1 + w < 0\) means \(\rho_\phi\) increases as \(a\) grows.<br><br>
+        This leads to the <strong>Big Rip</strong>: the scale factor diverges in finite time:
+        \[t_{\rm rip} - t_0 = \frac{2}{3|1+w|H_0\sqrt{1-\Omega_m}}\]
+        At \(t_{\rm rip}\), the Hubble rate \(H \to \infty\), and gravitationally bound systems are torn apart.<br><br>
+        <strong>The fundamental problem:</strong> a wrong-sign kinetic term means the theory has a <strong>ghost instability</strong> — the vacuum is unstable. Quantum corrections drive the field to infinite energy in finite time. This makes single-field phantom models theoretically pathological.
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Phantom crossing and the quintom scenario</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--c7)"></div><div class="item-text"><strong>No-go theorem:</strong> A single canonical minimally coupled scalar field cannot cross \(w = -1\). Proof: at the crossing, \(\dot\phi = 0\) and the EoS is undefined (Vikman 2005).</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c7)"></div><div class="item-text"><strong>Quintom scenario (Feng et al. 2005):</strong> Use <em>two</em> fields — one quintessence (\(w > -1\)) and one phantom (\(w < -1\)). The combined EoS can smoothly cross \(w = -1\). \(\mathcal{L} = \frac{1}{2}(\partial\phi_1)^2 - \frac{1}{2}(\partial\phi_2)^2 - V(\phi_1, \phi_2)\).</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c7)"></div><div class="item-text"><strong>k-essence crossing:</strong> Non-canonical kinetic terms can achieve crossing without ghosts if \(c_s^2\) remains positive. This requires careful Lagrangian design.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c7)"></div><div class="item-text"><strong>Why DESI makes this critical:</strong> DESI DR1/DR2 best-fit CPL values \(w_0 \approx -0.73\), \(w_a \approx -1.05\) imply \(w(z)\) was <em>phantom</em> at \(z \gtrsim 0.5\) and is <em>quintessence</em> today. This requires phantom crossing — ruling out single-field quintessence.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c7)"></div><div class="item-text"><strong>EFT approach:</strong> The EFT of dark energy (Bellini &amp; Sawicki 2014) parametrises all stable theories that can cross \(w = -1\) without invoking explicit ghost fields — currently the preferred theoretical framework.</div></div>
+      </div>
+      <div class="openq"><strong>Key references:</strong> Caldwell (2002) PLB 545, 23 (phantom DE). Feng et al. (2005) PLB 607, 35 (quintom). Vikman (2005) PRD 71, 023515 (no-go theorem).</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 7 — THE CPL PARAMETRISATION ══ -->
+<div class="slide" data-color="#fb923c">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--c6)">&#9679; Topic 7 &nbsp;&mdash;&nbsp; The Chevallier-Polarski-Linder (CPL) parametrisation</span>
+    <span class="slide-count">8 / 10</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--c6);height:40px"></div>
+      <div>
+        <div class="slide-title">The CPL Parametrisation</div>
+        <div class="slide-sub">The standard two-parameter model for the dark energy equation of state — used by DESI, Euclid, and all surveys</div>
+      </div>
+    </div>
+  </div>
+  <div class="fbox">
+    <div class="fbox-label">CPL equation of state</div>
+    <div class="fbox-expr">\(\displaystyle w(a) = w_0 + w_a(1-a) = w_0 + w_a\frac{z}{1+z}\)</div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">Complete derivation of the background equations</div>
+      <div class="panel-body">
+        <strong>Step 1 — EoS definition:</strong> \(w(a) = w_0 + w_a(1-a)\), where \(w_0 = w(a=1)\) is the present value and \(w_a = -dw/da|_{a=1}\) is the derivative at the present epoch. Proposed by Chevallier &amp; Polarski (2001, IJMPD 10, 213) and Linder (2003, PRL 90, 091301).<br><br>
+        <strong>Step 2 — Dark energy density:</strong> From the continuity equation \(\dot\rho_{\rm de} + 3H(1+w)\rho_{\rm de} = 0\), changing variable to \(a\):
+        \[\frac{d\rho_{\rm de}}{\rho_{\rm de}} = -3\frac{1+w(a)}{a}\,da\]
+        Integrating from \(a\) to 1 with \(w(a') = w_0 + w_a(1-a')\):
+        \[\rho_{\rm de}(a) = \rho_{\rm de,0}\, a^{-3(1+w_0+w_a)}\, e^{-3w_a(1-a)}\]
+        This is exact. Note the mixed power-law and exponential dependence.<br><br>
+        <strong>Step 3 — Friedmann equation:</strong> For a flat universe:
+        \[H^2(a) = H_0^2\left[\Omega_m\,a^{-3} + (1-\Omega_m)\,a^{-3(1+w_0+w_a)}\,e^{-3w_a(1-a)}\right]\]
+        \(\Lambda\)CDM is recovered at \(w_0 = -1, w_a = 0\). \(w\)CDM is \(w_a = 0\).<br><br>
+        <strong>Step 4 — Limits:</strong> At \(a \to 0\) (early times): \(w \to w_0 + w_a\). At \(a = 1\) (today): \(w = w_0\). The EoS evolves monotonically from \(w_0 + w_a\) to \(w_0\).
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Properties and interpretation</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--c6)"></div><div class="item-text"><strong>\(w_0\) meaning:</strong> The dark energy equation of state today. \(w_0 = -1\) is \(\Lambda\)CDM. \(w_0 > -1\) is quintessence-like. \(w_0 < -1\) is phantom-like.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c6)"></div><div class="item-text"><strong>\(w_a\) meaning:</strong> The rate of change of \(w\) with scale factor at the present. \(w_a > 0\) means \(w\) was more negative in the past (phantom → quintessence). \(w_a < 0\) means \(w\) was less negative in the past (quintessence → phantom).</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c6)"></div><div class="item-text"><strong>Phantom crossing:</strong> Occurs when \(w = -1\) at some \(a_*\), i.e. \(a_* = 1 + (1+w_0)/w_a\). The DESI best-fit implies crossing at \(z \approx 0.5\).</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c6)"></div><div class="item-text"><strong>Limitation at high \(z\):</strong> As \(a \to 0\), \(w \to w_0 + w_a\) which can be very negative. This causes unphysical dark energy domination at early times. The CPL form is reliable only for \(z \lesssim 2\text{–}3\).</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c6)"></div><div class="item-text"><strong>Mapping to quintessence:</strong> Thawing models cluster near \(w_a \approx -3(1+w_0)\). Freezing models near \(w_a \approx 3w_0(1+w_0)\) (Caldwell &amp; Linder 2005).</div></div>
+      </div>
+      <div class="openq"><strong>Key references:</strong> Chevallier &amp; Polarski (2001) IJMPD 10, 213 [gr-qc/0009008]. Linder (2003) PRL 90, 091301 [astro-ph/0208512]. Scherrer (2015) PRD 92, 043001 [arXiv:1505.05781].</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 8 — w0waCDM MODEL ══ -->
+<div class="slide" data-color="#34d399">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--c8)">&#9679; Topic 8 &nbsp;&mdash;&nbsp; The \(w_0 w_a\)CDM model — full cosmological framework</span>
+    <span class="slide-count">9 / 10</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--c8);height:40px"></div>
+      <div>
+        <div class="slide-title">The \(w_0 w_a\)CDM Model</div>
+        <div class="slide-sub">The full 8-parameter cosmological model used by DESI, Euclid, and next-generation surveys</div>
+      </div>
+    </div>
+  </div>
+  <div class="metrics-row">
+    <div class="metric"><div class="metric-label">Parameters</div><div class="metric-val">8: \(\Omega_b h^2, \Omega_c h^2, \theta_*, \tau, n_s, A_s, w_0, w_a\)</div></div>
+    <div class="metric"><div class="metric-label">\(\Lambda\)CDM limit</div><div class="metric-val">\(w_0 = -1,\ w_a = 0\)</div></div>
+    <div class="metric"><div class="metric-label">\(w\)CDM limit</div><div class="metric-val">\(w_a = 0\)</div></div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">The complete \(w_0 w_a\)CDM equations</div>
+      <div class="panel-body">
+        <strong>Background expansion:</strong>
+        \[H^2(z) = H_0^2\bigl[\Omega_r(1+z)^4 + \Omega_m(1+z)^3 + \Omega_{\rm de}(z)\bigr]\]
+        with the dark energy density:
+        \[\Omega_{\rm de}(z) = (1 - \Omega_m - \Omega_r)(1+z)^{3(1+w_0+w_a)}\exp\!\left[\frac{-3w_a z}{1+z}\right]\]
+        <strong>Distances:</strong>
+        \[d_C(z) = c\int_0^z \frac{dz'}{H(z')}, \quad d_A(z) = \frac{d_C(z)}{1+z}, \quad d_L(z) = (1+z)\,d_C(z)\]
+        <strong>Growth of structure:</strong> In the linear regime,
+        \[\delta''(\ln a) + \left(2 + \frac{H'}{H}\right)\delta'(\ln a) - \frac{3}{2}\Omega_m(a)\,\delta = 0\]
+        where \(\Omega_m(a) = \Omega_{m,0}\,a^{-3}/E^2(a)\) and \(E(a) = H(a)/H_0\). The growth rate \(f = d\ln\delta/d\ln a\) is modified by the changing DE density.<br><br>
+        <strong>Key observables that constrain \(w_0, w_a\):</strong> BAO measures \(d_A(z)/r_s\) and \(H(z)r_s\) at multiple redshifts. SNIa measure \(d_L(z)\). CMB measures \(d_A(z_*)\) and \(\theta_* = r_s/d_A(z_*)\). RSD measures \(f\sigma_8(z)\). Weak lensing measures \(\sigma_8(\Omega_m/0.3)^{0.5}\).
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">How each probe constrains the model</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--c8)"></div><div class="item-text"><strong>BAO (DESI, BOSS, eBOSS):</strong> Measures \(D_M(z)/r_d\) and \(D_H(z)/r_d\) at \(z = 0.3\text{–}4.2\). Constrains \(H(z)\) hence \(w_0, w_a\). DESI DR2 rejects \(\Lambda\)CDM at \(2.8\text{–}4.2\sigma\) depending on SNe dataset.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c8)"></div><div class="item-text"><strong>Type Ia Supernovae (Pantheon+, DESY5, Union3):</strong> Standard candles measuring \(d_L(z)\). Combined with BAO breaks the \(\Omega_m\)–\(w_0\) degeneracy. Different SNe compilations give different tension levels with \(\Lambda\)CDM.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c8)"></div><div class="item-text"><strong>CMB (Planck, ACT, SPT):</strong> Constrains \(\Omega_b h^2\), \(\Omega_c h^2\), \(\theta_*\), \(\tau\) precisely. Provides the early-universe anchor. Combined with BAO+SNIa determines \(w_0, w_a\).</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c8)"></div><div class="item-text"><strong>RSD (\(f\sigma_8\)):</strong> Galaxy redshift surveys measure the growth rate \(f\sigma_8(z)\) from anisotropic clustering. In \(w_0 w_a\)CDM, growth is modified — \(f\sigma_8\) is a powerful discriminator between \(\Lambda\)CDM and DDE.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c8)"></div><div class="item-text"><strong>Power spectrum turnover \(k_0\):</strong> Your work — the turnover encodes \(\Omega_m h\), which changes when dark energy modifies \(H(z)\) at matter-radiation equality. DDM further modifies this via changed DM density evolution.</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 9 — SUMMARY ══ -->
+<div class="slide" data-color="#818cf8">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--c9)">&#9679; Summary — All dark energy models at a glance</span>
+    <span class="slide-count">10 / 10</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--c9);height:40px"></div>
+      <div>
+        <div class="slide-title">Summary — Dark Energy Theory</div>
+        <div class="slide-sub">Every model from this Part 1, compared side by side — master these before moving to Part 2</div>
+      </div>
+    </div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">The six dark energy frameworks — hierarchy</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--c1)"></div><div class="item-text"><strong>\(\Lambda\)CDM:</strong> \(w = -1\) exactly. Constant \(\rho_\Lambda\). 6 parameters. Fine-tuning: \(10^{123}\). Coincidence problem. Simplest model. Consistent with most data. DESI DR2 rejects at \(2.8\text{–}4.2\sigma\).</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c2)"></div><div class="item-text"><strong>Quintessence:</strong> \(-1 < w_\phi \leq +1\). Canonical scalar \(\phi\) with \(V(\phi)\). Two classes: tracking (freezing) and thawing. Cannot cross \(w = -1\). Sound speed \(c_s = 1\).</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c4)"></div><div class="item-text"><strong>k-Essence:</strong> General \(\mathcal{L}(\phi, X)\). Non-canonical kinetic term. Allows \(c_s \neq 1\). DBI from string theory. Modifies perturbation growth. Subset of Horndeski gravity.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c7)"></div><div class="item-text"><strong>Phantom:</strong> \(w < -1\). Wrong-sign kinetic term. Ghost instability. Energy grows. Big Rip in finite time. Single-field phantom is pathological.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c3)"></div><div class="item-text"><strong>Quintom:</strong> Two fields (\(\phi_1\) quintessence + \(\phi_2\) phantom). Can cross \(w = -1\) smoothly. Matches DESI best-fit. More parameters. Stability must be checked.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c6)"></div><div class="item-text"><strong>CPL / \(w_0 w_a\)CDM:</strong> Phenomenological. \(w(a) = w_0 + w_a(1-a)\). 8 parameters. Standard DESI/Euclid analysis framework. Not tied to a specific theory — it parametrises ignorance.</div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">What you must be able to do after Part 1</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--c9)"></div><div class="item-text"><strong>Derive</strong> the quintessence Klein-Gordon equation from the action</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c9)"></div><div class="item-text"><strong>Derive</strong> \(\rho_\phi\), \(p_\phi\), and \(w_\phi\) for both quintessence and phantom fields</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c9)"></div><div class="item-text"><strong>Derive</strong> \(\rho_{\rm de}(a)\) from the CPL continuity equation — the full exponential result</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c9)"></div><div class="item-text"><strong>Explain</strong> why canonical quintessence cannot cross \(w = -1\) (no-go theorem)</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c9)"></div><div class="item-text"><strong>State</strong> the cosmological constant problem quantitatively: \(\rho_{\rm vac}^{\rm QFT} / \rho_\Lambda^{\rm obs} \sim 10^{123}\)</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c9)"></div><div class="item-text"><strong>Write</strong> the full \(w_0 w_a\)CDM Friedmann equation and identify how each probe constrains \(w_0\) and \(w_a\)</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c9)"></div><div class="item-text"><strong>Identify</strong> where the DESI best-fit sits in the \((w_0, w_a)\) plane relative to quintessence, phantom, and \(\Lambda\)CDM</div></div>
+      </div>
+      <div class="openq"><strong>Next:</strong> Part 2 covers the DESI DR1/DR2 observational results, current constraints from CMB + BAO + SNIa + WL, and the complete reading list with all arXiv links.</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+</div><!-- /deck -->
+
+<script>
+const canvas=document.getElementById('stars'),ctx=canvas.getContext('2d');
+let W,H,stars=[];
+function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight}
+function makeStars(){stars=Array.from({length:240},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.3+0.2,o:Math.random()*0.5+0.1,sp:Math.random()*0.007+0.002,ph:Math.random()*Math.PI*2}))}
+function draw(t){ctx.clearRect(0,0,W,H);stars.forEach(s=>{const o=Math.max(0,Math.min(1,s.o+Math.sin(t*s.sp+s.ph)*0.12));ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(180,210,255,${o.toFixed(2)})`;ctx.fill()});requestAnimationFrame(draw)}
+resize();makeStars();
+window.addEventListener('resize',()=>{resize();makeStars()});
+requestAnimationFrame(draw);
+
+const slides=Array.from(document.querySelectorAll('.slide'));
+const colors=slides.map(s=>s.dataset.color||'#60a5fa');
+const bar=document.getElementById('progress-bar');
+const dotsEl=document.getElementById('dots');
+let cur=0;
+slides.forEach((_,i)=>{const d=document.createElement('div');d.className='dot'+(i===0?' active':'');d.style.background=i===0?colors[0]:'';d.onclick=()=>go(i);dotsEl.appendChild(d)});
+const dotEls=Array.from(dotsEl.querySelectorAll('.dot'));
+function go(n){
+  if(n<0||n>=slides.length)return;
+  slides[cur].classList.remove('active');dotEls[cur].classList.remove('active');dotEls[cur].style.background='';
+  cur=n;
+  slides[cur].classList.add('active');dotEls[cur].classList.add('active');dotEls[cur].style.background=colors[cur];
+  bar.style.width=((cur/(slides.length-1))*100)+'%';bar.style.background=colors[cur];
+  if(window.MathJax&&MathJax.typesetPromise)MathJax.typesetPromise([slides[cur]]).catch(()=>{});
+}
+document.getElementById('prev').onclick=()=>go(cur-1);
+document.getElementById('next').onclick=()=>go(cur+1);
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown')go(cur+1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(cur-1)});
+bar.style.width='0%';bar.style.background=colors[0];
+</script>
+</body>
+</html>
