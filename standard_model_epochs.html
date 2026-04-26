@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Epochs of the Standard Model — PhD Cosmology Reference</title>
+
+<script>
+MathJax = {
+  tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']], packages: {'[+]':['ams']} },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] },
+  startup: { ready() { MathJax.startup.defaultReady(); } }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ── RESET & BASE ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; }
+
+:root {
+  --bg:     #06080f;
+  --bg2:    #0d1525;
+  --bg3:    #121e33;
+  --bg4:    #1a2a45;
+  --border:  rgba(140,180,255,.13);
+  --border2: rgba(140,180,255,.25);
+  --text:   #dde6f5;
+  --muted:  #8399bb;
+  --dim:    #4a5e7a;
+  /* epoch accent colours */
+  --e0: #c084fc;
+  --e1: #f97316;
+  --e2: #06b6d4;
+  --e3: #f43f5e;
+  --e4: #eab308;
+  --e5: #22c55e;
+  --e6: #60a5fa;
+  --e7: #a78bfa;
+  --e8: #f472b6;
+  --e9: #34d399;
+  --e10:#fb923c;
+  --e11:#818cf8;
+  --e12:#dde6f5;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 300;
+}
+
+mjx-container { color: var(--text) !important; max-width: 100%; }
+mjx-container[display="true"] { overflow-x: visible !important; white-space: normal !important; margin: 0.3rem 0 !important; }
+
+#stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+/* ── SLIDE SYSTEM ── */
+.deck { position: fixed; inset: 0; z-index: 1; }
+.slide {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  opacity: 0; pointer-events: none;
+  transition: opacity .35s ease; overflow: hidden;
+}
+.slide.active { opacity: 1; pointer-events: all; }
+
+/* ── PROGRESS BAR ── */
+#progress-bar {
+  position: fixed; top: 0; left: 0; height: 3px;
+  background: var(--e6); z-index: 200;
+  transition: width .3s ease, background .3s ease;
+}
+
+/* ── DOTS ── */
+#dots {
+  position: fixed; bottom: 20px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; gap: 7px; z-index: 200;
+}
+.dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--border2); cursor: pointer;
+  transition: background .2s, transform .2s;
+}
+.dot.active { transform: scale(1.5); }
+
+/* ── ARROWS ── */
+.arrow {
+  position: fixed; top: 50%; transform: translateY(-50%);
+  z-index: 200; background: var(--bg2);
+  border: .5px solid var(--border2); border-radius: 50%;
+  width: 38px; height: 38px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--muted); font-size: 15px;
+  transition: background .2s, color .2s;
+}
+.arrow:hover { background: var(--bg3); color: var(--text); }
+#prev { left: 14px; }
+#next { right: 14px; }
+
+/* ── SLIDE INNER ── */
+.slide-inner {
+  flex: 1; display: flex; flex-direction: column;
+  padding: 28px 56px 60px;
+  max-width: 1080px; margin: 0 auto; width: 100%;
+  overflow: hidden; min-height: 0; height: 100%;
+}
+
+/* ── HEADER ROW ── */
+.slide-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 11px; flex-shrink: 0;
+}
+.slide-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--dim);
+}
+.slide-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--dim);
+}
+
+/* ── TITLE BLOCK ── */
+.title-block { margin-bottom: 11px; flex-shrink: 0; }
+.accent-line { display: flex; align-items: center; gap: 13px; }
+.accent-bar { width: 4px; border-radius: 2px; flex-shrink: 0; }
+.slide-title {
+  font-family: 'Crimson Pro', serif;
+  font-size: clamp(1.55rem, 3vw, 2.4rem);
+  font-weight: 400; line-height: 1.15; color: var(--text);
+}
+.slide-sub {
+  font-size: clamp(11.5px, 1.3vw, 13.5px);
+  color: var(--muted); margin-top: 3px; font-weight: 300;
+}
+
+/* ── METRICS ROW ── */
+.metrics-row {
+  display: flex; gap: 7px; flex-wrap: wrap;
+  margin-bottom: 10px; flex-shrink: 0;
+}
+.metric {
+  background: var(--bg2); border: .5px solid var(--border);
+  border-radius: 8px; padding: 5px 12px;
+  display: flex; flex-direction: column; gap: 2px; overflow: hidden;
+}
+.metric-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 7.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--dim);
+}
+.metric-val { font-size: clamp(10.5px,1.25vw,12.5px); color: var(--text); }
+
+/* ── TWO-COLUMN CONTENT ── */
+.content-grid {
+  display: grid; grid-template-columns: 1.1fr 1fr;
+  gap: 10px; flex: 1; min-height: 0; overflow: hidden;
+}
+
+/* ── PANEL ── */
+.panel {
+  background: var(--bg2); border: .5px solid var(--border);
+  border-radius: 14px; padding: 13px 15px;
+  display: flex; flex-direction: column; gap: 7px;
+  min-height: 0; overflow: hidden; height: 100%;
+}
+.panel-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--dim); flex-shrink: 0;
+}
+.panel-body {
+  font-family: 'Crimson Pro', serif;
+  font-size: clamp(12.5px, 1.45vw, 14.5px);
+  font-weight: 300; color: var(--muted); line-height: 1.7;
+  flex: 1; overflow: hidden; min-height: 0;
+}
+.panel-body strong { color: var(--text); font-weight: 400; }
+.panel-body em { font-style: italic; }
+
+/* ── FACTS LIST ── */
+.facts-list {
+  display: flex; flex-direction: column; gap: 5px;
+  flex: 1; overflow: hidden; min-height: 0;
+}
+.fact-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  background: var(--bg3); border: .5px solid var(--border);
+  border-radius: 8px; padding: 7px 10px;
+  flex-shrink: 0; overflow: hidden;
+}
+.fact-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+.fact-text {
+  font-size: clamp(11px, 1.25vw, 12.5px);
+  color: var(--muted); line-height: 1.5; overflow: hidden;
+}
+.fact-text strong { color: var(--text); font-weight: 500; }
+
+/* ── OPEN Q ── */
+.openq {
+  border-left: 2px solid var(--border2);
+  padding: 7px 12px; flex-shrink: 0; overflow: hidden;
+  font-size: clamp(10.5px, 1.15vw, 12px);
+  color: var(--dim); font-style: italic; line-height: 1.55;
+}
+.openq strong { color: var(--muted); font-style: normal; font-weight: 400; }
+
+/* ── COVER ── */
+.cover {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; gap: 18px; padding: 40px 60px;
+}
+.cover-kicker {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--dim);
+  display: flex; align-items: center; gap: 12px;
+}
+.cover-kicker::before, .cover-kicker::after {
+  content: ''; width: 36px; height: 1px; background: var(--border2); display: inline-block;
+}
+.cover h1 {
+  font-family: 'Crimson Pro', serif;
+  font-size: clamp(2.4rem, 6vw, 4.4rem);
+  font-weight: 400; line-height: 1.1; color: var(--text);
+}
+.cover h1 em { font-style: italic; color: #fbbf24; }
+.cover-sub {
+  font-size: clamp(13px, 1.6vw, 15px);
+  color: var(--muted); max-width: 560px; line-height: 1.7;
+}
+.epoch-pills { display: flex; flex-wrap: wrap; gap: 7px; justify-content: center; max-width: 720px; }
+.epill {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; letter-spacing: .1em; text-transform: uppercase;
+  padding: 4px 11px; border-radius: 100px; border: .5px solid;
+}
+.cover-hint {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; color: var(--dim); letter-spacing: .1em;
+}
+
+/* ── SUMMARY TABLE ── */
+.sum-wrap {
+  flex: 1; background: var(--bg2); border: .5px solid var(--border2);
+  border-radius: 14px; overflow: hidden; min-height: 0;
+}
+.sum-table { width: 100%; border-collapse: collapse; }
+.sum-table th {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5px; letter-spacing: .13em; text-transform: uppercase;
+  color: var(--dim); padding: 8px 12px;
+  background: var(--bg3); border-bottom: .5px solid var(--border2); text-align: left;
+}
+.sum-table td {
+  font-size: clamp(11px, 1.25vw, 12.5px);
+  color: var(--muted); padding: 6px 12px;
+  border-bottom: .5px solid var(--border); vertical-align: middle; line-height: 1.4;
+}
+.sum-table tr:last-child td { border-bottom: none; }
+.edot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 7px; vertical-align: middle; }
+
+/* ── FOOTER ── */
+.slide-footer {
+  flex-shrink: 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5px; color: var(--dim); letter-spacing: .08em;
+  text-align: center; padding: 5px 0 0;
+  border-top: .5px solid var(--border); margin-top: 8px;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+.slide.active .slide-inner > * { animation: fadeUp .42s ease both; }
+.slide.active .slide-inner > *:nth-child(1){animation-delay:.04s}
+.slide.active .slide-inner > *:nth-child(2){animation-delay:.09s}
+.slide.active .slide-inner > *:nth-child(3){animation-delay:.14s}
+.slide.active .slide-inner > *:nth-child(4){animation-delay:.19s}
+.slide.active .slide-inner > *:nth-child(5){animation-delay:.24s}
+.slide.active .slide-inner > *:nth-child(6){animation-delay:.29s}
+
+::-webkit-scrollbar { display: none; }
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+<div id="progress-bar"></div>
+<div id="dots"></div>
+<button class="arrow" id="prev">&#8592;</button>
+<button class="arrow" id="next">&#8594;</button>
+<div class="deck" id="deck">
+
+<!-- ══ SLIDE 0 — COVER ══ -->
+<div class="slide active" data-color="#a78bfa">
+<div class="cover">
+  <div class="cover-kicker">PhD Cosmology Reference &nbsp;·&nbsp; Standard Model Cosmology</div>
+  <h1>Epochs of the<br><em>Standard Model</em></h1>
+  <p class="cover-sub">From the quantum gravity wall at \(t \approx 10^{-43}\ \mathrm{s}\) to the dark-energy-dominated universe today — every epoch, every phase transition, every open question.</p>
+  <div class="epoch-pills">
+    <span class="epill" style="color:var(--e0);border-color:var(--e0)">Planck</span>
+    <span class="epill" style="color:var(--e1);border-color:var(--e1)">GUT</span>
+    <span class="epill" style="color:var(--e2);border-color:var(--e2)">Inflation</span>
+    <span class="epill" style="color:var(--e3);border-color:var(--e3)">Electroweak</span>
+    <span class="epill" style="color:var(--e4);border-color:var(--e4)">QCD &amp; BBN</span>
+    <span class="epill" style="color:var(--e5);border-color:var(--e5)">Lepton epoch</span>
+    <span class="epill" style="color:var(--e6);border-color:var(--e6)">Photon dom.</span>
+    <span class="epill" style="color:var(--e7);border-color:var(--e7)">Matter dom.</span>
+    <span class="epill" style="color:var(--e8);border-color:var(--e8)">Recombination</span>
+    <span class="epill" style="color:var(--e9);border-color:var(--e9)">Dark Ages</span>
+    <span class="epill" style="color:var(--e10);border-color:var(--e10)">Reionisation</span>
+    <span class="epill" style="color:var(--e11);border-color:var(--e11)">Dark Energy</span>
+    <span class="epill" style="color:var(--e12);border-color:rgba(221,230,245,.3)">Today</span>
+  </div>
+  <div class="cover-hint">15 slides &nbsp;·&nbsp; Arrow keys &#8592; &#8594; or buttons to navigate</div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 1 — PLANCK ══ -->
+<div class="slide" data-color="#c084fc">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--e0)">&#9679; Epoch 1 &nbsp;&mdash;&nbsp; Planck epoch</span>
+    <span class="slide-count">2 / 15</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--e0);height:44px"></div>
+      <div>
+        <div class="slide-title">The Planck Epoch</div>
+        <div class="slide-sub">The quantum gravity wall — the boundary of all known physics</div>
+      </div>
+    </div>
+  </div>
+  <div class="metrics-row">
+    <div class="metric"><div class="metric-label">Time</div><div class="metric-val">\(0 \to 10^{-43}\ \mathrm{s}\)</div></div>
+    <div class="metric"><div class="metric-label">Temperature</div><div class="metric-val">\(T > 10^{32}\ \mathrm{K}\)</div></div>
+    <div class="metric"><div class="metric-label">Energy scale</div><div class="metric-val">\(E > 10^{19}\ \mathrm{GeV}\)</div></div>
+    <div class="metric"><div class="metric-label">Density</div><div class="metric-val">\(\rho \sim 10^{96}\ \mathrm{kg\,m}^{-3}\)</div></div>
+    <div class="metric"><div class="metric-label">Forces</div><div class="metric-val">All 4 unified</div></div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">What happens</div>
+      <div class="panel-body">
+        This is the <strong>wall beyond which physics breaks down.</strong> General relativity predicts a singularity — infinite density and curvature. Quantum field theory requires a fixed background spacetime, which does not exist here.<br><br>
+        Spacetime itself is a <strong>quantum foam</strong> — topology fluctuates wildly on scales of \(\ell_{\mathrm{P}} \approx 10^{-35}\ \mathrm{m}\). Virtual black holes of mass \(m_{\mathrm{P}}\) form and evaporate every \(t_{\mathrm{P}} \approx 10^{-43}\ \mathrm{s}\).<br><br>
+        All four fundamental forces — gravity, electromagnetism, the strong force, and the weak force — are unified into a single <strong>superforce</strong>. The gravitational coupling \(\alpha_{\rm grav}(E) = (E/E_{\mathrm{P}})^2 = 1\) — gravity is as strong as all other interactions.
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Key facts &amp; open questions</div>
+      <div class="facts-list">
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e0)"></div><div class="fact-text">Candidate theories: <strong>String theory</strong>, <strong>Loop quantum gravity (LQG)</strong>, <strong>Causal set theory</strong> — none yet confirmed experimentally</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e0)"></div><div class="fact-text">In LQG: the Big Bang is a <strong>Big Bounce</strong> — the singularity is replaced by a prior contracting phase at Planck density \(\rho_{\rm Pl} \sim 10^{96}\ \mathrm{kg\,m}^{-3}\)</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e0)"></div><div class="fact-text">In the <strong>Hartle–Hawking no-boundary proposal</strong>: time becomes imaginary near \(t = 0\), removing the singularity — the universe has no beginning in the conventional sense</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e0)"></div><div class="fact-text"><strong>Trans-Planckian problem:</strong> inflationary modes with \(k \gg k_{\mathrm{P}}\) today originated sub-Planckian — their initial state may imprint on \(P(k)\)</div></div>
+      </div>
+      <div class="openq"><strong>Open question:</strong> Does the universe have a true beginning at \(t = 0\)? This is the deepest unanswered question in all of physics.</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 2 — GUT ══ -->
+<div class="slide" data-color="#f97316">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--e1)">&#9679; Epoch 2 &nbsp;&mdash;&nbsp; Grand Unification epoch</span>
+    <span class="slide-count">3 / 15</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--e1);height:44px"></div>
+      <div>
+        <div class="slide-title">Grand Unification Epoch</div>
+        <div class="slide-sub">Gravity separates — the first phase transition in cosmic history</div>
+      </div>
+    </div>
+  </div>
+  <div class="metrics-row">
+    <div class="metric"><div class="metric-label">Time</div><div class="metric-val">\(10^{-43} \to 10^{-36}\ \mathrm{s}\)</div></div>
+    <div class="metric"><div class="metric-label">Temperature</div><div class="metric-val">\(10^{29} \to 10^{32}\ \mathrm{K}\)</div></div>
+    <div class="metric"><div class="metric-label">Energy scale</div><div class="metric-val">\(10^{15} \to 10^{19}\ \mathrm{GeV}\)</div></div>
+    <div class="metric"><div class="metric-label">Forces</div><div class="metric-val">Gravity + GUT (3 unified)</div></div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">What happens</div>
+      <div class="panel-body">
+        As the universe cools past \(T_{\mathrm{P}}\), <strong>gravity separates</strong> from the other three forces — the first symmetry breaking in cosmic history. Gravity becomes the distinct, weak, long-range force we know today.<br><br>
+        The three remaining forces stay unified in a single <strong>Grand Unified Theory (GUT)</strong> interaction, described by a gauge group such as \(\mathrm{SU}(5)\), \(\mathrm{SO}(10)\), or \(E_6\). The GUT symmetry then breaks:
+        \[\mathcal{G}_{\rm GUT} \;\longrightarrow\; \mathrm{SU}(3)_c \times \mathrm{SU}(2)_L \times \mathrm{U}(1)_Y\]
+        giving us the Standard Model gauge group.<br><br>
+        <strong>Leptogenesis</strong> may generate the baryon asymmetry \(\eta_B = n_B/n_\gamma \approx 6\times10^{-10}\) — responsible for all matter we observe.
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Key facts &amp; open questions</div>
+      <div class="facts-list">
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e1)"></div><div class="fact-text">GUT theories predict <strong>proton decay</strong> at rate \(\Gamma_p \propto M_{\rm GUT}^{-4}\) — not yet observed at Super-Kamiokande (limit: \(\tau_p > 1.6\times10^{34}\ \mathrm{yr}\))</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e1)"></div><div class="fact-text">GUT symmetry breaking produces <strong>magnetic monopoles</strong> predicted to be superheavy (\(m_M \sim M_{\rm GUT}/\alpha_{\rm GUT}\)) — inflation dilutes them to undetectable levels</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e1)"></div><div class="fact-text"><strong>Sakharov conditions</strong> for baryogenesis: (1) baryon number violation, (2) C and CP violation, (3) departure from thermal equilibrium — all must hold simultaneously</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e1)"></div><div class="fact-text">The three gauge couplings \(\alpha_1\), \(\alpha_2\), \(\alpha_3\) nearly unify at \(E_{\rm GUT} \sim 10^{15}\ \mathrm{GeV}\) in the MSSM (with supersymmetry) but not in the Standard Model alone</div></div>
+      </div>
+      <div class="openq"><strong>Open question:</strong> What is the correct GUT gauge group? Why has proton decay not been observed? These are among the deepest unsolved problems in particle physics.</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 3 — INFLATION ══ -->
+<div class="slide" data-color="#06b6d4">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--e2)">&#9679; Epoch 3 &nbsp;&mdash;&nbsp; Inflation</span>
+    <span class="slide-count">4 / 15</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--e2);height:44px"></div>
+      <div>
+        <div class="slide-title">Inflation</div>
+        <div class="slide-sub">Exponential expansion — seeds every structure in the universe</div>
+      </div>
+    </div>
+  </div>
+  <div class="metrics-row">
+    <div class="metric"><div class="metric-label">Time</div><div class="metric-val">\(\sim 10^{-36} \to 10^{-32}\ \mathrm{s}\)</div></div>
+    <div class="metric"><div class="metric-label">Expansion</div><div class="metric-val">\(\geq 10^{26}\times\)</div></div>
+    <div class="metric"><div class="metric-label">Scale factor</div><div class="metric-val">\(a(t) \propto e^{Ht}\)</div></div>
+    <div class="metric"><div class="metric-label">Hubble rate</div><div class="metric-val">\(H^2 = V(\phi)/3m_{\mathrm{P}}^2\)</div></div>
+    <div class="metric"><div class="metric-label">Energy scale</div><div class="metric-val">\(\sim 10^{15}\text{–}10^{16}\ \mathrm{GeV}\)</div></div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">What happens</div>
+      <div class="panel-body">
+        A scalar field — the <strong>inflaton \(\phi\)</strong> — rolls slowly down its potential \(V(\phi)\), driving de Sitter expansion. The universe doubled every \(\sim 10^{-38}\ \mathrm{s}\), expanding by at least \(10^{26}\) altogether.<br><br>
+        <strong>Quantum vacuum fluctuations</strong> \(\delta\phi_k \sim H/(2\pi)\) were stretched from sub-Planckian scales to macroscopic scales. After crossing the Hubble horizon they became <em>classical</em> density perturbations — the seeds of every galaxy and cluster we observe today, and the <strong>turnover scale \(k_0\)</strong> in \(P(k)\) that you are detecting.<br><br>
+        <strong>Reheating</strong> ends inflation: the inflaton decays into Standard Model particles, restoring the hot thermal bath at temperature \(T_{\rm reh}\).
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Observational imprints</div>
+      <div class="facts-list">
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e2)"></div><div class="fact-text">Primordial power spectrum: \(\mathcal{P}_{\mathcal{R}}(k) = A_s(k/k_*)^{n_s-1}\) with \(n_s \approx 0.965\) (Planck 2018) — nearly scale-invariant</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e2)"></div><div class="fact-text">Tensor-to-scalar ratio: \(r = \mathcal{P}_T / \mathcal{P}_{\mathcal{R}}\) constrains inflation energy scale via \(V^{1/4} = 1.06\times10^{16}(r/0.01)^{1/4}\ \mathrm{GeV}\). Current limit: \(r < 0.036\)</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e2)"></div><div class="fact-text">Inflation solves the <strong>flatness problem</strong> (\(\Omega \approx 1\)), <strong>horizon problem</strong> (CMB uniform to \(10^{-5}\)), and <strong>monopole problem</strong></div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e2)"></div><div class="fact-text">The <strong>turnover scale \(k_0 \sim 0.01\text{–}0.02\ h\,\mathrm{Mpc}^{-1}\)</strong> you detect with Euclid and MegaMapper traces directly to the horizon scale at the end of inflation</div></div>
+      </div>
+      <div class="openq"><strong>Open question:</strong> What is the inflaton \(\phi\)? Future CMB \(B\)-mode experiments (LiteBIRD, CMB-S4) will measure \(r\) to \(\pm 0.001\) precision.</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 4 — ELECTROWEAK ══ -->
+<div class="slide" data-color="#f43f5e">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--e3)">&#9679; Epoch 4 &nbsp;&mdash;&nbsp; Electroweak epoch</span>
+    <span class="slide-count">5 / 15</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--e3);height:44px"></div>
+      <div>
+        <div class="slide-title">Electroweak Epoch</div>
+        <div class="slide-sub">Reheating, the quark-gluon plasma, and the Higgs mechanism</div>
+      </div>
+    </div>
+  </div>
+  <div class="metrics-row">
+    <div class="metric"><div class="metric-label">Time</div><div class="metric-val">\(10^{-32} \to 10^{-12}\ \mathrm{s}\)</div></div>
+    <div class="metric"><div class="metric-label">Temperature</div><div class="metric-val">\(10^{15} \to 10^{28}\ \mathrm{K}\)</div></div>
+    <div class="metric"><div class="metric-label">Energy scale</div><div class="metric-val">\(100\ \mathrm{GeV} \to 10^{15}\ \mathrm{GeV}\)</div></div>
+    <div class="metric"><div class="metric-label">State of matter</div><div class="metric-val">Quark-gluon plasma (QGP)</div></div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">What happens</div>
+      <div class="panel-body">
+        After inflation, the inflaton decays and <strong>reheats</strong> the universe, filling it with a hot plasma of quarks, leptons, and gauge bosons in thermal equilibrium. The strong force separates at \(\sim 10^{15}\ \mathrm{GeV}\).<br><br>
+        At the <strong>electroweak phase transition</strong> (\(T_{\rm EW} \approx 160\ \mathrm{GeV} \approx 10^{15}\ \mathrm{K}\)), the Higgs field acquires its vacuum expectation value \(\langle\phi\rangle = v \approx 246\ \mathrm{GeV}\), breaking electroweak symmetry:
+        \[\mathrm{SU}(2)_L \times \mathrm{U}(1)_Y \;\longrightarrow\; \mathrm{U}(1)_{\rm em}\]
+        giving mass \(m_W \approx 80\ \mathrm{GeV}\) to \(W^\pm\) and \(m_Z \approx 91\ \mathrm{GeV}\) to \(Z^0\), while the photon remains massless.
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Key facts &amp; open questions</div>
+      <div class="facts-list">
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e3)"></div><div class="fact-text">The QGP — where quarks and gluons move freely — was recreated at RHIC and the LHC ALICE experiment at \(T \sim 2\times10^{12}\ \mathrm{K}\)</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e3)"></div><div class="fact-text">The Higgs boson (\(m_H \approx 125.1\ \mathrm{GeV}\)) discovered at the LHC in 2012 confirms the Higgs mechanism — the last piece of the Standard Model</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e3)"></div><div class="fact-text">Lattice QCD shows the EW transition at \(m_H = 125\ \mathrm{GeV}\) is a <strong>smooth crossover</strong>, not first-order — this rules out electroweak baryogenesis</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e3)"></div><div class="fact-text">All Standard Model particles are in thermal equilibrium; matter–antimatter ratio is \(\sim 1:1\) with tiny excess \(\eta_B \approx 6\times10^{-10}\) surviving from leptogenesis</div></div>
+      </div>
+      <div class="openq"><strong>Open question:</strong> If the EW transition is a crossover, how was the baryon asymmetry generated? This remains one of the deepest unsolved problems in particle cosmology.</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 5 — QCD & BBN ══ -->
+<div class="slide" data-color="#eab308">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--e4)">&#9679; Epoch 5 &nbsp;&mdash;&nbsp; QCD transition &amp; BBN</span>
+    <span class="slide-count">6 / 15</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--e4);height:44px"></div>
+      <div>
+        <div class="slide-title">QCD Transition &amp; Big Bang Nucleosynthesis</div>
+        <div class="slide-sub">Quarks confine into protons and neutrons; the first nuclei form</div>
+      </div>
+    </div>
+  </div>
+  <div class="metrics-row">
+    <div class="metric"><div class="metric-label">QCD transition</div><div class="metric-val">\(t \sim 10^{-6}\ \mathrm{s},\ T \sim 2\times10^{12}\ \mathrm{K}\)</div></div>
+    <div class="metric"><div class="metric-label">BBN window</div><div class="metric-val">\(t \approx 1\ \mathrm{s} \to 3\ \mathrm{min}\)</div></div>
+    <div class="metric"><div class="metric-label">\(^4\mathrm{He}\) mass fraction</div><div class="metric-val">\(Y_p \approx 0.247\)</div></div>
+    <div class="metric"><div class="metric-label">\(\mathrm{D/H}\) ratio</div><div class="metric-val">\(\approx 2.5\times10^{-5}\)</div></div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">What happens</div>
+      <div class="panel-body">
+        At \(T \approx 2\times10^{12}\ \mathrm{K}\) (\(\sim 200\ \mathrm{MeV}\)), the strong coupling grows and quarks and gluons bind into <strong>protons and neutrons</strong>. The quark-gluon plasma gives way to a hadron gas — this is the <strong>QCD confinement transition</strong>.<br><br>
+        At \(t \approx 1\ \mathrm{s}\), neutrinos decouple and the neutron-to-proton ratio freezes at \(n/p \approx 1/7\). Between \(t \approx 1\ \mathrm{s}\) and \(t \approx 3\ \mathrm{min}\), <strong>Big Bang Nucleosynthesis (BBN)</strong> fuses protons and neutrons into:
+        \[{}^2\mathrm{H},\quad {}^3\mathrm{He},\quad {}^4\mathrm{He},\quad {}^7\mathrm{Li}\]
+        The predicted abundances match observations — one of the greatest triumphs of the Standard Model of cosmology.
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">BBN predictions vs observations</div>
+      <div class="facts-list">
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e4)"></div><div class="fact-text"><strong>Helium-4:</strong> \(Y_p^{\rm BBN} \approx 0.247\) — matches measurements in metal-poor HII regions and old stars to \(\sim 1\%\) precision</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e4)"></div><div class="fact-text"><strong>Deuterium:</strong> \((\mathrm{D/H})_{\rm BBN} \approx 2.5\times10^{-5}\) — measured in quasar absorption spectra; directly constrains \(\Omega_b h^2\)</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e4)"></div><div class="fact-text"><strong>BBN as a probe:</strong> number of neutrino species \(N_\nu\) and the baryon density \(\Omega_b h^2\) are both constrained by comparing predicted to observed abundances</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e4)"></div><div class="fact-text"><strong>Lithium problem:</strong> BBN predicts \(({}^7\mathrm{Li/H}) \approx 5\times10^{-10}\), but metal-poor halo stars (the Spite plateau) show \(\sim 3\times\) less — still unresolved</div></div>
+      </div>
+      <div class="openq"><strong>Open question:</strong> The lithium-7 problem — new physics, stellar depletion, or systematic error? Decades of effort have not resolved it.</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 6 — LEPTON EPOCH ══ -->
+<div class="slide" data-color="#22c55e">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--e5)">&#9679; Epoch 6 &nbsp;&mdash;&nbsp; Lepton epoch</span>
+    <span class="slide-count">7 / 15</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--e5);height:44px"></div>
+      <div>
+        <div class="slide-title">Lepton Epoch</div>
+        <div class="slide-sub">Neutrino decoupling, \(e^\pm\) annihilation, and the Cosmic Neutrino Background</div>
+      </div>
+    </div>
+  </div>
+  <div class="metrics-row">
+    <div class="metric"><div class="metric-label">Time</div><div class="metric-val">\(\sim 1 \to 10\ \mathrm{s}\)</div></div>
+    <div class="metric"><div class="metric-label">Temperature</div><div class="metric-val">\(5\times10^9 \to 10^{10}\ \mathrm{K}\)</div></div>
+    <div class="metric"><div class="metric-label">Energy scale</div><div class="metric-val">\(\sim 0.5 \to 1\ \mathrm{MeV}\)</div></div>
+    <div class="metric"><div class="metric-label">Content</div><div class="metric-val">\(e^\pm\), \(\nu\), \(\bar\nu\), \(\gamma\), \(p\), \(n\)</div></div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">What happens</div>
+      <div class="panel-body">
+        At \(T \sim 10^{10}\ \mathrm{K}\) (\(\sim 1\ \mathrm{MeV}\)), <strong>neutrinos decouple</strong> from the thermal bath — their mean free path exceeds the Hubble radius. They free-stream forever as the <strong>Cosmic Neutrino Background (C\(\nu\)B)</strong>.<br><br>
+        Shortly after, as \(T\) drops below \(m_e c^2 \approx 0.511\ \mathrm{MeV}\), <strong>electrons and positrons annihilate</strong>: \(e^+ + e^- \to \gamma + \gamma\). This reheats the photon gas but not the already-decoupled neutrinos, creating a permanent temperature split:
+        \[T_\gamma = \left(\frac{11}{4}\right)^{1/3} T_\nu \approx 1.401\, T_\nu\]
+        The photon temperature is boosted relative to \(T_\nu\) by the factor \((11/4)^{1/3}\), a result that follows from entropy conservation.
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Key facts &amp; open questions</div>
+      <div class="facts-list">
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e5)"></div><div class="fact-text">C\(\nu\)B temperature today: \(T_\nu = (4/11)^{1/3} T_0 \approx 1.945\ \mathrm{K}\) — the universe is permeated by \(\sim 336\ \mathrm{cm}^{-3}\) relic neutrinos</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e5)"></div><div class="fact-text">Effective number of relativistic species: \(N_{\rm eff} = 3.044\) in the SM; CMB constraint: \(N_{\rm eff} = 2.99\pm0.17\) (Planck 2018) — future CMB-S4 target: \(\pm 0.02\)</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e5)"></div><div class="fact-text">The PTOLEMY experiment aims to detect C\(\nu\)B via \(\bar\nu_e + {}^3\mathrm{H} \to {}^3\mathrm{He} + e^-\) — the first direct neutrino background detection would be a landmark</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e5)"></div><div class="fact-text">After \(e^\pm\) annihilation: the universe is a plasma of <strong>photons, protons, neutrons, and electrons</strong>, about to enter the radiation-dominated era</div></div>
+      </div>
+      <div class="openq"><strong>Open question:</strong> Neutrino mass \(\sum m_\nu < 0.12\ \mathrm{eV}\) (Planck + BAO). Absolute mass scale and mass ordering (normal vs inverted hierarchy) remain unknown.</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 7 — PHOTON DOMINATION ══ -->
+<div class="slide" data-color="#60a5fa">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--e6)">&#9679; Epoch 7 &nbsp;&mdash;&nbsp; Photon domination</span>
+    <span class="slide-count">8 / 15</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--e6);height:44px"></div>
+      <div>
+        <div class="slide-title">Photon Domination Era</div>
+        <div class="slide-sub">Radiation rules — acoustic oscillations build up — the turnover scale is set</div>
+      </div>
+    </div>
+  </div>
+  <div class="metrics-row">
+    <div class="metric"><div class="metric-label">Time</div><div class="metric-val">\(10\ \mathrm{s} \to 47{,}000\ \mathrm{yr}\)</div></div>
+    <div class="metric"><div class="metric-label">Scale factor</div><div class="metric-val">\(a(t) \propto t^{1/2}\)</div></div>
+    <div class="metric"><div class="metric-label">Equation of state</div><div class="metric-val">\(w = 1/3\)</div></div>
+    <div class="metric"><div class="metric-label">Energy density</div><div class="metric-val">\(\rho_r \propto a^{-4}\)</div></div>
+    <div class="metric"><div class="metric-label">Ends at</div><div class="metric-val">\(z_{\rm eq} \approx 3400\)</div></div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">What happens</div>
+      <div class="panel-body">
+        Radiation (photons + relativistic neutrinos) dominates the energy budget. The universe is an opaque <strong>photon-baryon plasma</strong> — photons and baryons tightly coupled via Thomson scattering.<br><br>
+        Pressure waves travel through this plasma at the <strong>sound speed</strong>:
+        \[c_s = \frac{c}{\sqrt{3\bigl(1 + 3\rho_b/4\rho_\gamma\bigr)}}\]
+        These are the <strong>baryon acoustic oscillations (BAO)</strong> — they create the acoustic peaks in \(C_\ell\) and the BAO feature in \(P(k)\). This era ends at <strong>matter-radiation equality</strong> \(z_{\rm eq} \approx 3400\) when \(\rho_m = \rho_r\). The comoving Hubble scale at equality sets the <strong>turnover scale</strong> \(k_0 \approx k_{\rm eq} = a_{\rm eq} H_{\rm eq}\) in your research.
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Key facts — direct connection to your research</div>
+      <div class="facts-list">
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e6)"></div><div class="fact-text"><strong>Turnover scale:</strong> \(k_0 \approx k_{\rm eq}\) in \(P(k)\) is set here — the shape of the power spectrum around \(k_0 \sim 0.01\text{–}0.02\ h\,\mathrm{Mpc}^{-1}\) encodes \(\Omega_m h\) and \(H_0\)</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e6)"></div><div class="fact-text"><strong>Meszaros effect:</strong> dark matter perturbations are suppressed during radiation domination — growth \(\delta_m \propto \ln a\) instead of \(\propto a\) — this imprints on \(P(k)\) for \(k \gg k_{\rm eq}\)</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e6)"></div><div class="fact-text"><strong>BAO sound horizon:</strong> \(r_s = \int_0^{t_{\rm drag}} c_s\,dt/a \approx 147\ \mathrm{Mpc}\) — a standard ruler used to measure \(H_0\) and \(\Omega_m\)</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e6)"></div><div class="fact-text"><strong>Transfer function</strong> \(T(k)\): encodes all radiation-era suppression; \(P(k) = A_s k^{n_s} T^2(k)\) connects the primordial spectrum to what surveys measure</div></div>
+      </div>
+      <div class="openq"><strong>Connection to your research:</strong> The shape of \(P(k)\) around \(k_0\) — which you detect in the power spectrum and bispectrum — is entirely determined by the physics of this epoch.</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 8 — MATTER DOMINATION ══ -->
+<div class="slide" data-color="#a78bfa">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--e7)">&#9679; Epoch 8 &nbsp;&mdash;&nbsp; Matter domination</span>
+    <span class="slide-count">9 / 15</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--e7);height:44px"></div>
+      <div>
+        <div class="slide-title">Matter Domination Era</div>
+        <div class="slide-sub">Structure grows — dark matter halos, galaxies, and clusters assemble</div>
+      </div>
+    </div>
+  </div>
+  <div class="metrics-row">
+    <div class="metric"><div class="metric-label">Redshift range</div><div class="metric-val">\(z_{\rm eq} \approx 3400 \to z \approx 0.4\)</div></div>
+    <div class="metric"><div class="metric-label">Scale factor</div><div class="metric-val">\(a(t) \propto t^{2/3}\)</div></div>
+    <div class="metric"><div class="metric-label">Equation of state</div><div class="metric-val">\(w = 0\)</div></div>
+    <div class="metric"><div class="metric-label">Growth of perturbations</div><div class="metric-val">\(\delta_m \propto a \propto (1+z)^{-1}\)</div></div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">What happens</div>
+      <div class="panel-body">
+        Matter (dark matter + baryons) dominates the energy budget. The scale factor grows as \(a \propto t^{2/3}\) and \(\rho_m \propto a^{-3}\). <strong>Density perturbations grow linearly</strong> as \(\delta_m \propto a\) — the primordial seeds from inflation amplify into the large-scale structure of the universe.<br><br>
+        The linear growth equation is:
+        \[\ddot\delta + 2H\dot\delta - 4\pi G\bar\rho\,\delta = 0\]
+        with growing solution \(\delta \propto D_+(a)\), the growth factor. <strong>Dark matter halos</strong> collapse first (hierarchical clustering), then baryonic gas falls into these potential wells, cools, and forms <strong>galaxies</strong>. The cosmic web — sheets, filaments, voids, and nodes — is the large-scale imprint of \(P(k)\) amplified by gravitational instability.
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Key facts &amp; open questions</div>
+      <div class="facts-list">
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e7)"></div><div class="fact-text">The <strong>two-point correlation function</strong> \(\xi(r)\) and power spectrum \(P(k)\) are statistical descriptions of the matter density field grown during this era — directly what Euclid and MegaMapper measure</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e7)"></div><div class="fact-text">Recombination (\(z \approx 1100\)) occurs within this era — the CMB is released, and baryons fall freely into dark matter potential wells for the first time</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e7)"></div><div class="fact-text"><strong>Galaxy bias:</strong> \(\delta_g = b\,\delta_m\) — galaxies are biased tracers of the dark matter field; scale-dependent and relativistic bias corrections are crucial for precision surveys</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e7)"></div><div class="fact-text"><strong>Halo mass function</strong> \(n(M,z)\) — the number density of dark matter halos per mass per volume — is predicted by the Press-Schechter formalism and its extensions</div></div>
+      </div>
+      <div class="openq"><strong>Open question:</strong> The \(\sigma_8\) tension — CMB-predicted amplitude of matter fluctuations is \(2\text{–}3\sigma\) above weak-lensing surveys. New physics or unaccounted systematics?</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 9 — RECOMBINATION ══ -->
+<div class="slide" data-color="#f472b6">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--e8)">&#9679; Epoch 9 &nbsp;&mdash;&nbsp; Recombination &amp; last scattering</span>
+    <span class="slide-count">10 / 15</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--e8);height:44px"></div>
+      <div>
+        <div class="slide-title">Recombination &amp; the CMB</div>
+        <div class="slide-sub">The universe becomes transparent — the Cosmic Microwave Background is born</div>
+      </div>
+    </div>
+  </div>
+  <div class="metrics-row">
+    <div class="metric"><div class="metric-label">Time</div><div class="metric-val">\(\approx 380{,}000\ \mathrm{yr}\)</div></div>
+    <div class="metric"><div class="metric-label">Redshift</div><div class="metric-val">\(z \approx 1100\)</div></div>
+    <div class="metric"><div class="metric-label">Temperature then</div><div class="metric-val">\(\approx 3000\ \mathrm{K}\)</div></div>
+    <div class="metric"><div class="metric-label">CMB today</div><div class="metric-val">\(T_0 = 2.7255\ \mathrm{K}\)</div></div>
+    <div class="metric"><div class="metric-label">Anisotropy</div><div class="metric-val">\(\Delta T/T \sim 10^{-5}\)</div></div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">What happens</div>
+      <div class="panel-body">
+        When \(T \approx 3000\ \mathrm{K}\), protons and electrons combine to form <strong>neutral hydrogen</strong>. The photon mean free path diverges — the universe becomes <strong>transparent</strong>. The photons that last-scatter are detected today as the <strong>Cosmic Microwave Background (CMB)</strong> — a perfect blackbody at \(T_0 = 2.7255\ \mathrm{K}\).<br><br>
+        The tiny temperature fluctuations \(\Delta T/T \sim 10^{-5}\) are the imprint of primordial density perturbations, processed by acoustic oscillations in the photon-baryon fluid. The angular power spectrum \(C_\ell\) is the Rosetta Stone of cosmology — it encodes:
+        \[C_\ell \;\supset\; \Omega_b h^2,\; \Omega_c h^2,\; H_0,\; n_s,\; A_s,\; \tau\]
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">What the CMB encodes</div>
+      <div class="facts-list">
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e8)"></div><div class="fact-text">\(\Omega_b h^2\) — baryon density: from the <strong>ratio of odd to even acoustic peaks</strong> in \(C_\ell\)</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e8)"></div><div class="fact-text">\(\Omega_c h^2\) — dark matter density: from <strong>peak amplitude suppression</strong> (more DM reduces the baryon-photon driving)</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e8)"></div><div class="fact-text">\(H_0\) — Hubble constant: from the <strong>angular scale of the first peak</strong> \(\theta_* = r_s(z_*)/D_A(z_*)\) with \(\ell_1 \approx 220\)</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e8)"></div><div class="fact-text">\(P(k) = A_s k^{n_s} T^2(k)\) — the matter power spectrum you measure is connected to \(C_\ell\) via the transfer function \(T(k)\)</div></div>
+      </div>
+      <div class="openq"><strong>Open question:</strong> Hubble tension — \(H_0 = 67.4\ \mathrm{km\,s^{-1}Mpc^{-1}}\) (CMB) vs \(73\ \mathrm{km\,s^{-1}Mpc^{-1}}\) (distance ladder) — a \(\sim 5\sigma\) discrepancy possibly indicating new physics beyond \(\Lambda\)CDM.</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 10 — DARK AGES ══ -->
+<div class="slide" data-color="#34d399">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--e9)">&#9679; Epoch 10 &nbsp;&mdash;&nbsp; The Cosmic Dark Ages</span>
+    <span class="slide-count">11 / 15</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--e9);height:44px"></div>
+      <div>
+        <div class="slide-title">The Cosmic Dark Ages</div>
+        <div class="slide-sub">No stars, no light — only dark matter and neutral hydrogen assembling in silence</div>
+      </div>
+    </div>
+  </div>
+  <div class="metrics-row">
+    <div class="metric"><div class="metric-label">Time span</div><div class="metric-val">\(380{,}000\ \mathrm{yr} \to \sim 150\ \mathrm{Myr}\)</div></div>
+    <div class="metric"><div class="metric-label">Redshift range</div><div class="metric-val">\(z \approx 1100 \to z \approx 30\)</div></div>
+    <div class="metric"><div class="metric-label">Universe content</div><div class="metric-val">Neutral H, He, dark matter</div></div>
+    <div class="metric"><div class="metric-label">Light sources</div><div class="metric-val">None — completely dark</div></div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">What happens</div>
+      <div class="panel-body">
+        After recombination, the universe enters a period of <strong>complete darkness</strong>. No stars or galaxies exist. The universe is filled with neutral hydrogen and helium, slowly cooling, while dark matter halos quietly assemble through gravitational collapse.<br><br>
+        The gas temperature evolves as \(T_{\rm gas} \propto (1+z)^2\) (adiabatic cooling) until it decouples from the CMB at \(z \sim 200\), then as \(T_{\rm gas} \propto (1+z)^2\). <strong>Dark matter halos</strong> grow hierarchically — small halos form first then merge. By \(z \sim 30\), the first halos of mass \(\sim 10^5\text{–}10^6\ M_\odot\) (minihalos) have formed, ready to host the first stars.<br><br>
+        The only radiation is the redshifting CMB and the C\(\nu\)B. The universe is opaque to visible light but transparent to the <strong>21-cm hydrogen spin-flip line</strong>.
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Key facts &amp; open questions</div>
+      <div class="facts-list">
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e9)"></div><div class="fact-text">The <strong>21-cm line</strong> (\(\lambda = 21.1\ \mathrm{cm}\), \(\nu = 1420\ \mathrm{MHz}\)) from neutral hydrogen spin-flip transition is the primary probe of the Dark Ages — the Square Kilometre Array (SKA) will map it</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e9)"></div><div class="fact-text">The global 21-cm signal is observable as an absorption feature against the CMB: \(\delta T_b \propto (1 - T_{\rm CMB}/T_S)\) where \(T_S\) is the spin temperature</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e9)"></div><div class="fact-text">EDGES (2018) reported an anomalous absorption at \(z \sim 17\) (\(\delta T_b \approx -500\ \mathrm{mK}\)) — \(\sim 2\times\) deeper than standard predictions; possibly indicating dark matter-baryon interactions</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e9)"></div><div class="fact-text">First stars (Population III) end the Dark Ages at \(z \sim 20\text{–}30\) by emitting UV radiation that begins to ionise surrounding gas</div></div>
+      </div>
+      <div class="openq"><strong>Open question:</strong> The EDGES anomaly remains controversial — the REACH experiment is designed to provide a definitive answer. New physics in the dark sector could explain it.</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 11 — REIONISATION ══ -->
+<div class="slide" data-color="#fb923c">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--e10)">&#9679; Epoch 11 &nbsp;&mdash;&nbsp; Cosmic reionisation</span>
+    <span class="slide-count">12 / 15</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--e10);height:44px"></div>
+      <div>
+        <div class="slide-title">Cosmic Reionisation</div>
+        <div class="slide-sub">The first stars and quasars ionise the universe — cosmic dawn begins</div>
+      </div>
+    </div>
+  </div>
+  <div class="metrics-row">
+    <div class="metric"><div class="metric-label">Time span</div><div class="metric-val">\(\sim 150\ \mathrm{Myr} \to 1\ \mathrm{Gyr}\)</div></div>
+    <div class="metric"><div class="metric-label">Redshift range</div><div class="metric-val">\(z \approx 6 \to 30\)</div></div>
+    <div class="metric"><div class="metric-label">First stars (Pop III)</div><div class="metric-val">\(z \sim 20\text{–}30\)</div></div>
+    <div class="metric"><div class="metric-label">Optical depth</div><div class="metric-val">\(\tau = 0.054 \pm 0.007\)</div></div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">What happens</div>
+      <div class="panel-body">
+        The first stars — <strong>Population III (Pop III)</strong> stars — are massive (\(\sim 100\text{–}1000\ M_\odot\)), extremely hot (\(T_{\rm eff} \sim 10^5\ \mathrm{K}\)), and completely metal-free. Their intense UV radiation creates expanding <strong>ionised bubbles (HII regions)</strong> in the surrounding neutral hydrogen.<br><br>
+        As more stars and early galaxies form, these bubbles grow and overlap. Early <strong>quasars (AGN)</strong> also contribute significantly to ionising the intergalactic medium (IGM). By \(z \approx 6\) (\(t \approx 1\ \mathrm{Gyr}\)), reionisation is essentially complete — the IGM is fully ionised.<br><br>
+        The <strong>optical depth to reionisation</strong> \(\tau = 0.054\) is measured from the large-scale CMB \(E\)-mode polarisation — it damps small-scale temperature fluctuations by \(e^{-2\tau}\).
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Key facts &amp; open questions</div>
+      <div class="facts-list">
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e10)"></div><div class="fact-text">The <strong>Gunn-Peterson trough</strong> — complete Ly\(\alpha\) absorption in quasar spectra at \(z > 6\) — demonstrates that the IGM was neutral before \(z \approx 6\) (confirmed by SDSS)</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e10)"></div><div class="fact-text">JWST is detecting galaxies at \(z > 12\) — directly observing the first sources driving reionisation. Early results suggest reionisation began at \(z \sim 20\text{–}25\)</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e10)"></div><div class="fact-text">Pop III stars end as core-collapse supernovae or <strong>direct collapse black holes</strong> — seeding the universe with the first metals and the first seeds of supermassive black holes</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e10)"></div><div class="fact-text">The 21-cm signal from reionisation is the primary target of the <strong>SKA and HERA</strong> radio telescopes — a new observational window on cosmic dawn</div></div>
+      </div>
+      <div class="openq"><strong>Open question:</strong> What drove reionisation — stars, quasars, or both? What were the masses of Pop III stars? JWST and SKA are answering these questions in real time.</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 12 — DARK ENERGY ══ -->
+<div class="slide" data-color="#818cf8">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--e11)">&#9679; Epoch 12 &nbsp;&mdash;&nbsp; Dark energy domination</span>
+    <span class="slide-count">13 / 15</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--e11);height:44px"></div>
+      <div>
+        <div class="slide-title">Dark Energy Domination</div>
+        <div class="slide-sub">Accelerated expansion — the cosmological constant \(\Lambda\) takes over</div>
+      </div>
+    </div>
+  </div>
+  <div class="metrics-row">
+    <div class="metric"><div class="metric-label">Transition redshift</div><div class="metric-val">\(z_{\rm acc} \approx 0.4\)</div></div>
+    <div class="metric"><div class="metric-label">Equation of state</div><div class="metric-val">\(w = p/\rho \approx -1\)</div></div>
+    <div class="metric"><div class="metric-label">\(\Omega_\Lambda\) today</div><div class="metric-val">\(\approx 0.685\)</div></div>
+    <div class="metric"><div class="metric-label">Scale factor</div><div class="metric-val">\(a(t) \propto e^{H_0\sqrt{\Omega_\Lambda}\,t}\)</div></div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">What happens</div>
+      <div class="panel-body">
+        At \(z \approx 0.4\), the dark energy density \(\rho_\Lambda = \Lambda c^2/8\pi G\) exceeds the matter density \(\rho_m \propto a^{-3}\). The expansion of the universe <strong>begins to accelerate</strong>.<br><br>
+        Dark energy has negative pressure \(p_\Lambda = w\rho_\Lambda c^2\) with \(w \approx -1\), acting as a repulsive force on cosmic scales. The <strong>cosmological constant \(\Lambda\)</strong> (or a dynamical quintessence field) drives this. The modified Friedmann equation:
+        \[H^2 = H_0^2\bigl(\Omega_m(1+z)^3 + \Omega_\Lambda\bigr)\]
+        The discovery of accelerated expansion (Riess, Perlmutter &amp; Schmidt 1998, Nobel Prize 2011) via Type Ia supernovae was one of the most surprising results in the history of cosmology.
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Key facts &amp; open questions</div>
+      <div class="facts-list">
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e11)"></div><div class="fact-text"><strong>Cosmological constant problem:</strong> QFT predicts \(\rho_{\rm vac} \sim m_{\mathrm{P}}^4 \sim 10^{96}\ \mathrm{kg\,m^{-3}}\), but observed \(\rho_\Lambda \sim 10^{-27}\ \mathrm{kg\,m^{-3}}\) — a discrepancy of \(\sim 123\) orders of magnitude</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e11)"></div><div class="fact-text">Dark energy suppresses structure growth: the growth factor \(D_+(a)\) grows more slowly than \(a\) in \(\Lambda\)CDM for \(z \lesssim 1\), measurable via the <strong>growth rate</strong> \(f = d\ln D_+/d\ln a \approx \Omega_m(z)^{0.55}\)</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e11)"></div><div class="fact-text">DESI 2024 results hint \(w\) may evolve: \(w_0 = -0.73\), \(w_a = -1.05\) — if confirmed at \(\sim 3\sigma\), this rules out \(\Lambda\) and points to dynamical dark energy (quintessence)</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e11)"></div><div class="fact-text">Euclid (launched 2023) will measure \(w_0\) and \(w_a\) to \(\sim 1\%\) using weak lensing + galaxy clustering + \(P(k)\) measurements — your research directly contributes to this</div></div>
+      </div>
+      <div class="openq"><strong>Open question:</strong> What is dark energy? Is \(w = -1\) exactly (cosmological constant) or does it evolve? The answer will define the next era of cosmology.</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 13 — TODAY ══ -->
+<div class="slide" data-color="#dde6f5">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--e12)">&#9679; Today &nbsp;&mdash;&nbsp; \(t_0 = 13.8\ \mathrm{Gyr}\)</span>
+    <span class="slide-count">14 / 15</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--e12);height:44px"></div>
+      <div>
+        <div class="slide-title">The Universe Today</div>
+        <div class="slide-sub">The \(\Lambda\)CDM concordance model and what remains unknown</div>
+      </div>
+    </div>
+  </div>
+  <div class="metrics-row">
+    <div class="metric"><div class="metric-label">Age</div><div class="metric-val">\(t_0 = 13.8\ \mathrm{Gyr}\)</div></div>
+    <div class="metric"><div class="metric-label">\(H_0\) (CMB)</div><div class="metric-val">\(67.4\ \mathrm{km\,s^{-1}Mpc^{-1}}\)</div></div>
+    <div class="metric"><div class="metric-label">\(\Omega_\Lambda\)</div><div class="metric-val">\(0.685\)</div></div>
+    <div class="metric"><div class="metric-label">\(\Omega_m\)</div><div class="metric-val">\(0.315\)</div></div>
+    <div class="metric"><div class="metric-label">\(\Omega_b\)</div><div class="metric-val">\(0.049\)</div></div>
+    <div class="metric"><div class="metric-label">CMB temperature</div><div class="metric-val">\(T_0 = 2.7255\ \mathrm{K}\)</div></div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">Composition of the universe today</div>
+      <div class="facts-list">
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e11)"></div><div class="fact-text"><strong>Dark energy (\(\Lambda\)) — 68.5%:</strong> drives accelerated expansion; nature completely unknown; worst fine-tuning problem in physics</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e7)"></div><div class="fact-text"><strong>Dark matter — 26.6%:</strong> gravitationally interacts, forms halos and the cosmic web; particle identity unknown — WIMPs, axions, primordial black holes are candidates</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e6)"></div><div class="fact-text"><strong>Baryonic matter (atoms) — 4.9%:</strong> stars, gas, dust, planets, us — everything we can directly observe makes up less than 5% of the universe</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e5)"></div><div class="fact-text"><strong>Photons + neutrinos — \(< 0.01\%\):</strong> radiation is negligible today but dominated the universe for the first \(47{,}000\ \mathrm{yr}\)</div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">The four greatest open questions</div>
+      <div class="facts-list">
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e11)"></div><div class="fact-text"><strong>Dark energy:</strong> Is \(w = -1\) exactly? DESI 2024 hint at \(w \neq -1\). Euclid will measure \(w_0, w_a\) to \(\sim 1\%\)</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e7)"></div><div class="fact-text"><strong>Dark matter:</strong> WIMPs, axions, or something else entirely? No direct detection despite decades of searching with LUX, XENONnT, LZ, PandaX</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e3)"></div><div class="fact-text"><strong>Hubble tension:</strong> \(H_0^{\rm CMB} = 67.4\) vs \(H_0^{\rm SH0ES} = 73\ \mathrm{km\,s^{-1}Mpc^{-1}}\) — \(5\sigma\) discrepancy; new physics or systematics?</div></div>
+        <div class="fact-item"><div class="fact-dot" style="background:var(--e8)"></div><div class="fact-text"><strong>\(\sigma_8\) tension:</strong> amplitude of matter fluctuations — CMB vs weak lensing surveys — \(2\text{–}3\sigma\) discrepancy; hints at new dark sector physics</div></div>
+      </div>
+      <div class="openq"><strong>Your research:</strong> The turnover scale \(k_0\) in \(P(k)\) and \(B(k_1,k_2,k_3)\) detected with Euclid and MegaMapper constrains \(H_0\), \(\Omega_m\), and the full thermal history connecting all these epochs.</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 14 — SUMMARY TABLE ══ -->
+<div class="slide" data-color="#60a5fa">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--e6)">&#9679; Quick reference</span>
+    <span class="slide-count">15 / 15</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--e6);height:36px"></div>
+      <div><div class="slide-title">All Epochs at a Glance</div></div>
+    </div>
+  </div>
+  <div class="sum-wrap">
+    <table class="sum-table">
+      <thead>
+        <tr>
+          <th style="width:16%">Epoch</th>
+          <th style="width:22%">Time / Redshift</th>
+          <th style="width:16%">Temperature</th>
+          <th style="width:46%">What happens</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="edot" style="background:var(--e0)"></span>Planck</td><td>\(0 \to 10^{-43}\ \mathrm{s}\)</td><td>\(>10^{32}\ \mathrm{K}\)</td><td>Quantum gravity wall — spacetime foam — all 4 forces unified</td></tr>
+        <tr><td><span class="edot" style="background:var(--e1)"></span>GUT</td><td>\(10^{-43} \to 10^{-36}\ \mathrm{s}\)</td><td>\(10^{29}\text{–}10^{32}\ \mathrm{K}\)</td><td>Gravity separates; GUT symmetry; leptogenesis &amp; baryon asymmetry</td></tr>
+        <tr><td><span class="edot" style="background:var(--e2)"></span>Inflation</td><td>\(10^{-36} \to 10^{-32}\ \mathrm{s}\)</td><td>drops sharply</td><td>Exponential expansion \(\geq 10^{26}\times\); primordial perturbations seeded</td></tr>
+        <tr><td><span class="edot" style="background:var(--e3)"></span>Electroweak</td><td>\(10^{-32} \to 10^{-12}\ \mathrm{s}\)</td><td>\(10^{15}\text{–}10^{28}\ \mathrm{K}\)</td><td>Reheating; QGP; Higgs gives mass to \(W^\pm\) and \(Z^0\)</td></tr>
+        <tr><td><span class="edot" style="background:var(--e4)"></span>QCD &amp; BBN</td><td>\(10^{-6}\ \mathrm{s} \to 3\ \mathrm{min}\)</td><td>\(10^9\text{–}10^{12}\ \mathrm{K}\)</td><td>Quarks confine; protons &amp; neutrons; \({}^4\mathrm{He}\), \({}^2\mathrm{H}\), \({}^7\mathrm{Li}\) form</td></tr>
+        <tr><td><span class="edot" style="background:var(--e5)"></span>Lepton</td><td>\(1 \to 10\ \mathrm{s}\)</td><td>\(\sim 10^{10}\ \mathrm{K}\)</td><td>Neutrino decoupling; \(e^\pm\) annihilation; C\(\nu\)B formed; \(T_\gamma = (11/4)^{1/3}T_\nu\)</td></tr>
+        <tr><td><span class="edot" style="background:var(--e6)"></span>Photon dom.</td><td>\(10\ \mathrm{s} \to 47{,}000\ \mathrm{yr}\)</td><td>falling as \(T \propto 1/a\)</td><td>BAO acoustic oscillations build; turnover scale \(k_0\) set at \(z_{\rm eq} \approx 3400\)</td></tr>
+        <tr><td><span class="edot" style="background:var(--e7)"></span>Matter dom.</td><td>\(47{,}000\ \mathrm{yr} \to 9.8\ \mathrm{Gyr}\)</td><td>\(T \propto (1+z)\)</td><td>Structure grows as \(\delta \propto a\); halos, galaxies, cosmic web form</td></tr>
+        <tr><td><span class="edot" style="background:var(--e8)"></span>Recombination</td><td>\(380{,}000\ \mathrm{yr},\ z\approx1100\)</td><td>\(\approx 3000\ \mathrm{K}\)</td><td>Neutral atoms form; universe transparent; CMB released at \(T_0 = 2.7255\ \mathrm{K}\)</td></tr>
+        <tr><td><span class="edot" style="background:var(--e9)"></span>Dark Ages</td><td>\(380{,}000\ \mathrm{yr} \to 150\ \mathrm{Myr}\)</td><td>cooling</td><td>No stars; neutral H; dark matter halos assemble hierarchically</td></tr>
+        <tr><td><span class="edot" style="background:var(--e10)"></span>Reionisation</td><td>\(150\ \mathrm{Myr} \to 1\ \mathrm{Gyr},\ z\approx6\text{–}30\)</td><td>&mdash;</td><td>Pop III stars &amp; quasars ionise IGM; cosmic dawn; optical depth \(\tau = 0.054\)</td></tr>
+        <tr><td><span class="edot" style="background:var(--e11)"></span>Dark energy</td><td>\(9.8\ \mathrm{Gyr} \to\) now, \(z\approx0.4\)</td><td>\(\to 2.73\ \mathrm{K}\)</td><td>Accelerated expansion; \(\Lambda\) dominates; growth of structure suppressed</td></tr>
+        <tr style="background:rgba(221,230,245,.04)"><td><span class="edot" style="background:var(--e12)"></span><strong>Today</strong></td><td>\(t_0 = 13.8\ \mathrm{Gyr},\ z = 0\)</td><td>\(2.7255\ \mathrm{K}\)</td><td>\(\Lambda\)CDM: 68.5% \(\Lambda\), 26.6% DM, 4.9% baryons; \(H_0\) and \(\sigma_8\) tensions</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+</div><!-- /deck -->
+
+<script>
+/* ── STARS — identical to planck_quantities.html ── */
+const canvas = document.getElementById('stars');
+const ctx = canvas.getContext('2d');
+let W, H, stars = [];
+function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+function makeStars(){ stars = Array.from({length:240},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.3+0.2,o:Math.random()*0.5+0.1,sp:Math.random()*0.007+0.002,ph:Math.random()*Math.PI*2})); }
+function draw(t){ ctx.clearRect(0,0,W,H); stars.forEach(s=>{ const o=Math.max(0,Math.min(1,s.o+Math.sin(t*s.sp+s.ph)*0.12)); ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fillStyle=`rgba(180,210,255,${o.toFixed(2)})`; ctx.fill(); }); requestAnimationFrame(draw); }
+resize(); makeStars();
+window.addEventListener('resize',()=>{ resize(); makeStars(); });
+requestAnimationFrame(draw);
+
+/* ── SLIDE DECK ── */
+const slides = Array.from(document.querySelectorAll('.slide'));
+const colors = slides.map(s => s.dataset.color || '#60a5fa');
+const bar = document.getElementById('progress-bar');
+const dotsEl = document.getElementById('dots');
+let cur = 0;
+
+slides.forEach((_,i)=>{
+  const d = document.createElement('div');
+  d.className = 'dot' + (i===0?' active':'');
+  d.style.background = i===0 ? colors[0] : '';
+  d.onclick = ()=> go(i);
+  dotsEl.appendChild(d);
+});
+const dotEls = Array.from(dotsEl.querySelectorAll('.dot'));
+
+function go(n){
+  if(n<0||n>=slides.length) return;
+  slides[cur].classList.remove('active');
+  dotEls[cur].classList.remove('active');
+  dotEls[cur].style.background = '';
+  cur = n;
+  slides[cur].classList.add('active');
+  dotEls[cur].classList.add('active');
+  dotEls[cur].style.background = colors[cur];
+  bar.style.width = ((cur/(slides.length-1))*100)+'%';
+  bar.style.background = colors[cur];
+  if(window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([slides[cur]]).catch(()=>{});
+}
+
+document.getElementById('prev').onclick = ()=> go(cur-1);
+document.getElementById('next').onclick = ()=> go(cur+1);
+document.addEventListener('keydown', e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown') go(cur+1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp') go(cur-1);
+});
+
+bar.style.width = '0%';
+bar.style.background = colors[0];
+</script>
+</body>
+</html>
