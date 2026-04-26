@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dynamic Dark Matter — 21-Day Study Plan</title>
+
+<script>
+MathJax = {
+  tex: { inlineMath:[['\\(','\\)']], displayMath:[['\\[','\\]']], packages:{'[+]':['ams']} },
+  options: { skipHtmlTags:['script','noscript','style','textarea','pre'] },
+  startup: { ready(){ MathJax.startup.defaultReady(); } }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden}
+:root{
+  --bg:#06080f; --bg2:#0d1525; --bg3:#121e33; --bg4:#1a2a45;
+  --border:rgba(140,180,255,.13); --border2:rgba(140,180,255,.25);
+  --text:#dde6f5; --muted:#8399bb; --dim:#4a5e7a;
+  /* week colours */
+  --w1:#60a5fa; --w2:#2dd4bf; --w3:#f472b6;
+  /* phase colours */
+  --p1:#a78bfa; --p2:#fbbf24; --p3:#fb923c; --p4:#34d399; --p5:#f43f5e; --p6:#818cf8;
+}
+body{ background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif; font-weight:300; }
+mjx-container{ color:var(--text)!important; max-width:100%; }
+mjx-container[display="true"]{ overflow-x:visible!important; white-space:normal!important; margin:.3rem 0!important; }
+#stars{ position:fixed; inset:0; z-index:0; pointer-events:none; }
+.deck{ position:fixed; inset:0; z-index:1; }
+.slide{ position:absolute; inset:0; display:flex; flex-direction:column; opacity:0; pointer-events:none; transition:opacity .35s ease; overflow:hidden; }
+.slide.active{ opacity:1; pointer-events:all; }
+#progress-bar{ position:fixed; top:0; left:0; height:3px; background:var(--w1); z-index:200; transition:width .3s ease,background .3s ease; }
+#dots{ position:fixed; bottom:20px; left:50%; transform:translateX(-50%); display:flex; gap:7px; z-index:200; }
+.dot{ width:6px; height:6px; border-radius:50%; background:var(--border2); cursor:pointer; transition:background .2s,transform .2s; }
+.dot.active{ transform:scale(1.5); }
+.arrow{ position:fixed; top:50%; transform:translateY(-50%); z-index:200; background:var(--bg2); border:.5px solid var(--border2); border-radius:50%; width:38px; height:38px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--muted); font-size:15px; transition:background .2s,color .2s; }
+.arrow:hover{ background:var(--bg3); color:var(--text); }
+#prev{ left:14px; } #next{ right:14px; }
+
+/* slide inner — strict height chain: slide → slide-inner → content-grid → panel */
+.slide-inner{
+  flex:1; display:flex; flex-direction:column;
+  padding:28px 56px 60px; max-width:1080px; margin:0 auto; width:100%;
+  overflow:hidden; min-height:0; height:100%;
+}
+.slide-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:11px; flex-shrink:0; }
+.slide-eyebrow{ font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--dim); }
+.slide-count{ font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--dim); }
+.title-block{ margin-bottom:11px; flex-shrink:0; }
+.accent-line{ display:flex; align-items:center; gap:13px; }
+.accent-bar{ width:4px; border-radius:2px; flex-shrink:0; }
+.slide-title{ font-family:'Crimson Pro',serif; font-size:clamp(1.55rem,3vw,2.4rem); font-weight:400; line-height:1.15; color:var(--text); }
+.slide-sub{ font-size:clamp(11.5px,1.3vw,13.5px); color:var(--muted); margin-top:3px; font-weight:300; }
+.slide-footer{ flex-shrink:0; font-family:'JetBrains Mono',monospace; font-size:8.5px; color:var(--dim); letter-spacing:.08em; text-align:center; padding:5px 0 0; border-top:.5px solid var(--border); margin-top:8px; }
+
+/* cover */
+.cover{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:14px; padding:30px 56px; overflow:hidden; }
+.cover-kicker{ font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--dim); display:flex; align-items:center; gap:12px; flex-shrink:0; }
+.cover-kicker::before,.cover-kicker::after{ content:''; width:32px; height:1px; background:var(--border2); display:inline-block; }
+.cover h1{ font-family:'Crimson Pro',serif; font-size:clamp(2rem,5vw,3.6rem); font-weight:400; line-height:1.1; color:var(--text); flex-shrink:0; }
+.cover h1 em{ font-style:italic; color:#fbbf24; }
+.cover-sub{ font-size:clamp(12px,1.4vw,14px); color:var(--muted); max-width:560px; line-height:1.65; flex-shrink:0; }
+.cover-hint{ font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--dim); letter-spacing:.1em; flex-shrink:0; }
+
+/* deadline strip */
+.deadline-strip{ display:flex; gap:9px; flex-wrap:wrap; justify-content:center; flex-shrink:0; }
+.deadline-pill{ background:var(--bg2); border:.5px solid var(--border2); border-radius:10px; padding:9px 16px; text-align:center; }
+.deadline-pill-label{ font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:.12em; text-transform:uppercase; color:var(--dim); margin-bottom:3px; }
+.deadline-pill-val{ font-size:clamp(12px,1.4vw,14px); color:var(--text); font-weight:400; }
+
+/* day grid — fixed height, text clips neatly inside each card */
+.day-grid{
+  display:grid; grid-template-columns:repeat(7,1fr); gap:6px;
+  flex-shrink:0; margin-bottom:10px;
+  /* give the grid a fixed portion of the slide */
+  height: 160px;
+}
+.day-card{
+  background:var(--bg2); border:.5px solid var(--border);
+  border-radius:10px; padding:8px 9px; min-width:0;
+  border-top-width:2px; overflow:hidden;
+  display:flex; flex-direction:column;
+}
+.day-num{ font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:.1em; color:var(--dim); margin-bottom:3px; flex-shrink:0; }
+.day-date{ font-size:9.5px; color:var(--muted); margin-bottom:4px; font-weight:400; flex-shrink:0; }
+.day-topic{ font-size:10.5px; color:var(--text); line-height:1.35; margin-bottom:3px; font-weight:400; flex-shrink:0; }
+.day-tasks{ font-size:9px; color:var(--muted); line-height:1.45; overflow:hidden; }
+
+/* content grid — takes all remaining space, children must not escape */
+.content-grid{
+  display:grid; grid-template-columns:1.05fr 1fr; gap:10px;
+  flex:1; min-height:0; overflow:hidden;
+}
+
+/* panel — hard-clips all content inside */
+.panel{
+  background:var(--bg2); border:.5px solid var(--border);
+  border-radius:13px; padding:13px 15px;
+  display:flex; flex-direction:column; gap:7px;
+  min-height:0; overflow:hidden;
+  /* critical: panels must not grow beyond their grid cell */
+  height:100%;
+}
+.panel-label{ font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.14em; text-transform:uppercase; color:var(--dim); flex-shrink:0; }
+.panel-body{
+  font-family:'Crimson Pro',serif; font-size:clamp(12.5px,1.4vw,14.5px);
+  font-weight:300; color:var(--muted); line-height:1.72;
+  flex:1; overflow:hidden; min-height:0;
+}
+.panel-body strong{ color:var(--text); font-weight:400; }
+.panel-body em{ font-style:italic; }
+
+/* items list — clips at panel boundary */
+.items-list{
+  display:flex; flex-direction:column; gap:5px;
+  flex:1; overflow:hidden; min-height:0;
+}
+.item{
+  display:flex; align-items:flex-start; gap:8px;
+  background:var(--bg3); border:.5px solid var(--border);
+  border-radius:8px; padding:7px 10px;
+  flex-shrink:0; /* items don't stretch — they stack and clip */
+  overflow:hidden;
+}
+.item-dot{ width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:3px; }
+.item-text{ font-size:clamp(10.5px,1.2vw,12.5px); color:var(--muted); line-height:1.5; overflow:hidden; }
+.item-text strong{ color:var(--text); font-weight:500; }
+
+.openq{
+  border-left:2px solid var(--border2); padding:7px 12px;
+  flex-shrink:0; overflow:hidden;
+  font-size:clamp(10.5px,1.15vw,12px); color:var(--dim);
+  font-style:italic; line-height:1.55;
+}
+.openq strong{ color:var(--muted); font-style:normal; font-weight:400; }
+
+/* phase grid — hard-clips cards within slide */
+.phase-grid{
+  display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;
+  flex:1; min-height:0; overflow:hidden;
+}
+.phase-card{
+  background:var(--bg2); border:.5px solid var(--border);
+  border-radius:12px; padding:12px 13px;
+  display:flex; flex-direction:column; gap:5px;
+  border-top-width:2px; overflow:hidden; min-height:0;
+}
+.phase-num{ font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:.12em; text-transform:uppercase; color:var(--dim); flex-shrink:0; }
+.phase-title{ font-size:clamp(11.5px,1.3vw,13px); font-weight:500; color:var(--text); line-height:1.28; flex-shrink:0; }
+.phase-days{ font-family:'JetBrains Mono',monospace; font-size:8.5px; color:var(--dim); flex-shrink:0; }
+.phase-body{ font-size:clamp(10.5px,1.15vw,11.5px); color:var(--muted); line-height:1.55; overflow:hidden; flex:1; min-height:0; }
+.phase-body strong{ color:var(--text); font-weight:400; }
+
+/* reading grid */
+.reading-grid{
+  display:grid; grid-template-columns:1fr 1fr; gap:8px;
+  flex:1; min-height:0; overflow:hidden;
+}
+.read-card{
+  background:var(--bg2); border:.5px solid var(--border);
+  border-radius:11px; padding:11px 13px;
+  display:flex; flex-direction:column; gap:4px;
+  border-left-width:2px; overflow:hidden; min-height:0;
+}
+.read-type{ font-family:'JetBrains Mono',monospace; font-size:7.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--dim); flex-shrink:0; }
+.read-title{ font-size:clamp(11px,1.25vw,12.5px); color:var(--text); font-weight:400; line-height:1.3; flex-shrink:0; }
+.read-auth{ font-size:clamp(9.5px,1.05vw,11px); color:var(--muted); font-style:italic; flex-shrink:0; }
+.read-why{ font-size:clamp(9.5px,1.05vw,10.5px); color:var(--dim); line-height:1.45; overflow:hidden; flex:1; min-height:0; }
+
+/* metrics */
+.metrics-row{ display:flex; gap:7px; flex-wrap:wrap; margin-bottom:10px; flex-shrink:0; }
+.metric{ background:var(--bg2); border:.5px solid var(--border); border-radius:8px; padding:5px 12px; display:flex; flex-direction:column; gap:2px; overflow:hidden; }
+.metric-label{ font-family:'JetBrains Mono',monospace; font-size:7.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--dim); }
+.metric-val{ font-size:clamp(10.5px,1.2vw,12.5px); color:var(--text); }
+
+@keyframes fadeUp{ from{opacity:0;transform:translateY(11px)} to{opacity:1;transform:translateY(0)} }
+.slide.active .slide-inner>*{ animation:fadeUp .42s ease both; }
+.slide.active .slide-inner>*:nth-child(1){animation-delay:.04s}
+.slide.active .slide-inner>*:nth-child(2){animation-delay:.09s}
+.slide.active .slide-inner>*:nth-child(3){animation-delay:.14s}
+.slide.active .slide-inner>*:nth-child(4){animation-delay:.19s}
+.slide.active .slide-inner>*:nth-child(5){animation-delay:.24s}
+.slide.active .slide-inner>*:nth-child(6){animation-delay:.29s}
+::-webkit-scrollbar{display:none}
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+<div id="progress-bar"></div>
+<div id="dots"></div>
+<button class="arrow" id="prev">&#8592;</button>
+<button class="arrow" id="next">&#8594;</button>
+<div class="deck" id="deck">
+
+<!-- ══ SLIDE 0 — COVER ══ -->
+<div class="slide active" data-color="#a78bfa">
+<div class="cover">
+  <div class="cover-kicker">PhD Study Plan &nbsp;·&nbsp; Dynamic Dark Matter</div>
+  <h1>Ready for Research<br>in <em>21 Days</em></h1>
+  <p class="cover-sub">A structured intensive reading and mastery plan — from foundational \(\Lambda\)CDM to Dynamic Dark Matter theory — designed for your supervisor meeting on 17 May 2026.</p>
+  <div class="deadline-strip">
+    <div class="deadline-pill"><div class="deadline-pill-label">Start</div><div class="deadline-pill-val">26 April 2026</div></div>
+    <div class="deadline-pill"><div class="deadline-pill-label">Days available</div><div class="deadline-pill-val" style="color:#fbbf24">21 days</div></div>
+    <div class="deadline-pill"><div class="deadline-pill-label">Supervisor meeting</div><div class="deadline-pill-val" style="color:#f472b6">17 May 2026</div></div>
+    <div class="deadline-pill"><div class="deadline-pill-label">Slides in plan</div><div class="deadline-pill-val">12 slides</div></div>
+  </div>
+  <div class="cover-hint">Arrow keys &#8592; &#8594; or buttons to navigate</div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 1 — OVERVIEW OF 6 PHASES ══ -->
+<div class="slide" data-color="#60a5fa">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--w1)">&#9679; The Full Plan — Six phases over 21 days</span>
+    <span class="slide-count">2 / 12</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--w1);height:42px"></div>
+      <div>
+        <div class="slide-title">The 21-Day Mastery Roadmap</div>
+        <div class="slide-sub">What you need to know — and in what order — to enter Dynamic Dark Matter research</div>
+      </div>
+    </div>
+  </div>
+  <div class="phase-grid">
+    <div class="phase-card" style="border-top-color:var(--p1)">
+      <div class="phase-num">Phase 1 &nbsp;·&nbsp; Days 1–3</div>
+      <div class="phase-title">Foundations of \(\Lambda\)CDM &amp; Dark Matter</div>
+      <div class="phase-days">26–28 April</div>
+      <div class="phase-body">The concordance model, standard DM evidence, \(P(k)\), the CMB, and the \(\sigma_8\) and \(H_0\) tensions that motivate DDM. <strong>Why standard CDM fails at small scales.</strong></div>
+    </div>
+    <div class="phase-card" style="border-top-color:var(--p2)">
+      <div class="phase-num">Phase 2 &nbsp;·&nbsp; Days 4–6</div>
+      <div class="phase-title">Dark Energy Models &amp; \(w(z)\) Phenomenology</div>
+      <div class="phase-days">29 April – 1 May</div>
+      <div class="phase-body">Cosmological constant, quintessence, \(w_0 w_a\)CDM, the CPL parametrisation. DESI 2024/2025 evidence for dynamical dark energy. <strong>The equation of state and its role in background evolution.</strong></div>
+    </div>
+    <div class="phase-card" style="border-top-color:var(--p3)">
+      <div class="phase-num">Phase 3 &nbsp;·&nbsp; Days 7–10</div>
+      <div class="phase-title">Dynamic Dark Matter — Core Theory</div>
+      <div class="phase-days">2–5 May</div>
+      <div class="phase-body">DDM frameworks: decaying DM, interacting DE-DM, dynamical DM equation of state \(w_{\rm dm}(z)\). Continuity equations, perturbation theory in the dark sector, the interaction kernel \(\mathcal{Q}\). <strong>The heart of your research.</strong></div>
+    </div>
+    <div class="phase-card" style="border-top-color:var(--p4)">
+      <div class="phase-num">Phase 4 &nbsp;·&nbsp; Days 11–14</div>
+      <div class="phase-title">Perturbation Theory &amp; Power Spectra</div>
+      <div class="phase-days">6–9 May</div>
+      <div class="phase-body">How DDM modifies \(P(k)\), the transfer function, the matter bispectrum \(B(k_1,k_2,k_3)\). Relativistic corrections. The growth factor \(D_+(a)\) in interacting models. <strong>What the surveys actually measure.</strong></div>
+    </div>
+    <div class="phase-card" style="border-top-color:var(--p5)">
+      <div class="phase-num">Phase 5 &nbsp;·&nbsp; Days 15–18</div>
+      <div class="phase-title">Observational Constraints &amp; MCMC Methods</div>
+      <div class="phase-days">10–13 May</div>
+      <div class="phase-body">Constraining DDM with CMB, BAO, weak lensing, galaxy clustering. Fisher matrices, cobaya, MCMC parameter inference. DESI, Euclid, MegaMapper forecasts. <strong>How you will test your theory.</strong></div>
+    </div>
+    <div class="phase-card" style="border-top-color:var(--p6)">
+      <div class="phase-num">Phase 6 &nbsp;·&nbsp; Days 19–21</div>
+      <div class="phase-title">Synthesis, Research Gaps &amp; Supervisor Prep</div>
+      <div class="phase-days">14–16 May</div>
+      <div class="phase-body">Identify open research questions. Map your existing bispectrum work to DDM. Draft your research proposal outline. <strong>Walk into the meeting with a concrete research direction.</strong></div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 2 — WEEK 1 CALENDAR ══ -->
+<div class="slide" data-color="#60a5fa">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--w1)">&#9679; Week 1 &nbsp;·&nbsp; Days 1–7 &nbsp;·&nbsp; 26 April – 2 May</span>
+    <span class="slide-count">3 / 12</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--w1);height:42px"></div>
+      <div>
+        <div class="slide-title">Week 1 — Foundations &amp; Dark Energy</div>
+        <div class="slide-sub">Build the bedrock: \(\Lambda\)CDM mastery, dark matter evidence, dark energy phenomenology</div>
+      </div>
+    </div>
+  </div>
+  <div class="day-grid">
+    <div class="day-card" style="border-top-color:var(--p1)">
+      <div class="day-num">DAY 1</div>
+      <div class="day-date">Sun 26 Apr</div>
+      <div class="day-topic">\(\Lambda\)CDM concordance model</div>
+      <div class="day-tasks">Friedmann eqs · \(\rho_m, \rho_r, \rho_\Lambda\) · \(\Omega\) parameters · Ryden Ch.1–5</div>
+    </div>
+    <div class="day-card" style="border-top-color:var(--p1)">
+      <div class="day-num">DAY 2</div>
+      <div class="day-date">Mon 27 Apr</div>
+      <div class="day-topic">Dark matter evidence &amp; candidates</div>
+      <div class="day-tasks">Rotation curves · CMB · lensing · WIMPs · axions · PDG Dark Matter review 2024</div>
+    </div>
+    <div class="day-card" style="border-top-color:var(--p1)">
+      <div class="day-num">DAY 3</div>
+      <div class="day-date">Tue 28 Apr</div>
+      <div class="day-topic">Small-scale CDM tensions</div>
+      <div class="day-tasks">Missing satellites · cusp-core · \(\sigma_8\) tension · \(H_0\) tension · Bullock &amp; Boylan-Kolchin 2017 review</div>
+    </div>
+    <div class="day-card" style="border-top-color:var(--p2)">
+      <div class="day-num">DAY 4</div>
+      <div class="day-date">Wed 29 Apr</div>
+      <div class="day-topic">Cosmological constant &amp; quintessence</div>
+      <div class="day-tasks">\(w=-1\) · scalar field \(\phi\) · slow-roll · \(V(\phi)\) · fine-tuning problem · Weinberg review</div>
+    </div>
+    <div class="day-card" style="border-top-color:var(--p2)">
+      <div class="day-num">DAY 5</div>
+      <div class="day-date">Thu 30 Apr</div>
+      <div class="day-topic">CPL parametrisation &amp; \(w_0 w_a\)CDM</div>
+      <div class="day-tasks">\(w(a) = w_0 + w_a(1-a)\) · Chevallier &amp; Polarski 2001 · Linder 2003 · DESI 2024 key paper</div>
+    </div>
+    <div class="day-card" style="border-top-color:var(--p2)">
+      <div class="day-num">DAY 6</div>
+      <div class="day-date">Fri 1 May</div>
+      <div class="day-topic">DESI 2024/2025 evidence for DDE</div>
+      <div class="day-tasks">DESI DR1 &amp; DR2 BAO · \(w_0=-0.73, w_a=-1.05\) · tension with \(\Lambda\)CDM at \(3\sigma\) · arXiv:2404.03002</div>
+    </div>
+    <div class="day-card" style="border-top-color:var(--p3)">
+      <div class="day-num">DAY 7</div>
+      <div class="day-date">Sat 2 May</div>
+      <div class="day-topic">Introduction to Dynamic Dark Matter</div>
+      <div class="day-tasks">What DDM means · DDM vs DDE · motivation from tensions · first reading: arXiv:2504.21481 · map DDM to your \(P(k)\) work</div>
+    </div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">Week 1 goal</div>
+      <div class="panel-body">By end of Day 7 you should be able to <strong>derive the Friedmann equations from scratch</strong>, state the observational evidence for dark matter and dark energy, explain the \(H_0\) and \(\sigma_8\) tensions quantitatively, and articulate why \(\Lambda\)CDM fails at small scales. You should also have read your first DDM paper.</div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Core readings — Week 1</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--w1)"></div><div class="item-text"><strong>Ryden, Introduction to Cosmology</strong> — Ch.1–7 (background cosmology)</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--w1)"></div><div class="item-text"><strong>PDG 2024, Ch.27 — Dark Matter review</strong> — comprehensive candidate survey</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--w1)"></div><div class="item-text"><strong>Bullock &amp; Boylan-Kolchin (2017)</strong> ARA&amp;A — small-scale CDM problems</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--w1)"></div><div class="item-text"><strong>DESI Collaboration (2024)</strong> arXiv:2404.03002 — DR1 BAO + dark energy</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--w1)"></div><div class="item-text"><strong>Wang et al. (2025)</strong> arXiv:2504.21481 — Evidence for Dynamic Dark Matter</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 3 — WEEK 2 CALENDAR ══ -->
+<div class="slide" data-color="#2dd4bf">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--w2)">&#9679; Week 2 &nbsp;·&nbsp; Days 8–14 &nbsp;·&nbsp; 3–9 May</span>
+    <span class="slide-count">4 / 12</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--w2);height:42px"></div>
+      <div>
+        <div class="slide-title">Week 2 — DDM Core Theory &amp; Perturbations</div>
+        <div class="slide-sub">Master the DDM framework, perturbation theory, and what DDM does to \(P(k)\) and \(B(k_1,k_2,k_3)\)</div>
+      </div>
+    </div>
+  </div>
+  <div class="day-grid">
+    <div class="day-card" style="border-top-color:var(--p3)">
+      <div class="day-num">DAY 8</div>
+      <div class="day-date">Sun 3 May</div>
+      <div class="day-topic">DDM equation of state</div>
+      <div class="day-tasks">\(w_{\rm dm}(z) \neq 0\) · CPL-DDM: \(w_{\rm dm}(a)=w_0+w_a(1-a)\) · continuity eq. \(\dot\rho_{\rm dm}+3H(1+w_{\rm dm})\rho_{\rm dm}=0\)</div>
+    </div>
+    <div class="day-card" style="border-top-color:var(--p3)">
+      <div class="day-num">DAY 9</div>
+      <div class="day-date">Mon 4 May</div>
+      <div class="day-topic">Decaying dark matter (DDM)</div>
+      <div class="day-tasks">Two-body decay: DM \(\to\) massless + massive daughter · velocity kick \(v_k\) · decay rate \(\Gamma\) · \(P(k)\) suppression at small scales</div>
+    </div>
+    <div class="day-card" style="border-top-color:var(--p3)">
+      <div class="day-num">DAY 10</div>
+      <div class="day-date">Tue 5 May</div>
+      <div class="day-topic">Interacting DE-DM (IDE)</div>
+      <div class="day-tasks">Interaction kernel \(\mathcal{Q}\) · energy transfer between dark sectors · continuity eqs with coupling · coincidence problem resolution</div>
+    </div>
+    <div class="day-card" style="border-top-color:var(--p4)">
+      <div class="day-num">DAY 11</div>
+      <div class="day-date">Wed 6 May</div>
+      <div class="day-topic">Cosmological perturbation theory in DDM</div>
+      <div class="day-tasks">Gauge-invariant perturbations · dark sector perturbations \(\delta_{\rm dm}, \theta_{\rm dm}\) · Boltzmann hierarchy modifications · Dodelson &amp; Schmidt Ch.4–5</div>
+    </div>
+    <div class="day-card" style="border-top-color:var(--p4)">
+      <div class="day-num">DAY 12</div>
+      <div class="day-date">Thu 7 May</div>
+      <div class="day-topic">DDM effects on \(P(k)\)</div>
+      <div class="day-tasks">Modified transfer function · suppression for \(k \gg k_{\rm eq}\) · turnover scale \(k_0\) shifts · Bucko et al. 2024 \(\Lambda\)DDM N-body results</div>
+    </div>
+    <div class="day-card" style="border-top-color:var(--p4)">
+      <div class="day-num">DAY 13</div>
+      <div class="day-date">Fri 8 May</div>
+      <div class="day-topic">Growth factor &amp; \(f\sigma_8\) in DDM</div>
+      <div class="day-tasks">Growth equation with dark coupling · \(f = d\ln D_+/d\ln a\) · RSD signal in DDM · growth rate suppression</div>
+    </div>
+    <div class="day-card" style="border-top-color:var(--p4)">
+      <div class="day-num">DAY 14</div>
+      <div class="day-date">Sat 9 May</div>
+      <div class="day-topic">DDM bispectrum \(B(k_1,k_2,k_3)\)</div>
+      <div class="day-tasks">Tree-level bispectrum in DDM · relativistic corrections · connection to your JCAP paper · what changes vs \(\Lambda\)CDM</div>
+    </div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">Week 2 goal</div>
+      <div class="panel-body">By end of Day 14 you should be able to <strong>write down the full set of background and perturbation equations for a DDM model from scratch</strong>, explain how DDM modifies \(P(k)\) and \(B(k_1,k_2,k_3)\) compared to \(\Lambda\)CDM, and identify which DDM parameters leave the strongest observational signatures in the power spectrum and bispectrum you have already studied.</div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Core readings — Week 2</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--w2)"></div><div class="item-text"><strong>Dodelson &amp; Schmidt (2020)</strong> Modern Cosmology — Ch.4–6 (perturbation theory)</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--w2)"></div><div class="item-text"><strong>Bucko et al. (2024)</strong> A&amp;A — \(\Lambda\)DDM weak lensing analysis, arXiv:2309.10038</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--w2)"></div><div class="item-text"><strong>Giarè et al. (2024)</strong> JCAP — Interacting dark energy constraints</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--w2)"></div><div class="item-text"><strong>Perivolaropoulos &amp; Skara (2022)</strong> — Challenges to \(\Lambda\)CDM review, arXiv:2105.05208</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--w2)"></div><div class="item-text"><strong>Your own JCAP paper</strong> (arXiv:2511.06962) — re-read in light of DDM extensions</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 4 — WEEK 3 CALENDAR ══ -->
+<div class="slide" data-color="#f472b6">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--w3)">&#9679; Week 3 &nbsp;·&nbsp; Days 15–21 &nbsp;·&nbsp; 10–16 May</span>
+    <span class="slide-count">5 / 12</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--w3);height:42px"></div>
+      <div>
+        <div class="slide-title">Week 3 — Observations, MCMC &amp; Supervisor Prep</div>
+        <div class="slide-sub">Constrain DDM with real data, master the inference pipeline, and prepare your research direction</div>
+      </div>
+    </div>
+  </div>
+  <div class="day-grid">
+    <div class="day-card" style="border-top-color:var(--p5)">
+      <div class="day-num">DAY 15</div>
+      <div class="day-date">Sun 10 May</div>
+      <div class="day-topic">CMB constraints on DDM</div>
+      <div class="day-tasks">\(\tau\) damping in IDE · \(N_{\rm eff}\) shifts · CMB \(C_\ell\) modifications · Planck 2018 constraints on IDE models</div>
+    </div>
+    <div class="day-card" style="border-top-color:var(--p5)">
+      <div class="day-num">DAY 16</div>
+      <div class="day-date">Mon 11 May</div>
+      <div class="day-topic">BAO &amp; galaxy clustering constraints</div>
+      <div class="day-tasks">DESI BAO in DDM · \(r_s(z_{\rm drag})\) shift · \(f\sigma_8(z)\) RSD · eBOSS + DESI constraint papers</div>
+    </div>
+    <div class="day-card" style="border-top-color:var(--p5)">
+      <div class="day-num">DAY 17</div>
+      <div class="day-date">Tue 12 May</div>
+      <div class="day-topic">Weak lensing &amp; \(\sigma_8\) tension</div>
+      <div class="day-tasks">KiDS-1000 + Planck in DDM · \(S_8 = \sigma_8(\Omega_m/0.3)^{0.5}\) · how DDM resolves \(\sigma_8\) tension · Bucko 2024</div>
+    </div>
+    <div class="day-card" style="border-top-color:var(--p5)">
+      <div class="day-num">DAY 18</div>
+      <div class="day-date">Wed 13 May</div>
+      <div class="day-topic">MCMC for DDM — cobaya pipeline</div>
+      <div class="day-tasks">Bayesian inference · likelihood construction · DDM parameter priors · Fisher matrices for Euclid/MegaMapper · Verde lecture notes</div>
+    </div>
+    <div class="day-card" style="border-top-color:var(--p6)">
+      <div class="day-num">DAY 19</div>
+      <div class="day-date">Thu 14 May</div>
+      <div class="day-topic">Open research gaps in DDM</div>
+      <div class="day-tasks">What has not been done · relativistic DDM bispectrum? · DDM + lensing magnification? · DDM turnover scale detection?</div>
+    </div>
+    <div class="day-card" style="border-top-color:var(--p6)">
+      <div class="day-num">DAY 20</div>
+      <div class="day-date">Fri 15 May</div>
+      <div class="day-topic">Map your existing work to DDM</div>
+      <div class="day-tasks">Your JCAP turnover paper + bispectrum → DDM extension · what changes in \(B(k_1,k_2,k_3)\)? · draft research proposal 1 page</div>
+    </div>
+    <div class="day-card" style="border-top-color:var(--p6)">
+      <div class="day-num">DAY 21</div>
+      <div class="day-date">Sat 16 May</div>
+      <div class="day-topic">Final review &amp; supervisor prep</div>
+      <div class="day-tasks">Review all 6 phases · prepare 5 specific research questions · prepare 3 concrete next-step proposals for Prof. Maartens</div>
+    </div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">Week 3 goal</div>
+      <div class="panel-body">By end of Day 21 you should be able to <strong>present a concrete, well-motivated research proposal</strong> to Prof. Maartens: specifically, how Dynamic Dark Matter modifications affect the relativistic galaxy power spectrum and bispectrum detectable with Euclid and MegaMapper, what has not yet been done in the literature, and what your first paper's contribution would be.</div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Core readings — Week 3</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--w3)"></div><div class="item-text"><strong>Verde (2010)</strong> Les Houches lecture notes — Statistical methods in cosmology (MCMC, Fisher)</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--w3)"></div><div class="item-text"><strong>Planck 2018 DE paper</strong> (arXiv:1807.06209) — interacting dark energy constraints</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--w3)"></div><div class="item-text"><strong>DESI 2025 DR2 key paper</strong> — updated evidence for \(w \neq -1\) in dark matter and dark energy</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--w3)"></div><div class="item-text"><strong>Amendola &amp; Tsujikawa (2010)</strong> — Dark Energy textbook (interacting DE-DM chapters)</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--w3)"></div><div class="item-text"><strong>Ellis, Maartens &amp; MacCallum (2012)</strong> — revisit for relativistic DDM perturbation formalism</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 5 — PHASE 3: DDM CORE THEORY ══ -->
+<div class="slide" data-color="#fb923c">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--p3)">&#9679; Deep dive — DDM core theory</span>
+    <span class="slide-count">6 / 12</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--p3);height:42px"></div>
+      <div>
+        <div class="slide-title">What You Must Understand About DDM</div>
+        <div class="slide-sub">The mathematical core — every equation you need to be fluent in</div>
+      </div>
+    </div>
+  </div>
+  <div class="metrics-row">
+    <div class="metric"><div class="metric-label">DDM EoS</div><div class="metric-val">\(w_{\rm dm}(a) = w_0 + w_a(1-a)\)</div></div>
+    <div class="metric"><div class="metric-label">Continuity equation</div><div class="metric-val">\(\dot\rho_i + 3H(1+w_i)\rho_i = \mathcal{Q}_i\)</div></div>
+    <div class="metric"><div class="metric-label">Interaction kernel</div><div class="metric-val">\(\mathcal{Q} = \xi H \rho_{\rm dm}\) (or other forms)</div></div>
+    <div class="metric"><div class="metric-label">Friedmann modified</div><div class="metric-val">\(H^2 = H_0^2(\Omega_m^{\rm eff}(z) + \Omega_\Lambda)\)</div></div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">The three DDM frameworks you must know</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--p3)"></div><div class="item-text"><strong>Framework 1 — Dynamical DM equation of state:</strong> DM has \(w_{\rm dm}(z) \neq 0\). Background energy density evolves as \(\rho_{\rm dm} \propto a^{-3(1+w_{\rm dm})}\). The CPL form \(w_{\rm dm}(a) = w_0 + w_a(1-a)\) is the simplest parametrisation. Modifies \(P(k)\) via the transfer function.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--p3)"></div><div class="item-text"><strong>Framework 2 — Decaying dark matter (\(\Lambda\)DDM):</strong> DM particle decays: DM \(\to\) massless radiation + massive daughter with velocity kick \(v_k\). The decay rate \(\Gamma\) and \(v_k\) are free parameters. Suppresses \(P(k)\) at small scales \(k \gtrsim k_{\rm decay}\), potentially resolving \(\sigma_8\) tension.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--p3)"></div><div class="item-text"><strong>Framework 3 — Interacting DE-DM (IDE):</strong> Energy exchange between dark sectors: \(\dot\rho_{\rm dm} + 3H\rho_{\rm dm} = +\mathcal{Q}\), \(\dot\rho_{\rm de} + 3H(1+w_{\rm de})\rho_{\rm de} = -\mathcal{Q}\). Common kernels: \(\mathcal{Q} = \xi H\rho_{\rm dm}\) or \(\mathcal{Q} = \xi H\rho_{\rm de}\). Can address coincidence problem and \(H_0\) tension.</div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">What DDM changes observationally</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--p4)"></div><div class="item-text"><strong>Background expansion:</strong> \(H(z)\) is modified — shifts BAO peak position \(r_s(z_{\rm drag})\) and changes \(d_A(z)\). DESI constrains this directly.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--p4)"></div><div class="item-text"><strong>Matter power spectrum \(P(k)\):</strong> modified transfer function — suppression at \(k \gg k_{\rm eq}\) for decaying DDM; shift in turnover \(k_0\) for interacting IDE. These are the scales Euclid and MegaMapper measure.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--p4)"></div><div class="item-text"><strong>Growth factor \(D_+(a)\):</strong> the growth equation \(\ddot\delta + 2H\dot\delta - 4\pi G\bar\rho_{\rm dm}^{\rm eff}\delta = 0\) changes — \(f\sigma_8(z)\) in RSD is modified. Measured by DESI full-shape analysis.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--p4)"></div><div class="item-text"><strong>Bispectrum \(B(k_1,k_2,k_3)\):</strong> tree-level bispectrum kernel \(F_2\) is modified; relativistic corrections in DDM have not been fully computed — <em>this is your research opportunity.</em></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 6 — WHAT YOU NEED TO KNOW: FULL MAP ══ -->
+<div class="slide" data-color="#a78bfa">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--p1)">&#9679; Complete knowledge map</span>
+    <span class="slide-count">7 / 12</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--p1);height:42px"></div>
+      <div>
+        <div class="slide-title">Everything You Must Know — Full Map</div>
+        <div class="slide-sub">Every topic, in order of prerequisite dependency — master each before moving to the next</div>
+      </div>
+    </div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">Layer 1 — Absolute prerequisites (must know already / Days 1–3)</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--p1)"></div><div class="item-text"><strong>GR &amp; Friedmann equations:</strong> \(H^2 = (8\pi G/3)\rho - k/a^2 + \Lambda/3\), \(\ddot a/a = -(4\pi G/3)(\rho+3p) + \Lambda/3\)</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--p1)"></div><div class="item-text"><strong>Cosmological perturbation theory:</strong> gauge choices, \(\delta_m\), \(\theta\), the Boltzmann hierarchy — you need this fluently</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--p1)"></div><div class="item-text"><strong>Matter power spectrum:</strong> \(P(k) = A_s k^{n_s} T^2(k)\), transfer function \(T(k)\), turnover at \(k_0\) — your existing research</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--p1)"></div><div class="item-text"><strong>Galaxy bispectrum:</strong> \(B(k_1,k_2,k_3)\), tree-level kernel \(F_2\), relativistic corrections — your JCAP paper</div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Layer 2 — Dark sector foundations (Days 4–7)</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--p2)"></div><div class="item-text"><strong>Dark matter evidence:</strong> rotation curves, CMB, lensing, BBN — why we need non-baryonic DM</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--p2)"></div><div class="item-text"><strong>CDM small-scale tensions:</strong> missing satellites, cusp-core, \(\sigma_8\), \(H_0\) — the empirical motivation for DDM</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--p2)"></div><div class="item-text"><strong>Dark energy:</strong> \(\Lambda\), quintessence, \(w(z)\), CPL parametrisation \(w_0 w_a\)CDM, DESI results</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--p2)"></div><div class="item-text"><strong>Equation of state phenomenology:</strong> quintessence (\(w > -1\)) vs phantom (\(w < -1\)) vs crossing — stability conditions</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="openq" style="margin-top:10px;flex-shrink:0"><strong>Layers 3–6 are covered in the next slide.</strong> The key insight is that DDM research requires you to combine perturbation theory (which you already know from your bispectrum work) with new dark sector physics (the DDM framework). Your existing research gives you a head start that most students entering this field do not have.</div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 7 — KNOWLEDGE MAP CONTINUED ══ -->
+<div class="slide" data-color="#a78bfa">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--p1)">&#9679; Complete knowledge map — continued</span>
+    <span class="slide-count">8 / 12</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--p1);height:42px"></div>
+      <div>
+        <div class="slide-title">Layers 3–6 — Advanced DDM Knowledge</div>
+        <div class="slide-sub">What separates a student who has read about DDM from one ready to do research on it</div>
+      </div>
+    </div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">Layer 3 — DDM theory (Days 8–10)</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--p3)"></div><div class="item-text"><strong>DDM equation of state:</strong> \(w_{\rm dm}(z)\) evolution, CPL-DDM, background energy density with \(w_{\rm dm}\)</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--p3)"></div><div class="item-text"><strong>Decaying DM:</strong> two-body decay kinematics, velocity kick \(v_k\), decay rate \(\Gamma\), modified Boltzmann equations</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--p3)"></div><div class="item-text"><strong>Interacting DE-DM:</strong> interaction kernel \(\mathcal{Q}\), coupled continuity equations, stability conditions, coincidence problem</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--p3)"></div><div class="item-text"><strong>Dynamical systems analysis:</strong> phase space, critical points, attractors in DDM — useful for long-term behaviour</div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Layer 4 — DDM perturbations (Days 11–14)</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--p4)"></div><div class="item-text"><strong>Perturbed DDM equations:</strong> \(\delta_{\rm dm}\), \(\theta_{\rm dm}\) with interaction terms — gauge-invariant form in the \(1+3\) formalism</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--p4)"></div><div class="item-text"><strong>Modified transfer function \(T(k)\):</strong> how \(w_{\rm dm}\), decay, and coupling modify \(P(k)\) — scale-dependent suppression</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--p4)"></div><div class="item-text"><strong>Growth rate in DDM:</strong> modified \(\ddot\delta + 2H\dot\delta - 4\pi G\rho_{\rm dm}^{\rm eff}\delta = S_{\rm coupling}\) — non-trivial source terms</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--p4)"></div><div class="item-text"><strong>DDM bispectrum:</strong> how \(F_2(k_1,k_2)\) kernel and relativistic terms change in DDM — <em>the open research frontier</em></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="openq" style="margin-top:10px;flex-shrink:0">
+    <strong>Layer 5</strong> (Days 15–18): observational constraints — CMB, BAO (DESI), weak lensing (\(S_8\)), RSD (\(f\sigma_8\)), Bayesian MCMC inference with cobaya. &nbsp;<strong>Layer 6</strong> (Days 19–21): research gap identification — what has not been done in DDM that your expertise in the relativistic bispectrum and the turnover scale uniquely positions you to contribute.
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 8 — READING LIST ══ -->
+<div class="slide" data-color="#fbbf24">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--p2)">&#9679; Complete reading list</span>
+    <span class="slide-count">9 / 12</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--p2);height:42px"></div>
+      <div>
+        <div class="slide-title">The Essential Reading List</div>
+        <div class="slide-sub">Every paper and book you need — in priority order — to be research-ready by 17 May</div>
+      </div>
+    </div>
+  </div>
+  <div class="reading-grid">
+    <div class="read-card" style="border-left-color:var(--p1)">
+      <div class="read-type">Textbook · Week 1</div>
+      <div class="read-title">Introduction to Cosmology (2nd ed.)</div>
+      <div class="read-auth">Barbara Ryden</div>
+      <div class="read-why">Ch.1–7: background cosmology, expansion, dark matter, dark energy — your foundation</div>
+    </div>
+    <div class="read-card" style="border-left-color:var(--p1)">
+      <div class="read-type">Review · Week 1</div>
+      <div class="read-title">Small-Scale Challenges to CDM</div>
+      <div class="read-auth">Bullock &amp; Boylan-Kolchin (2017) ARA&amp;A</div>
+      <div class="read-why">The definitive review of why standard CDM fails at small scales — the empirical case for DDM</div>
+    </div>
+    <div class="read-card" style="border-left-color:var(--p2)">
+      <div class="read-type">Paper · Week 1</div>
+      <div class="read-title">DESI DR1 BAO — Evidence for Dynamical Dark Energy</div>
+      <div class="read-auth">DESI Collaboration (2024) arXiv:2404.03002</div>
+      <div class="read-why">\(w_0=-0.73, w_a=-1.05\) at \(3.9\sigma\) from \(\Lambda\)CDM — the key observational motivation</div>
+    </div>
+    <div class="read-card" style="border-left-color:var(--p2)">
+      <div class="read-type">Paper · Week 1</div>
+      <div class="read-title">Challenges and Tensions in the \(\Lambda\)CDM Model</div>
+      <div class="read-auth">Perivolaropoulos &amp; Skara (2022) arXiv:2105.05208</div>
+      <div class="read-why">Comprehensive review of \(H_0\) and \(\sigma_8\) tensions — why we need beyond-\(\Lambda\)CDM physics</div>
+    </div>
+    <div class="read-card" style="border-left-color:var(--p3)">
+      <div class="read-type">Paper · Week 2</div>
+      <div class="read-title">Evidence for Dynamic Dark Matter (CPL-DDM)</div>
+      <div class="read-auth">Wang et al. (2025) arXiv:2504.21481</div>
+      <div class="read-why">The most current DDM paper — CPL parametrisation for DM EoS, Super Rip scenario, DESI+CMB constraints</div>
+    </div>
+    <div class="read-card" style="border-left-color:var(--p3)">
+      <div class="read-type">Paper · Week 2</div>
+      <div class="read-title">Decaying Dark Matter with Weak Lensing (\(\Lambda\)DDM)</div>
+      <div class="read-auth">Bucko et al. (2024) A&amp;A arXiv:2309.10038</div>
+      <div class="read-why">Two-body DDM, velocity kick \(v_k\), \(P(k)\) suppression, KiDS-1000 constraints — the observational benchmark</div>
+    </div>
+    <div class="read-card" style="border-left-color:var(--p4)">
+      <div class="read-type">Textbook · Week 2</div>
+      <div class="read-title">Modern Cosmology (2nd ed.)</div>
+      <div class="read-auth">Dodelson &amp; Schmidt (2020)</div>
+      <div class="read-why">Ch.4–7: perturbation theory, Boltzmann hierarchy, power spectrum — essential for DDM perturbations</div>
+    </div>
+    <div class="read-card" style="border-left-color:var(--p4)">
+      <div class="read-type">Textbook · Week 2</div>
+      <div class="read-title">Dark Energy (textbook)</div>
+      <div class="read-auth">Amendola &amp; Tsujikawa (2010)</div>
+      <div class="read-why">Interacting DE-DM chapters: interaction kernel, coupled equations, stability — the IDE theoretical foundation</div>
+    </div>
+    <div class="read-card" style="border-left-color:var(--p5)">
+      <div class="read-type">Lecture notes · Week 3</div>
+      <div class="read-title">Statistical Methods in Cosmology</div>
+      <div class="read-auth">Verde (2010) Les Houches</div>
+      <div class="read-why">Fisher matrices, MCMC, Bayesian inference — how you will constrain DDM with Euclid and MegaMapper data</div>
+    </div>
+    <div class="read-card" style="border-left-color:var(--p5)">
+      <div class="read-type">Paper · Week 3</div>
+      <div class="read-title">Planck 2018 — Dark Energy Constraints</div>
+      <div class="read-auth">Planck Collaboration (2018) arXiv:1807.06209</div>
+      <div class="read-why">CMB constraints on interacting dark energy — the baseline constraint you will need to beat with DDM models</div>
+    </div>
+    <div class="read-card" style="border-left-color:var(--p6)">
+      <div class="read-type">Book · All weeks</div>
+      <div class="read-title">Relativistic Cosmology</div>
+      <div class="read-auth">Ellis, Maartens &amp; MacCallum (2012)</div>
+      <div class="read-why">The \(1+3\) covariant formalism for DDM perturbations — your supervisor is a co-author; this is your theoretical toolkit</div>
+    </div>
+    <div class="read-card" style="border-left-color:var(--p6)">
+      <div class="read-type">Your paper · All weeks</div>
+      <div class="read-title">Turnover Detection Using Power Spectrum &amp; Bispectrum</div>
+      <div class="read-auth">Dinda, Jolicoeur, Maartens &amp; Dube (2025) JCAP arXiv:2511.06962</div>
+      <div class="read-why">Re-read with DDM eyes: how does \(k_0\) and \(B(k_1,k_2,k_3)\) change when dark matter is dynamical? This is your research gap.</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 9 — RESEARCH GAPS ══ -->
+<div class="slide" data-color="#34d399">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--p4)">&#9679; Open research opportunities in DDM</span>
+    <span class="slide-count">10 / 12</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--p4);height:42px"></div>
+      <div>
+        <div class="slide-title">Where the Research Gaps Are</div>
+        <div class="slide-sub">What has not yet been done — and where your existing expertise gives you an advantage</div>
+      </div>
+    </div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">Confirmed open gaps in the DDM literature</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--p4)"></div><div class="item-text"><strong>Relativistic DDM bispectrum:</strong> no paper has computed the relativistic galaxy bispectrum \(B(k_1,k_2,k_3)\) in a dynamical dark matter model — Doppler, lensing, and wide-angle corrections are all uncharted territory in DDM</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--p4)"></div><div class="item-text"><strong>DDM turnover scale detection:</strong> the shift in \(k_0\) due to DDM's modified thermal history has not been quantified for Euclid or MegaMapper — a direct extension of your JCAP paper</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--p4)"></div><div class="item-text"><strong>Lensing magnification in DDM:</strong> your previous work showed lensing magnification affects turnover detection — this effect in DDM models is unexplored</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--p4)"></div><div class="item-text"><strong>Fisher forecasts for DDM with MegaMapper LBGs:</strong> no published DDM forecast exists for MegaMapper's high-\(z\) LBG sample — which is exactly the sample from your turnover paper</div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Your competitive advantage going into 17 May</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--p6)"></div><div class="item-text"><strong>Published bispectrum expertise:</strong> your JCAP paper on turnover detection with power spectrum + bispectrum is directly extendable to DDM — you already have the tools</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--p6)"></div><div class="item-text"><strong>MegaMapper MCMC pipeline:</strong> your cobaya-based turnover detection pipeline can be modified to include DDM parameters \(w_{\rm dm,0}\), \(w_{\rm dm,a}\), or \(\Gamma\), \(v_k\)</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--p6)"></div><div class="item-text"><strong>Relativistic corrections background:</strong> you know the \(1+3\) formalism from Ellis, Maartens &amp; MacCallum — applying this to DDM perturbations is a natural next step</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--p6)"></div><div class="item-text"><strong>Supervisor alignment:</strong> Prof. Maartens's own work on relativistic corrections to LSS is directly relevant to the DDM bispectrum — your proposed direction fits naturally within his research programme</div></div>
+      </div>
+      <div class="openq"><strong>Proposed paper title (draft):</strong> "Relativistic effects on the galaxy power spectrum and bispectrum in dynamical dark matter models: detectability with Euclid and MegaMapper" — this is a paper that could realistically be submitted within 12 months.</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 10 — SUPERVISOR PREP ══ -->
+<div class="slide" data-color="#f472b6">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--w3)">&#9679; 17 May — Supervisor meeting prep</span>
+    <span class="slide-count">11 / 12</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--w3);height:42px"></div>
+      <div>
+        <div class="slide-title">What to Say on 17 May</div>
+        <div class="slide-sub">Walk in with a research direction, not just reading notes — impress Prof. Maartens with concrete proposals</div>
+      </div>
+    </div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">Five things to communicate confidently</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--w3)"></div><div class="item-text"><strong>1. The DDM landscape:</strong> "I have studied the three main DDM frameworks — dynamical \(w_{\rm dm}(z)\), decaying DDM, and interacting IDE — and understand how each modifies \(P(k)\) and the growth rate \(f\sigma_8(z)\)."</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--w3)"></div><div class="item-text"><strong>2. The observational motivation:</strong> "DESI DR2 shows \(\sim 3\sigma\) evidence for \(w \neq -1\) in dark energy, and the \(\sigma_8\) tension motivates dynamical dark matter. These two findings together make DDM a well-motivated research direction."</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--w3)"></div><div class="item-text"><strong>3. The gap you have identified:</strong> "The relativistic galaxy bispectrum has not been computed for any DDM model. My existing bispectrum work provides the exact toolkit needed to do this."</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--w3)"></div><div class="item-text"><strong>4. The turnover extension:</strong> "DDM shifts the turnover scale \(k_0\) via its modified thermal history. I can quantify this shift for Euclid and MegaMapper using my existing cobaya pipeline — this is a natural second paper."</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--w3)"></div><div class="item-text"><strong>5. A specific question for Prof. Maartens:</strong> "Which DDM framework do you think is most theoretically motivated for a first paper — decaying DDM or interacting IDE? And should we use the \(1+3\) covariant formalism for the perturbations?"</div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">What to bring on 17 May</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--p6)"></div><div class="item-text"><strong>A one-page research proposal:</strong> title, motivation (DDM + tensions), methodology (your bispectrum formalism + DDM perturbations), expected outputs (2 papers: relativistic DDM bispectrum + turnover in DDM)</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--p6)"></div><div class="item-text"><strong>A list of 3 candidate DDM papers</strong> to discuss — Wang et al. 2025, Bucko et al. 2024, and one on IDE — showing you have engaged with the primary literature</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--p6)"></div><div class="item-text"><strong>A draft equation sheet:</strong> the DDM continuity equations, modified Friedmann equation, and perturbed equations — written out in the \(1+3\) notation Prof. Maartens uses</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--p6)"></div><div class="item-text"><strong>A timeline:</strong> realistic milestones — DDM theory mastery (done by 17 May), first analytical results (3 months), first paper draft (6 months) — showing Prof. Maartens you are organised and self-directed</div></div>
+      </div>
+      <div class="openq"><strong>Key message for the meeting:</strong> you are not asking "what should I work on?" — you are presenting a concrete, well-motivated research direction and asking for his expert guidance on which specific framework and formalism to prioritise. That is what a confident PhD researcher does.</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 11 — DAILY ROUTINE ══ -->
+<div class="slide" data-color="#60a5fa">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--w1)">&#9679; How to execute the plan</span>
+    <span class="slide-count">12 / 12</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--w1);height:42px"></div>
+      <div>
+        <div class="slide-title">Daily Execution Strategy</div>
+        <div class="slide-sub">How to structure each day to cover the material with deep understanding, not just surface reading</div>
+      </div>
+    </div>
+  </div>
+  <div class="metrics-row">
+    <div class="metric"><div class="metric-label">Days available</div><div class="metric-val" style="color:#fbbf24">21 days</div></div>
+    <div class="metric"><div class="metric-label">Recommended daily study</div><div class="metric-val">6–8 hrs intensive</div></div>
+    <div class="metric"><div class="metric-label">Papers per day (avg)</div><div class="metric-val">1–2 full papers</div></div>
+    <div class="metric"><div class="metric-label">Equations to derive daily</div><div class="metric-val">At least 3 from scratch</div></div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">Recommended daily structure</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--w1)"></div><div class="item-text"><strong>Morning (2–3 hrs) — Theory:</strong> work through the day's topic from first principles. Derive every equation on paper. Do not move on until you can reproduce it without notes.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--w1)"></div><div class="item-text"><strong>Midday (2–3 hrs) — Reading:</strong> read the day's assigned paper(s). Take structured notes: (1) what problem does it solve, (2) what equations are central, (3) what is the key result, (4) what does it leave open.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--w1)"></div><div class="item-text"><strong>Afternoon (1–2 hrs) — Connection:</strong> explicitly connect what you read to your existing bispectrum and power spectrum work. Write one paragraph: "If I applied this to my JCAP paper, I would need to change X to get Y."</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--w1)"></div><div class="item-text"><strong>Evening (30 min) — Consolidation:</strong> write a brief summary of the day's learning in your own words. Identify one thing you do not yet understand and schedule it for tomorrow morning.</div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">The three rules for intensive mastery</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--p3)"></div><div class="item-text"><strong>Rule 1 — Derive, do not memorise:</strong> every equation in DDM must be something you can derive. If you cannot derive it, you do not understand it yet. Write it out. Every. Time.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--p3)"></div><div class="item-text"><strong>Rule 2 — Connect everything to \(P(k)\) and \(B\):</strong> every new concept must be immediately mapped to the power spectrum or bispectrum. Ask: "How does this change what Euclid or MegaMapper would measure?"</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--p3)"></div><div class="item-text"><strong>Rule 3 — Generate questions, not just notes:</strong> the measure of your mastery is the quality of the questions you can ask. By Day 21, you should have a list of 10 specific unanswered questions about DDM. These are your research directions.</div></div>
+      </div>
+      <div class="openq"><strong>On 17 May:</strong> Prof. Maartens does not expect you to have solved DDM. He expects you to arrive with deep understanding, clear motivation, and a specific direction. That is exactly what this plan delivers. You have 21 days. You are ready for this.</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+</div><!-- /deck -->
+
+<script>
+const canvas=document.getElementById('stars'),ctx=canvas.getContext('2d');
+let W,H,stars=[];
+function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight}
+function makeStars(){stars=Array.from({length:240},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.3+0.2,o:Math.random()*0.5+0.1,sp:Math.random()*0.007+0.002,ph:Math.random()*Math.PI*2}))}
+function draw(t){ctx.clearRect(0,0,W,H);stars.forEach(s=>{const o=Math.max(0,Math.min(1,s.o+Math.sin(t*s.sp+s.ph)*0.12));ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(180,210,255,${o.toFixed(2)})`;ctx.fill()});requestAnimationFrame(draw)}
+resize();makeStars();
+window.addEventListener('resize',()=>{resize();makeStars()});
+requestAnimationFrame(draw);
+
+const slides=Array.from(document.querySelectorAll('.slide'));
+const colors=slides.map(s=>s.dataset.color||'#60a5fa');
+const bar=document.getElementById('progress-bar');
+const dotsEl=document.getElementById('dots');
+let cur=0;
+slides.forEach((_,i)=>{
+  const d=document.createElement('div');
+  d.className='dot'+(i===0?' active':'');
+  d.style.background=i===0?colors[0]:'';
+  d.onclick=()=>go(i);
+  dotsEl.appendChild(d);
+});
+const dotEls=Array.from(dotsEl.querySelectorAll('.dot'));
+function go(n){
+  if(n<0||n>=slides.length)return;
+  slides[cur].classList.remove('active');
+  dotEls[cur].classList.remove('active');
+  dotEls[cur].style.background='';
+  cur=n;
+  slides[cur].classList.add('active');
+  dotEls[cur].classList.add('active');
+  dotEls[cur].style.background=colors[cur];
+  bar.style.width=((cur/(slides.length-1))*100)+'%';
+  bar.style.background=colors[cur];
+  if(window.MathJax&&MathJax.typesetPromise)MathJax.typesetPromise([slides[cur]]).catch(()=>{});
+}
+document.getElementById('prev').onclick=()=>go(cur-1);
+document.getElementById('next').onclick=()=>go(cur+1);
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')go(cur+1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(cur-1);
+});
+bar.style.width='0%';
+bar.style.background=colors[0];
+</script>
+</body>
+</html>
