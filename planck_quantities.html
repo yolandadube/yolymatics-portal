@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planck Quantities — PhD Cosmology Reference</title>
+
+<script>
+MathJax = {
+  tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']], packages: {'[+]':['ams']} },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] },
+  startup: { ready() { MathJax.startup.defaultReady(); } }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ── RESET & BASE ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; }
+
+:root {
+  --bg:    #06080f;
+  --bg2:   #0d1525;
+  --bg3:   #121e33;
+  --bg4:   #1a2a45;
+  --border: rgba(140,180,255,.13);
+  --border2: rgba(140,180,255,.25);
+  --text:  #dde6f5;
+  --muted: #8399bb;
+  --dim:   #4a5e7a;
+  --cl: #60a5fa;   /* length  — blue   */
+  --cm: #2dd4bf;   /* mass    — teal   */
+  --ce: #fbbf24;   /* energy  — gold   */
+  --ct: #fb923c;   /* temp    — orange */
+  --cti:#a78bfa;   /* time    — purple */
+  --cep:#f472b6;   /* epoch   — pink   */
+  --cw: #34d399;   /* why     — green  */
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 300;
+}
+
+/* MathJax — prevent overflow, keep colour */
+mjx-container { color: var(--text) !important; max-width: 100%; }
+mjx-container[display="true"] {
+  overflow-x: visible !important;
+  white-space: normal !important;
+  margin: 0.4rem 0 !important;
+}
+
+/* ── STAR CANVAS ── */
+#stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+/* ── SLIDE SYSTEM ── */
+.deck { position: fixed; inset: 0; z-index: 1; }
+
+.slide {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  opacity: 0; pointer-events: none;
+  transition: opacity .35s ease;
+  overflow: hidden;
+}
+.slide.active {
+  opacity: 1; pointer-events: all;
+}
+
+/* ── PROGRESS BAR ── */
+#progress-bar {
+  position: fixed; top: 0; left: 0; height: 3px;
+  background: var(--cl); z-index: 100;
+  transition: width .3s ease, background .3s ease;
+}
+
+/* ── NAV DOTS ── */
+#dots {
+  position: fixed; bottom: 22px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; gap: 8px; z-index: 100;
+}
+.dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--border2); cursor: pointer;
+  transition: background .2s, transform .2s;
+}
+.dot.active { transform: scale(1.4); }
+
+/* ── ARROW BUTTONS ── */
+.arrow {
+  position: fixed; top: 50%; transform: translateY(-50%);
+  z-index: 100; background: var(--bg2);
+  border: .5px solid var(--border2); border-radius: 50%;
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--muted); font-size: 16px;
+  transition: background .2s, color .2s;
+}
+.arrow:hover { background: var(--bg3); color: var(--text); }
+#prev { left: 16px; }
+#next { right: 16px; }
+
+/* ── SLIDE INNER LAYOUT ── */
+.slide-inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 58px 62px;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+  gap: 0;
+  overflow: hidden;
+  min-height: 0;
+  height: 100%;
+}
+
+/* ── SLIDE HEADER ── */
+.slide-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px; flex-shrink: 0;
+}
+.slide-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--dim);
+}
+.slide-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--dim);
+}
+
+/* accent line under title */
+.title-block { margin-bottom: 12px; flex-shrink: 0; }
+.accent-line {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 4px;
+}
+.accent-bar { width: 4px; border-radius: 2px; flex-shrink: 0; }
+.slide-title {
+  font-family: 'Crimson Pro', serif;
+  font-size: clamp(1.6rem, 3.2vw, 2.5rem);
+  font-weight: 400; line-height: 1.15; color: var(--text);
+}
+.slide-symbol {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: var(--muted); margin-left: 2px;
+}
+
+/* ── FORMULA BOX ── */
+.formula-box {
+  background: var(--bg2);
+  border: .5px solid var(--border2);
+  border-radius: 14px;
+  padding: 12px 22px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+}
+.formula-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--dim); flex-shrink: 0; min-width: 60px;
+}
+.formula-expr {
+  font-size: clamp(1rem, 2.2vw, 1.35rem);
+  color: var(--text); flex: 1;
+}
+
+/* ── VALUE PILLS ── */
+.value-row {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 12px; flex-shrink: 0;
+}
+.vpill {
+  background: var(--bg3);
+  border: .5px solid var(--border);
+  border-radius: 10px; padding: 7px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(11px, 1.35vw, 13px);
+  color: var(--text); line-height: 1.4;
+  display: flex; flex-direction: column; gap: 2px;
+  overflow: hidden;
+}
+.vpill-label {
+  font-size: 8.5px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--dim);
+}
+
+/* ── MEANING SECTION ── */
+.meaning-text {
+  font-family: 'Crimson Pro', serif;
+  font-size: clamp(13px, 1.6vw, 15.5px);
+  font-weight: 300; color: var(--muted);
+  line-height: 1.72;
+  margin-bottom: 12px; flex-shrink: 0;
+  overflow: hidden;
+}
+.meaning-text strong { color: var(--text); font-weight: 400; }
+.meaning-text em { font-style: italic; }
+
+/* ── ANALOGY GRID ── */
+.agrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  flex-shrink: 0;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.acell {
+  background: var(--bg3);
+  border: .5px solid var(--border);
+  border-radius: 10px;
+  padding: 9px 13px;
+  min-width: 0;
+  overflow: hidden;
+}
+.acell-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5px; letter-spacing: .09em; text-transform: uppercase;
+  color: var(--dim); margin-bottom: 3px;
+}
+.acell-val {
+  font-size: clamp(11.5px, 1.3vw, 12.5px);
+  color: var(--muted); line-height: 1.5;
+}
+.acell-val strong { color: var(--text); font-weight: 400; }
+
+/* ── OPEN Q ── */
+.openq {
+  border-left: 2px solid var(--border2);
+  padding: 8px 13px;
+  font-size: clamp(11px, 1.25vw, 12.5px);
+  color: var(--dim); font-style: italic; line-height: 1.6;
+  flex-shrink: 0; overflow: hidden;
+}
+.openq strong { color: var(--muted); font-style: normal; font-weight: 400; }
+
+/* ── COVER SLIDE ── */
+.cover {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; gap: 18px; padding: 40px;
+}
+.cover-kicker {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--dim);
+  display: flex; align-items: center; gap: 12px;
+}
+.cover-kicker::before, .cover-kicker::after {
+  content: ''; display: inline-block; width: 32px; height: 1px; background: var(--border2);
+}
+.cover h1 {
+  font-family: 'Crimson Pro', serif;
+  font-size: clamp(2.4rem, 6vw, 4.5rem);
+  font-weight: 300; line-height: 1.1; color: var(--text);
+}
+.cover h1 em { font-style: italic; color: var(--ce); }
+.cover-sub {
+  font-size: clamp(13px, 1.6vw, 15px);
+  color: var(--muted); max-width: 520px; line-height: 1.7;
+}
+.const-pills {
+  display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+  margin-top: 8px;
+}
+.cpill {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg2); border: .5px solid var(--border2);
+  border-radius: 100px; padding: 6px 14px 6px 10px;
+}
+.cpill-sym { font-size: 16px; color: var(--text); min-width: 24px; text-align: center; }
+.cpill-name { font-size: 11px; color: var(--muted); }
+.cpill-val { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--dim); }
+.cover-hint {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--dim); letter-spacing: .1em;
+  margin-top: 8px;
+}
+
+/* ── EPOCH SLIDE ── */
+.epoch-list { display: flex; flex-direction: column; gap: 8px; flex: 1; overflow: hidden; }
+.erow {
+  background: var(--bg2); border: .5px solid var(--border);
+  border-radius: 10px; padding: 10px 16px;
+  display: flex; align-items: flex-start; gap: 14px;
+  cursor: pointer; transition: border-color .2s;
+}
+.erow:hover { border-color: var(--border2); }
+.erow.eopen { border-color: var(--border2); }
+.epip { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.erow-main { flex: 1; min-width: 0; }
+.erow-top { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+.erow-name { font-size: 13px; font-weight: 400; color: var(--text); }
+.erow-time {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  color: var(--dim); background: var(--bg3);
+  padding: 2px 8px; border-radius: 100px; flex-shrink: 0;
+}
+.erow-body {
+  font-size: 12px; color: var(--muted); line-height: 1.6;
+  display: none;
+}
+.erow.eopen .erow-body { display: block; }
+.erow-metrics {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px;
+}
+.emtag {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  background: var(--bg3); padding: 2px 8px; border-radius: 6px; color: var(--muted);
+}
+.echev { font-size: 11px; color: var(--dim); flex-shrink: 0; margin-top: 4px; transition: transform .2s; }
+.erow.eopen .echev { transform: rotate(180deg); }
+
+/* ── MATTERS SLIDE ── */
+.matters-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px; flex: 1;
+}
+.mcard {
+  background: var(--bg2); border: .5px solid var(--border);
+  border-radius: 14px; padding: 20px 22px;
+  border-top-width: 2px; display: flex; flex-direction: column; gap: 8px;
+}
+.mcard h4 { font-size: 14px; font-weight: 500; color: var(--text); }
+.mcard p { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+/* ── FOOTER STRIP ── */
+.slide-footer {
+  flex-shrink: 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; color: var(--dim); letter-spacing: .08em;
+  text-align: center; padding: 8px 0 0;
+  border-top: .5px solid var(--border);
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+.slide.active .slide-inner > * { animation: fadeUp .45s ease both; }
+.slide.active .slide-inner > *:nth-child(1){animation-delay:.04s}
+.slide.active .slide-inner > *:nth-child(2){animation-delay:.09s}
+.slide.active .slide-inner > *:nth-child(3){animation-delay:.14s}
+.slide.active .slide-inner > *:nth-child(4){animation-delay:.19s}
+.slide.active .slide-inner > *:nth-child(5){animation-delay:.24s}
+.slide.active .slide-inner > *:nth-child(6){animation-delay:.29s}
+.slide.active .slide-inner > *:nth-child(7){animation-delay:.34s}
+
+::-webkit-scrollbar { display: none; }
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+
+<div id="progress-bar"></div>
+<div id="dots"></div>
+<button class="arrow" id="prev">&#8592;</button>
+<button class="arrow" id="next">&#8594;</button>
+
+<div class="deck" id="deck">
+
+  <!-- ══ SLIDE 0 — COVER ══ -->
+  <div class="slide active" data-color="#60a5fa">
+    <div class="cover">
+      <div class="cover-kicker">PhD Cosmology Reference &nbsp;·&nbsp; Planck Units</div>
+      <h1>The <em>Natural</em> Units<br>of the Universe</h1>
+      <p class="cover-sub">Five quantities built entirely from the constants of nature — marking the boundary where quantum mechanics and gravity can no longer be treated separately.</p>
+      <div class="const-pills">
+        <div class="cpill">
+          <div class="cpill-sym">\(\hbar\)</div>
+          <div><div class="cpill-name">Reduced Planck const.</div><div class="cpill-val">1.055 &times; 10<sup>&minus;34</sup> J&middot;s</div></div>
+        </div>
+        <div class="cpill">
+          <div class="cpill-sym">\(c\)</div>
+          <div><div class="cpill-name">Speed of light</div><div class="cpill-val">2.998 &times; 10<sup>8</sup> m/s</div></div>
+        </div>
+        <div class="cpill">
+          <div class="cpill-sym">\(G\)</div>
+          <div><div class="cpill-name">Gravitational const.</div><div class="cpill-val">6.674 &times; 10<sup>&minus;11</sup> m<sup>3</sup>kg<sup>&minus;1</sup>s<sup>&minus;2</sup></div></div>
+        </div>
+        <div class="cpill">
+          <div class="cpill-sym">\(k_{\!B}\)</div>
+          <div><div class="cpill-name">Boltzmann const.</div><div class="cpill-val">1.381 &times; 10<sup>&minus;23</sup> J/K</div></div>
+        </div>
+      </div>
+      <div class="cover-hint">Use arrow keys or click &#8592; &#8594; to navigate &nbsp;·&nbsp; 11 pages</div>
+      <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 1 — PLANCK LENGTH ══ -->
+  <div class="slide" data-color="#60a5fa">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <div class="slide-eyebrow">Planck Quantities</div>
+        <div class="slide-count">2 / 11</div>
+      </div>
+      <div class="title-block">
+        <div class="accent-line">
+          <div class="accent-bar" style="background:var(--cl);height:38px"></div>
+          <div>
+            <div class="slide-title">Planck Length</div>
+            <div class="slide-symbol">\(\ell_{\mathrm{P}}\)</div>
+          </div>
+        </div>
+      </div>
+      <div class="formula-box">
+        <div class="formula-label">Formula</div>
+        <div class="formula-expr">\(\displaystyle \ell_{\mathrm{P}} \;=\; \sqrt{\frac{\hbar G}{c^{3}}}\)</div>
+      </div>
+      <div class="value-row">
+        <div class="vpill"><div class="vpill-label">Value</div>\(\approx 1.616 \times 10^{-35}\ \mathrm{m}\)</div>
+        <div class="vpill"><div class="vpill-label">Compared to proton</div>\(\approx 10^{-20} \times r_{\mathrm{proton}}\)</div>
+      </div>
+      <div class="meaning-text">
+        The Planck length is the scale at which <strong>spacetime itself breaks down.</strong>
+        To probe smaller distances, QM demands higher photon energy via \(\lambda = \hbar/p\).
+        But GR says that photon then collapses into a black hole with \(r_{\mathrm{s}} = 2GM/c^2\).
+        The Planck length is where these balance — <strong>the Schwarzschild radius equals the de Broglie wavelength.</strong>
+        No physical probe can resolve smaller distances.
+      </div>
+      <div class="agrid">
+        <div class="acell"><div class="acell-label">vs proton radius</div><div class="acell-val">A proton is <strong>\(\sim 10^{20}\ \ell_{\mathrm{P}}\)</strong> across</div></div>
+        <div class="acell"><div class="acell-label">Scale analogy</div><div class="acell-val">Proton : observable universe = \(\ell_{\mathrm{P}}\) : proton</div></div>
+        <div class="acell"><div class="acell-label">String theory</div><div class="acell-val">String length \(\ell_s \sim \ell_{\mathrm{P}}\); extra dims compactify here</div></div>
+        <div class="acell"><div class="acell-label">Loop quantum gravity</div><div class="acell-val">Min. area eigenvalue: \(\Delta A \sim 8\pi\gamma\, \ell_{\mathrm{P}}^{2}\)</div></div>
+      </div>
+      <div class="openq"><strong>Open question:</strong> Is there a minimum length in nature? This is experimentally untestable with any foreseeable technology.</div>
+      <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 2 — PLANCK MASS ══ -->
+  <div class="slide" data-color="#2dd4bf">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <div class="slide-eyebrow">Planck Quantities</div>
+        <div class="slide-count">3 / 11</div>
+      </div>
+      <div class="title-block">
+        <div class="accent-line">
+          <div class="accent-bar" style="background:var(--cm);height:38px"></div>
+          <div>
+            <div class="slide-title">Planck Mass</div>
+            <div class="slide-symbol">\(m_{\mathrm{P}}\)</div>
+          </div>
+        </div>
+      </div>
+      <div class="formula-box">
+        <div class="formula-label">Formula</div>
+        <div class="formula-expr">\(\displaystyle m_{\mathrm{P}} \;=\; \sqrt{\frac{\hbar c}{G}}\)</div>
+      </div>
+      <div class="value-row">
+        <div class="vpill"><div class="vpill-label">Value</div>\(\approx 2.176 \times 10^{-8}\ \mathrm{kg}\)</div>
+        <div class="vpill"><div class="vpill-label">In particle physics units</div>\(\approx 1.22 \times 10^{19}\ \mathrm{GeV}/c^2\)</div>
+      </div>
+      <div class="meaning-text">
+        The Planck mass is the mass of the <strong>smallest possible black hole</strong>, whose Schwarzschild radius \(r_{\mathrm{s}} = 2Gm_{\mathrm{P}}/c^{2}\) equals \(\ell_{\mathrm{P}}\).
+        Paradoxically it is <em>not tiny</em> — about <strong>22 micrograms</strong>, the mass of a flea egg.
+        This reflects how extraordinarily weak gravity is.
+        In particle physics, \(m_{\mathrm{P}}\) sets the scale of the <strong>hierarchy problem</strong>:
+        why is \(m_H \approx 125\ \mathrm{GeV}/c^2\) some \(10^{17}\) times smaller than \(m_{\mathrm{P}}\)?
+      </div>
+      <div class="agrid">
+        <div class="acell"><div class="acell-label">vs proton mass</div><div class="acell-val">\(m_{\mathrm{P}} \approx 10^{19}\, m_p\) — 19 orders heavier</div></div>
+        <div class="acell"><div class="acell-label">Hawking evaporation</div><div class="acell-val">Planck-mass black hole evaporates in \(\sim t_{\mathrm{P}}\)</div></div>
+        <div class="acell"><div class="acell-label">Hierarchy problem</div><div class="acell-val">\(m_H / m_{\mathrm{P}} \approx 10^{-17}\) — extreme fine-tuning</div></div>
+        <div class="acell"><div class="acell-label">GUT scale gap</div><div class="acell-val">Grand unification at \(\sim 10^{15}\ \mathrm{GeV}\) is \(10^4\times\) below \(m_{\mathrm{P}}c^2\)</div></div>
+      </div>
+      <div class="openq"><strong>Open question:</strong> Supersymmetry, large extra dimensions, and Randall–Sundrum warped geometry all propose solutions to the hierarchy problem. None has been experimentally confirmed at the LHC.</div>
+      <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 3 — PLANCK ENERGY ══ -->
+  <div class="slide" data-color="#fbbf24">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <div class="slide-eyebrow">Planck Quantities</div>
+        <div class="slide-count">4 / 11</div>
+      </div>
+      <div class="title-block">
+        <div class="accent-line">
+          <div class="accent-bar" style="background:var(--ce);height:38px"></div>
+          <div>
+            <div class="slide-title">Planck Energy</div>
+            <div class="slide-symbol">\(E_{\mathrm{P}}\)</div>
+          </div>
+        </div>
+      </div>
+      <div class="formula-box">
+        <div class="formula-label">Formula</div>
+        <div class="formula-expr">\(\displaystyle E_{\mathrm{P}} \;=\; m_{\mathrm{P}}\,c^{2} \;=\; \sqrt{\frac{\hbar c^{5}}{G}}\)</div>
+      </div>
+      <div class="value-row">
+        <div class="vpill"><div class="vpill-label">Value</div>\(\approx 1.956 \times 10^{9}\ \mathrm{J}\)</div>
+        <div class="vpill"><div class="vpill-label">In particle physics units</div>\(\approx 1.22 \times 10^{19}\ \mathrm{GeV}\)</div>
+      </div>
+      <div class="meaning-text">
+        The gravitational coupling at energy \(E\) is \(\alpha_{\rm grav}(E) = (E/E_{\mathrm{P}})^{2}\),
+        which equals <strong>unity at \(E = E_{\mathrm{P}}\)</strong> — gravity becomes as strong as all other forces.
+        Above this energy, perturbative quantum gravity is undefined.
+        The LHC reaches \(\sim 13\ \mathrm{TeV}\). The Planck energy is \(10^{15}\times\) higher — <strong>beyond any conceivable accelerator.</strong>
+      </div>
+      <div class="agrid">
+        <div class="acell"><div class="acell-label">LHC at 13 TeV</div><div class="acell-val">\(10^{15}\times\) below \(E_{\mathrm{P}}\)</div></div>
+        <div class="acell"><div class="acell-label">Cosmic rays</div><div class="acell-val">Reach \(\sim 10^{11}\ \mathrm{GeV}\) — still \(10^8\times\) below \(E_{\mathrm{P}}\)</div></div>
+        <div class="acell"><div class="acell-label">GUT scale</div><div class="acell-val">\(\sim 10^{15}\ \mathrm{GeV}\) — \(10^4\times\) below \(E_{\mathrm{P}}\)</div></div>
+        <div class="acell"><div class="acell-label">Macroscopic equivalent</div><div class="acell-val">\(E_{\mathrm{P}} \approx\) kinetic energy of a flying mosquito</div></div>
+      </div>
+      <div class="openq"><strong>Open question:</strong> Trans-Planckian physics may leave imprints on the primordial power spectrum \(P(k)\). Future surveys (Euclid, MegaMapper) may detect such signatures in \(P(k)\) and \(B(k_1,k_2,k_3)\).</div>
+      <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 4 — PLANCK TEMPERATURE ══ -->
+  <div class="slide" data-color="#fb923c">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <div class="slide-eyebrow">Planck Quantities</div>
+        <div class="slide-count">5 / 11</div>
+      </div>
+      <div class="title-block">
+        <div class="accent-line">
+          <div class="accent-bar" style="background:var(--ct);height:38px"></div>
+          <div>
+            <div class="slide-title">Planck Temperature</div>
+            <div class="slide-symbol">\(T_{\mathrm{P}}\)</div>
+          </div>
+        </div>
+      </div>
+      <div class="formula-box">
+        <div class="formula-label">Formula</div>
+        <div class="formula-expr">\(\displaystyle T_{\mathrm{P}} \;=\; \frac{E_{\mathrm{P}}}{k_{\!B}} \;=\; \sqrt{\frac{\hbar c^{5}}{G\,k_{\!B}^{2}}}\)</div>
+      </div>
+      <div class="value-row">
+        <div class="vpill"><div class="vpill-label">Value</div>\(\approx 1.417 \times 10^{32}\ \mathrm{K}\)</div>
+        <div class="vpill"><div class="vpill-label">Relation</div>\(k_{\!B}\,T_{\mathrm{P}} = E_{\mathrm{P}}\)</div>
+      </div>
+      <div class="meaning-text">
+        The <strong>highest temperature with any physical meaning</strong> in current theory.
+        When \(k_{\!B}T\) reaches \(E_{\mathrm{P}}\), gravity becomes order-unity strong and quantum field theory in curved spacetime breaks down.
+        The universe cooled from \(T_{\mathrm{P}}\) to today's CMB temperature \(T_0 = 2.725\ \mathrm{K}\) —
+        a drop by a factor of \(\sim 5 \times 10^{31}\), driven by cosmic expansion \(T \propto 1/a\).
+      </div>
+      <div class="agrid">
+        <div class="acell"><div class="acell-label">Sun's core</div><div class="acell-val">\(T_\odot \approx 1.5\times10^7\ \mathrm{K}\) — \(10^{25}\times\) below \(T_{\mathrm{P}}\)</div></div>
+        <div class="acell"><div class="acell-label">CMB today</div><div class="acell-val">\(T_0 = 2.725\ \mathrm{K}\) — \(10^{32}\times\) below \(T_{\mathrm{P}}\)</div></div>
+        <div class="acell"><div class="acell-label">Electroweak transition</div><div class="acell-val">\(T_{\rm EW} \approx 10^{15}\ \mathrm{K}\) — \(10^{17}\times\) below \(T_{\mathrm{P}}\)</div></div>
+        <div class="acell"><div class="acell-label">QCD transition</div><div class="acell-val">Quark–hadron crossover: \(\sim 2\times10^{12}\ \mathrm{K}\)</div></div>
+      </div>
+      <div class="openq"><strong>Open question:</strong> In string theory, the Hagedorn temperature \(T_{\rm H}\) may set an effective maximum. Its precise relation to \(T_{\mathrm{P}}\) is model-dependent.</div>
+      <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 5 — PLANCK TIME ══ -->
+  <div class="slide" data-color="#a78bfa">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <div class="slide-eyebrow">Planck Quantities</div>
+        <div class="slide-count">6 / 11</div>
+      </div>
+      <div class="title-block">
+        <div class="accent-line">
+          <div class="accent-bar" style="background:var(--cti);height:38px"></div>
+          <div>
+            <div class="slide-title">Planck Time</div>
+            <div class="slide-symbol">\(t_{\mathrm{P}}\)</div>
+          </div>
+        </div>
+      </div>
+      <div class="formula-box">
+        <div class="formula-label">Formula</div>
+        <div class="formula-expr">\(\displaystyle t_{\mathrm{P}} \;=\; \frac{\ell_{\mathrm{P}}}{c} \;=\; \sqrt{\frac{\hbar G}{c^{5}}}\)</div>
+      </div>
+      <div class="value-row">
+        <div class="vpill"><div class="vpill-label">Value</div>\(\approx 5.391 \times 10^{-44}\ \mathrm{s}\)</div>
+        <div class="vpill"><div class="vpill-label">Relation</div>\(t_{\mathrm{P}} = \ell_{\mathrm{P}}/c\)</div>
+      </div>
+      <div class="meaning-text">
+        The <strong>smallest interval of time with physical meaning</strong> — the time for light to cross \(\ell_{\mathrm{P}}\).
+        The Planck epoch spans \(0 < t < t_{\mathrm{P}}\). All of physics — QFT, GR, thermodynamics — begins only <em>after</em> \(t_{\mathrm{P}}\).
+        The age of the universe today is \(t_0 \approx 4.3 \times 10^{17}\ \mathrm{s} \approx 8\times10^{60}\ t_{\mathrm{P}}\).
+      </div>
+      <div class="agrid">
+        <div class="acell"><div class="acell-label">Age of universe</div><div class="acell-val">\(t_0 \approx 1.38\times10^{10}\ \mathrm{yr}\)<br>\(= 8\times10^{60}\ t_{\mathrm{P}}\)</div></div>
+        <div class="acell"><div class="acell-label">Nuclear timescale</div><div class="acell-val">\(1\ \mathrm{fs} = 10^{-15}\ \mathrm{s}\)<br>\(\approx 10^{29}\ t_{\mathrm{P}}\)</div></div>
+        <div class="acell"><div class="acell-label">Shortest laser pulse</div><div class="acell-val">\(\sim 10^{-18}\ \mathrm{s}\)<br>still \(\sim 10^{25}\ t_{\mathrm{P}}\) long</div></div>
+        <div class="acell"><div class="acell-label">Inflation duration</div><div class="acell-val">\(\sim 10^{-32}\ \mathrm{s} \approx 10^{11}\ t_{\mathrm{P}}\)<br>begins near \(t_{\mathrm{P}}\)</div></div>
+      </div>
+      <div class="openq"><strong>Open question:</strong> In loop quantum cosmology, the Big Bang is a Big Bounce. In the Hartle–Hawking no-boundary proposal, time becomes imaginary near \(t=0\). Both proposals regularise the singularity differently.</div>
+      <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 6 — PLANCK EPOCH ══ -->
+  <div class="slide" data-color="#f472b6">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <div class="slide-eyebrow">Early Universe Timeline</div>
+        <div class="slide-count">7 / 11</div>
+      </div>
+      <div class="title-block">
+        <div class="accent-line">
+          <div class="accent-bar" style="background:var(--cep);height:38px"></div>
+          <div>
+            <div class="slide-title">The Planck Epoch</div>
+          </div>
+        </div>
+      </div>
+      <div class="epoch-list">
+        <div class="erow eopen" onclick="this.classList.toggle('eopen')">
+          <div class="epip" style="background:#a78bfa"></div>
+          <div class="erow-main">
+            <div class="erow-top">
+              <div class="erow-name">Planck epoch</div>
+              <div class="erow-time">\(0 < t < 10^{-43}\ \mathrm{s}\)</div>
+            </div>
+            <div class="erow-metrics">
+              <span class="emtag">\(T > 10^{32}\ \mathrm{K}\)</span>
+              <span class="emtag">\(E > 10^{19}\ \mathrm{GeV}\)</span>
+              <span class="emtag">All 4 forces unified</span>
+            </div>
+            <div class="erow-body">GR predicts a singularity. QFT requires a fixed spacetime — which doesn't exist here. <strong>Spacetime is quantum foam</strong>: topology fluctuates wildly. The gravitational coupling \(\alpha_{\rm grav} = (E/E_{\mathrm{P}})^2 = 1\). No confirmed theory describes this epoch.</div>
+          </div>
+          <div class="echev">▾</div>
+        </div>
+        <div class="erow" onclick="this.classList.toggle('eopen')">
+          <div class="epip" style="background:#fb923c"></div>
+          <div class="erow-main">
+            <div class="erow-top">
+              <div class="erow-name">Grand Unification epoch</div>
+              <div class="erow-time">\(10^{-43} \to 10^{-36}\ \mathrm{s}\)</div>
+            </div>
+            <div class="erow-metrics">
+              <span class="emtag">\(T \sim 10^{29}–10^{32}\ \mathrm{K}\)</span>
+              <span class="emtag">\(E \sim 10^{15}–10^{19}\ \mathrm{GeV}\)</span>
+              <span class="emtag">Gravity separates</span>
+            </div>
+            <div class="erow-body">Gravity freezes out — the <strong>first phase transition</strong> in cosmic history. The remaining three forces stay unified at \(E_{\rm GUT} \sim 10^{15}\ \mathrm{GeV}\). Leptogenesis may have generated the baryon asymmetry \(\eta_B \approx 6\times10^{-10}\).</div>
+          </div>
+          <div class="echev">▾</div>
+        </div>
+        <div class="erow" onclick="this.classList.toggle('eopen')">
+          <div class="epip" style="background:#2dd4bf"></div>
+          <div class="erow-main">
+            <div class="erow-top">
+              <div class="erow-name">Inflation</div>
+              <div class="erow-time">\(\sim 10^{-36} \to 10^{-32}\ \mathrm{s}\)</div>
+            </div>
+            <div class="erow-metrics">
+              <span class="emtag">\(a(t) \propto e^{Ht}\)</span>
+              <span class="emtag">Expansion \(\geq 10^{26}\times\)</span>
+              <span class="emtag">Seeds LSS</span>
+            </div>
+            <div class="erow-body">The inflaton \(\phi\) drives exponential expansion. Quantum fluctuations \(\delta\phi_k \sim H/(2\pi)\) become the primordial density perturbations — the seeds of every galaxy and the <strong>turnover scale \(k_0\)</strong> you are detecting with Euclid and MegaMapper. The primordial spectrum: \(\mathcal{P}_{\mathcal{R}}(k) = A_s(k/k_*)^{n_s-1}\) with \(n_s \approx 0.965\).</div>
+          </div>
+          <div class="echev">▾</div>
+        </div>
+        <div class="erow" onclick="this.classList.toggle('eopen')">
+          <div class="epip" style="background:#60a5fa"></div>
+          <div class="erow-main">
+            <div class="erow-top">
+              <div class="erow-name">Electroweak epoch &amp; reheating</div>
+              <div class="erow-time">\(10^{-32} \to 10^{-12}\ \mathrm{s}\)</div>
+            </div>
+            <div class="erow-metrics">
+              <span class="emtag">\(T \sim 10^{15}–10^{28}\ \mathrm{K}\)</span>
+              <span class="emtag">Higgs gets vev</span>
+              <span class="emtag">Standard Model applies</span>
+            </div>
+            <div class="erow-body">Inflaton decays, reheating the universe. At \(T_{\rm EW} \approx 160\ \mathrm{GeV}\), the Higgs acquires \(\langle\phi\rangle = v \approx 246\ \mathrm{GeV}\), breaking \(\mathrm{SU}(2)_L\times\mathrm{U}(1)_Y \to \mathrm{U}(1)_{\rm em}\) and giving mass to \(W^\pm\) and \(Z^0\).</div>
+          </div>
+          <div class="echev">▾</div>
+        </div>
+      </div>
+      <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 7 — QCD & BBN ══ -->
+  <div class="slide" data-color="#fbbf24">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <div class="slide-eyebrow">Early Universe Timeline</div>
+        <div class="slide-count">8 / 11</div>
+      </div>
+      <div class="title-block">
+        <div class="accent-line">
+          <div class="accent-bar" style="background:var(--ce);height:38px"></div>
+          <div><div class="slide-title">QCD Transition &amp; Big Bang Nucleosynthesis</div></div>
+        </div>
+      </div>
+      <div class="epoch-list">
+        <div class="erow eopen" onclick="this.classList.toggle('eopen')">
+          <div class="epip" style="background:#fbbf24"></div>
+          <div class="erow-main">
+            <div class="erow-top">
+              <div class="erow-name">QCD confinement</div>
+              <div class="erow-time">\(t \sim 10^{-6}\ \mathrm{s}\)</div>
+            </div>
+            <div class="erow-metrics">
+              <span class="emtag">\(T \approx 2\times10^{12}\ \mathrm{K}\)</span>
+              <span class="emtag">\(\sim 200\ \mathrm{MeV}\)</span>
+            </div>
+            <div class="erow-body">At \(T \approx 2\times10^{12}\ \mathrm{K}\) (\(\sim 200\ \mathrm{MeV}\)), quarks and gluons <strong>confine into protons and neutrons</strong>. The quark-gluon plasma gives way to a hadron gas. This transition has been recreated briefly at the LHC and RHIC.</div>
+          </div>
+          <div class="echev">▾</div>
+        </div>
+        <div class="erow" onclick="this.classList.toggle('eopen')">
+          <div class="epip" style="background:#fb923c"></div>
+          <div class="erow-main">
+            <div class="erow-top">
+              <div class="erow-name">Neutrino decoupling &amp; neutron freeze-out</div>
+              <div class="erow-time">\(t \approx 1\ \mathrm{s}\)</div>
+            </div>
+            <div class="erow-metrics">
+              <span class="emtag">\(T \approx 10^{10}\ \mathrm{K}\)</span>
+              <span class="emtag">\(\sim 1\ \mathrm{MeV}\)</span>
+            </div>
+            <div class="erow-body">Neutrinos decouple from the thermal bath. The neutron-to-proton ratio freezes at \(n/p \approx 1/7\). Free neutrons begin to decay with half-life \(\tau_n \approx 610\ \mathrm{s}\).</div>
+          </div>
+          <div class="echev">▾</div>
+        </div>
+        <div class="erow" onclick="this.classList.toggle('eopen')">
+          <div class="epip" style="background:#f472b6"></div>
+          <div class="erow-main">
+            <div class="erow-top">
+              <div class="erow-name">Big Bang Nucleosynthesis (BBN)</div>
+              <div class="erow-time">\(t \approx 1\ \mathrm{s} \to 3\ \mathrm{min}\)</div>
+            </div>
+            <div class="erow-metrics">
+              <span class="emtag">\(Y_p \approx 0.247\)</span>
+              <span class="emtag">\(\mathrm{D/H} \approx 2.5\times10^{-5}\)</span>
+            </div>
+            <div class="erow-body">Protons and neutrons fuse to form \({}^2\mathrm{H}\), \({}^3\mathrm{He}\), \({}^4\mathrm{He}\), and \({}^7\mathrm{Li}\). The predicted helium mass fraction \(Y_p \approx 0.247\) matches observations — one of the great triumphs of modern cosmology. <strong>Open question:</strong> BBN predicts \(\sim 3\times\) more \({}^7\mathrm{Li}\) than observed in metal-poor stars — the lithium problem.</div>
+          </div>
+          <div class="echev">▾</div>
+        </div>
+      </div>
+      <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 8 — RECOMBINATION & CMB ══ -->
+  <div class="slide" data-color="#f472b6">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <div class="slide-eyebrow">Early Universe Timeline</div>
+        <div class="slide-count">9 / 11</div>
+      </div>
+      <div class="title-block">
+        <div class="accent-line">
+          <div class="accent-bar" style="background:var(--cep);height:38px"></div>
+          <div><div class="slide-title">Recombination &amp; the CMB</div></div>
+        </div>
+      </div>
+      <div class="value-row">
+        <div class="vpill"><div class="vpill-label">Time</div>\(t \approx 380{,}000\ \mathrm{yr}\)</div>
+        <div class="vpill"><div class="vpill-label">Redshift</div>\(z \approx 1100\)</div>
+        <div class="vpill"><div class="vpill-label">Temperature then</div>\(\approx 3000\ \mathrm{K}\)</div>
+        <div class="vpill"><div class="vpill-label">CMB today</div>\(T_0 = 2.725\ \mathrm{K}\)</div>
+      </div>
+      <div class="meaning-text">
+        Electrons combine with nuclei to form neutral atoms. The universe becomes transparent.
+        Photons stream freely and are detected today as the <strong>Cosmic Microwave Background</strong>.
+        CMB anisotropies \(\Delta T/T \sim 10^{-5}\) are the processed imprint of inflationary quantum fluctuations.
+        The CMB angular power spectrum \(C_\ell\) encodes \(\Omega_b h^2\), \(\Omega_c h^2\), \(H_0\), \(n_s\), \(A_s\), and \(\tau\).
+      </div>
+      <div class="agrid">
+        <div class="acell"><div class="acell-label">Matter power spectrum</div><div class="acell-val">\(P(k) = A_s\, k^{n_s}\, T^2(k)\)<br>connected to \(C_\ell\) via transfer function \(T(k)\)</div></div>
+        <div class="acell"><div class="acell-label">Turnover scale</div><div class="acell-val">\(k_0 \sim 0.01\text{–}0.02\ h\,\mathrm{Mpc}^{-1}\)<br>encodes \(k_{\rm eq} = a_{\rm eq}H_{\rm eq}\)</div></div>
+        <div class="acell"><div class="acell-label">Acoustic oscillations</div><div class="acell-val">Baryon acoustic peaks in \(C_\ell\) and \(P(k)\) constrain \(\Omega_b h^2\) and \(\Omega_c h^2\)</div></div>
+        <div class="acell"><div class="acell-label">Hubble tension</div><div class="acell-val">\(H_0 = 67.4\) (CMB) vs \(73\) (distance ladder) km s\(^{-1}\)Mpc\(^{-1}\) — \(5\sigma\) discrepancy</div></div>
+      </div>
+      <div class="openq"><strong>Open question:</strong> The Hubble tension — a \(\sim 5\sigma\) discrepancy in \(H_0\) between early and late universe measurements — may indicate new physics beyond \(\Lambda\)CDM.</div>
+      <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 9 — WHY IT MATTERS ══ -->
+  <div class="slide" data-color="#34d399">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <div class="slide-eyebrow">Connection to your Research</div>
+        <div class="slide-count">10 / 11</div>
+      </div>
+      <div class="title-block">
+        <div class="accent-line">
+          <div class="accent-bar" style="background:var(--cw);height:38px"></div>
+          <div><div class="slide-title">Why Planck Units Matter for LSS Research</div></div>
+        </div>
+      </div>
+      <div class="matters-grid">
+        <div class="mcard" style="border-top-color:var(--cl)">
+          <h4>Primordial power spectrum</h4>
+          <p>The spectral index \(n_s\) and running \(\alpha_s = dn_s/d\ln k\) encode the physics of the inflaton near \(E_{\mathrm{P}}\). Trans-Planckian effects may produce oscillatory features in \(P(k)\) detectable by next-generation surveys.</p>
+        </div>
+        <div class="mcard" style="border-top-color:var(--ce)">
+          <h4>Turnover scale \(k_0\)</h4>
+          <p>The turnover at \(k_0 \sim 0.01\text{–}0.02\ h\,\mathrm{Mpc}^{-1}\) encodes \(k_{\rm eq} = a_{\rm eq}H_{\rm eq}\), the Hubble horizon at matter–radiation equality, tracing the thermal history all the way back to the Planck epoch.</p>
+        </div>
+        <div class="mcard" style="border-top-color:var(--ct)">
+          <h4>Relativistic corrections</h4>
+          <p>Wide-angle effects, Doppler terms, and lensing in the galaxy bispectrum \(B(k_1,k_2,k_3)\) are rooted in the \(1+3\) covariant formalism — a consequence of GR, the very theory that breaks down at \(\ell_{\mathrm{P}}\).</p>
+        </div>
+        <div class="mcard" style="border-top-color:var(--cti)">
+          <h4>Initial conditions for MCMC</h4>
+          <p>Every MCMC run in cobaya and every Fisher forecast for Euclid assumes \(\mathcal{P}_{\mathcal{R}}(k) \propto k^{n_s-1}\). The Planck epoch is where those initial conditions were set — and where they might deviate from this simplicity.</p>
+        </div>
+      </div>
+      <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 10 — SUMMARY TABLE ══ -->
+  <div class="slide" data-color="#60a5fa">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <div class="slide-eyebrow">Quick Reference</div>
+        <div class="slide-count">11 / 11</div>
+      </div>
+      <div class="title-block">
+        <div class="accent-line">
+          <div class="accent-bar" style="background:var(--cl);height:38px"></div>
+          <div><div class="slide-title">Summary — All Planck Quantities</div></div>
+        </div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:9px;overflow:hidden">
+        <div style="display:grid;grid-template-columns:1.4fr 1.8fr 1.8fr 2.2fr;gap:0;background:var(--bg2);border:.5px solid var(--border2);border-radius:12px;overflow:hidden">
+          <!-- header -->
+          <div style="padding:10px 14px;background:var(--bg3);font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);letter-spacing:.1em;text-transform:uppercase;border-bottom:.5px solid var(--border)">Quantity</div>
+          <div style="padding:10px 14px;background:var(--bg3);font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);letter-spacing:.1em;text-transform:uppercase;border-bottom:.5px solid var(--border)">Formula</div>
+          <div style="padding:10px 14px;background:var(--bg3);font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);letter-spacing:.1em;text-transform:uppercase;border-bottom:.5px solid var(--border)">Value</div>
+          <div style="padding:10px 14px;background:var(--bg3);font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);letter-spacing:.1em;text-transform:uppercase;border-bottom:.5px solid var(--border)">Physical meaning (one line)</div>
+          <!-- rows -->
+          <div style="padding:11px 14px;font-size:14px;color:var(--cl);border-bottom:.5px solid var(--border)">\(\ell_{\mathrm{P}}\) &nbsp;Length</div>
+          <div style="padding:11px 14px;font-size:13px;color:var(--muted);border-bottom:.5px solid var(--border)">\(\sqrt{\hbar G/c^3}\)</div>
+          <div style="padding:11px 14px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);border-bottom:.5px solid var(--border)">\(1.616\times10^{-35}\) m</div>
+          <div style="padding:11px 14px;font-size:13px;color:var(--muted);border-bottom:.5px solid var(--border)">Scale below which spacetime loses meaning</div>
+
+          <div style="padding:11px 14px;font-size:14px;color:var(--cm);border-bottom:.5px solid var(--border)">\(m_{\mathrm{P}}\) &nbsp;Mass</div>
+          <div style="padding:11px 14px;font-size:13px;color:var(--muted);border-bottom:.5px solid var(--border)">\(\sqrt{\hbar c/G}\)</div>
+          <div style="padding:11px 14px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);border-bottom:.5px solid var(--border)">\(2.176\times10^{-8}\) kg</div>
+          <div style="padding:11px 14px;font-size:13px;color:var(--muted);border-bottom:.5px solid var(--border)">Mass of smallest possible black hole; hierarchy scale</div>
+
+          <div style="padding:11px 14px;font-size:14px;color:var(--ce);border-bottom:.5px solid var(--border)">\(E_{\mathrm{P}}\) &nbsp;Energy</div>
+          <div style="padding:11px 14px;font-size:13px;color:var(--muted);border-bottom:.5px solid var(--border)">\(\sqrt{\hbar c^5/G}\)</div>
+          <div style="padding:11px 14px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);border-bottom:.5px solid var(--border)">\(1.22\times10^{19}\) GeV</div>
+          <div style="padding:11px 14px;font-size:13px;color:var(--muted);border-bottom:.5px solid var(--border)">Energy where gravity equals all other interactions</div>
+
+          <div style="padding:11px 14px;font-size:14px;color:var(--ct);border-bottom:.5px solid var(--border)">\(T_{\mathrm{P}}\) &nbsp;Temperature</div>
+          <div style="padding:11px 14px;font-size:13px;color:var(--muted);border-bottom:.5px solid var(--border)">\(E_{\mathrm{P}}/k_{\!B}\)</div>
+          <div style="padding:11px 14px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);border-bottom:.5px solid var(--border)">\(1.417\times10^{32}\) K</div>
+          <div style="padding:11px 14px;font-size:13px;color:var(--muted);border-bottom:.5px solid var(--border)">Highest temperature with physical meaning</div>
+
+          <div style="padding:11px 14px;font-size:14px;color:var(--cti)">\(t_{\mathrm{P}}\) &nbsp;Time</div>
+          <div style="padding:11px 14px;font-size:13px;color:var(--muted)">\(\sqrt{\hbar G/c^5}\)</div>
+          <div style="padding:11px 14px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text)">\(5.391\times10^{-44}\) s</div>
+          <div style="padding:11px 14px;font-size:13px;color:var(--muted)">Smallest time interval with physical meaning</div>
+        </div>
+      </div>
+      <div class="slide-footer" style="margin-top:10px">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<script>
+/* ── STARS ── */
+const canvas = document.getElementById('stars');
+const ctx = canvas.getContext('2d');
+let W, H, stars = [];
+function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+function makeStars(){ stars = Array.from({length:200},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.2+0.2,o:Math.random()*0.4+0.1,sp:Math.random()*0.006+0.002,ph:Math.random()*Math.PI*2})); }
+function drawStars(t){ ctx.clearRect(0,0,W,H); stars.forEach(s=>{ const o=Math.max(0,Math.min(1,s.o+Math.sin(t*s.sp+s.ph)*0.1)); ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fillStyle=`rgba(170,200,255,${o.toFixed(2)})`; ctx.fill(); }); requestAnimationFrame(drawStars); }
+resize(); makeStars();
+window.addEventListener('resize',()=>{ resize(); makeStars(); });
+requestAnimationFrame(drawStars);
+
+/* ── SLIDE DECK ── */
+const slides = Array.from(document.querySelectorAll('.slide'));
+const colors = slides.map(s => s.dataset.color || '#60a5fa');
+const bar = document.getElementById('progress-bar');
+const dotsEl = document.getElementById('dots');
+let cur = 0;
+
+// Build dots
+slides.forEach((_,i)=>{
+  const d = document.createElement('div');
+  d.className = 'dot' + (i===0?' active':'');
+  d.style.background = i===0 ? colors[0] : '';
+  d.onclick = ()=> go(i);
+  dotsEl.appendChild(d);
+});
+const dotEls = Array.from(dotsEl.querySelectorAll('.dot'));
+
+function go(n){
+  if(n < 0 || n >= slides.length) return;
+  slides[cur].classList.remove('active');
+  dotEls[cur].classList.remove('active');
+  dotEls[cur].style.background = '';
+  cur = n;
+  slides[cur].classList.add('active');
+  dotEls[cur].classList.add('active');
+  dotEls[cur].style.background = colors[cur];
+  bar.style.width = ((cur/(slides.length-1))*100)+'%';
+  bar.style.background = colors[cur];
+  // Re-typeset MathJax on new slide
+  if(window.MathJax && MathJax.typesetPromise){
+    MathJax.typesetPromise([slides[cur]]).catch(()=>{});
+  }
+}
+
+document.getElementById('prev').onclick = ()=> go(cur-1);
+document.getElementById('next').onclick = ()=> go(cur+1);
+document.addEventListener('keydown', e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown') go(cur+1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp') go(cur-1);
+});
+
+// Initial bar
+bar.style.width = '0%';
+bar.style.background = colors[0];
+</script>
+</body>
+</html>
