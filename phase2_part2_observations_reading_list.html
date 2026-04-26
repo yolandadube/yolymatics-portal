@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 2 Part 2 — DESI Results, Observations &amp; Reading List</title>
+
+<script>
+MathJax = {
+  tex: { inlineMath:[['\\(','\\)']], displayMath:[['\\[','\\]']], packages:{'[+]':['ams']} },
+  options: { skipHtmlTags:['script','noscript','style','textarea','pre'] },
+  startup: { ready(){ MathJax.startup.defaultReady(); } }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden}
+:root{
+  --bg:#06080f;--bg2:#0d1525;--bg3:#121e33;--bg4:#1a2a45;
+  --border:rgba(140,180,255,.13);--border2:rgba(140,180,255,.25);
+  --text:#dde6f5;--muted:#8399bb;--dim:#4a5e7a;
+  --c1:#fbbf24;--c2:#60a5fa;--c3:#f43f5e;--c4:#a78bfa;--c5:#2dd4bf;--c6:#fb923c;--c7:#f472b6;--c8:#34d399;--c9:#818cf8;--c10:#e2e8f0;
+}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;font-weight:300}
+mjx-container{color:var(--text)!important;max-width:100%}
+mjx-container[display="true"]{overflow-x:visible!important;white-space:normal!important;margin:.3rem 0!important}
+#stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+.deck{position:fixed;inset:0;z-index:1}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .35s ease;overflow:hidden}
+.slide.active{opacity:1;pointer-events:all}
+#progress-bar{position:fixed;top:0;left:0;height:3px;z-index:200;transition:width .3s ease,background .3s ease}
+#dots{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:200}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--border2);cursor:pointer;transition:background .2s,transform .2s}
+.dot.active{transform:scale(1.5)}
+.arrow{position:fixed;top:50%;transform:translateY(-50%);z-index:200;background:var(--bg2);border:.5px solid var(--border2);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:14px;transition:background .2s,color .2s}
+.arrow:hover{background:var(--bg3);color:var(--text)}
+#prev{left:12px}#next{right:12px}
+
+.slide-inner{flex:1;display:flex;flex-direction:column;padding:26px 54px 56px;max-width:1080px;margin:0 auto;width:100%;overflow:hidden;min-height:0;height:100%}
+.slide-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-shrink:0}
+.slide-eyebrow{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+.slide-count{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--dim)}
+.title-block{margin-bottom:10px;flex-shrink:0}
+.accent-line{display:flex;align-items:center;gap:12px}
+.accent-bar{width:4px;border-radius:2px;flex-shrink:0}
+.slide-title{font-family:'Crimson Pro',serif;font-size:clamp(1.5rem,2.8vw,2.3rem);font-weight:400;line-height:1.12;color:var(--text)}
+.slide-sub{font-size:clamp(11px,1.25vw,13px);color:var(--muted);margin-top:3px;font-weight:300}
+.slide-footer{flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--dim);letter-spacing:.08em;text-align:center;padding:4px 0 0;border-top:.5px solid var(--border);margin-top:6px}
+
+.fbox{background:var(--bg2);border:.5px solid var(--border2);border-radius:12px;padding:10px 20px;margin-bottom:10px;flex-shrink:0;overflow:hidden;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.fbox-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);flex-shrink:0;min-width:55px}
+.fbox-expr{font-size:clamp(1rem,2vw,1.25rem);color:var(--text);flex:1}
+
+.metrics-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px;flex-shrink:0}
+.metric{background:var(--bg2);border:.5px solid var(--border);border-radius:7px;padding:5px 11px;display:flex;flex-direction:column;gap:1px;overflow:hidden}
+.metric-label{font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.metric-val{font-size:clamp(10px,1.15vw,12px);color:var(--text)}
+
+.content-grid{display:grid;grid-template-columns:1.08fr 1fr;gap:9px;flex:1;min-height:0;overflow:hidden}
+.content-grid.single{grid-template-columns:1fr}
+
+.panel{background:var(--bg2);border:.5px solid var(--border);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-height:0;overflow:hidden;height:100%}
+.panel-label{font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);flex-shrink:0}
+.panel-body{font-family:'Crimson Pro',serif;font-size:clamp(12px,1.35vw,14px);font-weight:300;color:var(--muted);line-height:1.7;flex:1;overflow:hidden;min-height:0}
+.panel-body strong{color:var(--text);font-weight:400}
+.panel-body em{font-style:italic}
+
+.items-list{display:flex;flex-direction:column;gap:5px;flex:1;overflow:hidden;min-height:0}
+.item{display:flex;align-items:flex-start;gap:8px;background:var(--bg3);border:.5px solid var(--border);border-radius:7px;padding:6px 10px;flex-shrink:0;overflow:hidden}
+.item-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.item-text{font-size:clamp(10px,1.15vw,12px);color:var(--muted);line-height:1.5;overflow:hidden}
+.item-text strong{color:var(--text);font-weight:500}
+
+.openq{border-left:2px solid var(--border2);padding:6px 11px;flex-shrink:0;overflow:hidden;font-size:clamp(10px,1.1vw,11.5px);color:var(--dim);font-style:italic;line-height:1.5}
+.openq strong{color:var(--muted);font-style:normal;font-weight:400}
+
+.cover{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px;padding:28px 54px;overflow:hidden}
+.cover-kicker{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);display:flex;align-items:center;gap:12px;flex-shrink:0}
+.cover-kicker::before,.cover-kicker::after{content:'';width:30px;height:1px;background:var(--border2);display:inline-block}
+.cover h1{font-family:'Crimson Pro',serif;font-size:clamp(2rem,5vw,3.4rem);font-weight:400;line-height:1.08;color:var(--text);flex-shrink:0}
+.cover h1 em{font-style:italic;color:var(--c2)}
+.cover-sub{font-size:clamp(12px,1.35vw,14px);color:var(--muted);max-width:560px;line-height:1.65;flex-shrink:0}
+.cover-hint{font-family:'JetBrains Mono',monospace;font-size:8.5px;color:var(--dim);letter-spacing:.1em;flex-shrink:0}
+.topic-pills{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:700px;flex-shrink:0}
+.tpill{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:100px;border:.5px solid}
+
+/* reading grid */
+.read-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;flex:1;min-height:0;overflow:hidden}
+.rcard{background:var(--bg2);border:.5px solid var(--border);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:3px;border-left-width:2px;overflow:hidden;min-height:0}
+.rtype{font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);flex-shrink:0}
+.rtitle{font-size:clamp(10.5px,1.2vw,12px);color:var(--text);font-weight:400;line-height:1.3;flex-shrink:0}
+.rauth{font-size:clamp(9.5px,1.05vw,10.5px);color:var(--muted);font-style:italic;flex-shrink:0}
+.rarxiv{font-family:'JetBrains Mono',monospace;font-size:clamp(8.5px,0.95vw,9.5px);color:var(--c2);flex-shrink:0}
+.rwhy{font-size:clamp(9px,1vw,10px);color:var(--dim);line-height:1.4;overflow:hidden;flex:1;min-height:0}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.slide.active .slide-inner>*{animation:fadeUp .4s ease both}
+.slide.active .slide-inner>*:nth-child(1){animation-delay:.03s}
+.slide.active .slide-inner>*:nth-child(2){animation-delay:.07s}
+.slide.active .slide-inner>*:nth-child(3){animation-delay:.11s}
+.slide.active .slide-inner>*:nth-child(4){animation-delay:.15s}
+.slide.active .slide-inner>*:nth-child(5){animation-delay:.19s}
+.slide.active .slide-inner>*:nth-child(6){animation-delay:.23s}
+.slide.active .slide-inner>*:nth-child(7){animation-delay:.27s}
+::-webkit-scrollbar{display:none}
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+<div id="progress-bar"></div>
+<div id="dots"></div>
+<button class="arrow" id="prev">&#8592;</button>
+<button class="arrow" id="next">&#8594;</button>
+<div class="deck" id="deck">
+
+<!-- ══ SLIDE 0 — COVER ══ -->
+<div class="slide active" data-color="#60a5fa">
+<div class="cover">
+  <div class="cover-kicker">Phase 2 &nbsp;·&nbsp; Part 2 of 2 &nbsp;·&nbsp; DDM Study Plan</div>
+  <h1>Dark Energy Models:<br><em>Observations</em></h1>
+  <p class="cover-sub">DESI DR1 and DR2 results, current observational constraints from CMB + BAO + SNIa + WL, alternative parametrisations, and the complete reading list with all arXiv links.</p>
+  <div class="topic-pills">
+    <span class="tpill" style="color:var(--c2);border-color:var(--c2)">DESI DR1 (2024)</span>
+    <span class="tpill" style="color:var(--c6);border-color:var(--c6)">DESI DR2 (2025)</span>
+    <span class="tpill" style="color:var(--c7);border-color:var(--c7)">CMB constraints</span>
+    <span class="tpill" style="color:var(--c1);border-color:var(--c1)">SNIa datasets</span>
+    <span class="tpill" style="color:var(--c5);border-color:var(--c5)">Weak lensing</span>
+    <span class="tpill" style="color:var(--c4);border-color:var(--c4)">Alternative \(w(z)\)</span>
+    <span class="tpill" style="color:var(--c8);border-color:var(--c8)">Complete reading list</span>
+  </div>
+  <div class="cover-hint">10 slides &nbsp;·&nbsp; Part 1 (theory) should be studied first</div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 1 — DESI DR1 ══ -->
+<div class="slide" data-color="#60a5fa">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--c2)">&#9679; Topic 1 &nbsp;&mdash;&nbsp; DESI Data Release 1 (April 2024)</span>
+    <span class="slide-count">2 / 10</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--c2);height:40px"></div>
+      <div>
+        <div class="slide-title">DESI DR1 — The First Hint</div>
+        <div class="slide-sub">6 million extragalactic objects — the first evidence for dynamical dark energy from BAO</div>
+      </div>
+    </div>
+  </div>
+  <div class="metrics-row">
+    <div class="metric"><div class="metric-label">Released</div><div class="metric-val">April 2024</div></div>
+    <div class="metric"><div class="metric-label">Objects</div><div class="metric-val">&gt; 6 million galaxies + quasars</div></div>
+    <div class="metric"><div class="metric-label">Redshift range</div><div class="metric-val">\(0.1 < z < 4.2\)</div></div>
+    <div class="metric"><div class="metric-label">Tracer types</div><div class="metric-val">BGS, LRG, ELG, QSO, Ly\(\alpha\)</div></div>
+    <div class="metric"><div class="metric-label">BAO precision</div><div class="metric-val">\(\sim 0.5\%\) (competitive with all prior surveys combined)</div></div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">What DESI DR1 found</div>
+      <div class="panel-body">
+        DESI DR1 measured the BAO scale — the sound horizon \(r_d \approx 147\ \mathrm{Mpc}\) imprinted on galaxy clustering — at seven effective redshifts from \(z_{\rm eff} = 0.30\) to \(z_{\rm eff} = 2.33\).<br><br>
+        <strong>BAO alone:</strong> consistent with flat \(\Lambda\)CDM (\(\Omega_m = 0.295 \pm 0.015\)).<br><br>
+        <strong>BAO + CMB (Planck) + SNIa:</strong> When combined with supernovae, the best-fit \(w_0 w_a\)CDM parameters are:
+        \[w_0 = -0.55^{+0.39}_{-0.21},\quad w_a = -1.32^{+0.58}_{-0.82}\]
+        (DESI + CMB + DESY5 SNIa). This rejects \(\Lambda\)CDM (\(w_0=-1, w_a=0\)) at \(\sim 2.5\sigma\) to \(3.9\sigma\) depending on the SNe dataset used.<br><br>
+        <strong>The key result:</strong> \(w_a < 0\) at high significance — dark energy was more negative (phantom-like, \(w < -1\)) in the past and is becoming less negative (quintessence-like, \(w > -1\)) today. This implies a <strong>phantom crossing</strong> at \(z \sim 0.5\).
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">What the tracer samples are</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--c2)"></div><div class="item-text"><strong>BGS</strong> (Bright Galaxy Survey): \(z_{\rm eff} \approx 0.30\). Low-\(z\) galaxies. Measures \(D_V(z)/r_d\) (volume-averaged distance).</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c2)"></div><div class="item-text"><strong>LRG</strong> (Luminous Red Galaxies): \(z_{\rm eff} \approx 0.51, 0.71\). Split into two redshift bins. Measures \(D_M(z)/r_d\) and \(D_H(z)/r_d\) separately.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c2)"></div><div class="item-text"><strong>ELG</strong> (Emission Line Galaxies): \(z_{\rm eff} \approx 1.32\). High-\(z\) star-forming galaxies. Key new DESI contribution — highest signal-to-noise at this redshift.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c2)"></div><div class="item-text"><strong>QSO</strong> (Quasars): \(z_{\rm eff} \approx 1.49\). In DR1, only \(D_V/r_d\) measured. In DR2, split into \(D_M\) and \(D_H\) separately (improved signal).</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c2)"></div><div class="item-text"><strong>Ly\(\alpha\) forest:</strong> \(z_{\rm eff} \approx 2.33\). Absorption in \(z > 2\) quasar spectra traces the intergalactic medium. Highest-redshift BAO measurement.</div></div>
+      </div>
+      <div class="openq"><strong>Key paper:</strong> DESI Collaboration (2024), "DESI 2024 VI: Cosmological Constraints from BAO", arXiv:2404.03002 [astro-ph.CO]</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 2 — DESI DR2 ══ -->
+<div class="slide" data-color="#fb923c">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--c6)">&#9679; Topic 2 &nbsp;&mdash;&nbsp; DESI Data Release 2 (March 2025)</span>
+    <span class="slide-count">3 / 10</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--c6);height:40px"></div>
+      <div>
+        <div class="slide-title">DESI DR2 — The Evidence Strengthens</div>
+        <div class="slide-sub">14 million objects, 3 years of data — \(\Lambda\)CDM rejected at up to \(4.2\sigma\)</div>
+      </div>
+    </div>
+  </div>
+  <div class="metrics-row">
+    <div class="metric"><div class="metric-label">Released</div><div class="metric-val">March 2025</div></div>
+    <div class="metric"><div class="metric-label">Objects</div><div class="metric-val">&gt; 14 million (2.3\(\times\) DR1)</div></div>
+    <div class="metric"><div class="metric-label">BAO precision</div><div class="metric-val">\(\sim 0.24\%\) (2\(\times\) better than DR1)</div></div>
+    <div class="metric"><div class="metric-label">Rejection of \(\Lambda\)CDM</div><div class="metric-val">\(2.8\sigma\) to \(4.2\sigma\) (depends on SNe)</div></div>
+    <div class="metric"><div class="metric-label">Neutrino mass limit</div><div class="metric-val">\(\sum m_\nu < 0.064\ \mathrm{eV}\) (\(\Lambda\)CDM)</div></div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">What DESI DR2 found — the headline results</div>
+      <div class="panel-body">
+        DR2 doubles the data volume and halves the BAO uncertainties compared to DR1. The QSO sample now has sufficient signal-to-noise for separate \(D_M(z)\) and \(D_H(z)\) measurements (in DR1 only \(D_V\) was reported).<br><br>
+        <strong>Key result 1 — \(\Lambda\)CDM tension:</strong> BAO alone are in mild \(2.3\sigma\) tension with CMB-preferred \(\Lambda\)CDM parameters. Adding a time-varying dark energy EoS via \(w_0 w_a\)CDM alleviates this tension.<br><br>
+        <strong>Key result 2 — Dynamical dark energy:</strong> Combined with CMB + SNIa, \(\Lambda\)CDM is rejected at:
+        \[\begin{aligned}
+        &2.8\sigma \quad (\text{Pantheon+}) \\
+        &3.8\sigma \quad (\text{Union3}) \\
+        &4.2\sigma \quad (\text{DESY5})
+        \end{aligned}\]
+        The preference for dynamical DE does <em>not</em> diminish relative to DR1 — it strengthens.<br><br>
+        <strong>Key result 3 — Phantom crossing preferred:</strong> Non-parametric reconstructions (Gaussian Processes, flexknots) and parametric fits all indicate \(w(z)\) crosses \(-1\) at \(z \approx 0.5\). Quintessence alone (\(w \geq -1\)) is disfavoured relative to models that allow crossing.<br><br>
+        <strong>Key result 4 — Neutrino masses:</strong> \(\sum m_\nu < 0.064\ \mathrm{eV}\) (\(\Lambda\)CDM, 95% CL). In \(w_0 w_a\)CDM: \(\sum m_\nu < 0.16\ \mathrm{eV}\). Dynamical DE relaxes the neutrino mass tension.
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Implications and caveats</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--c6)"></div><div class="item-text"><strong>Phantom crossing requires beyond-quintessence physics:</strong> A single canonical scalar field cannot cross \(w = -1\). This points to quintom, k-essence, or multi-field models — or a dynamical dark matter component.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c6)"></div><div class="item-text"><strong>SNe dataset dependence:</strong> The tension level depends on which SNIa compilation is used. Pantheon+ gives the weakest signal (\(2.8\sigma\)); DESY5 gives the strongest (\(4.2\sigma\)). This is a known systematic concern.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c6)"></div><div class="item-text"><strong>CPL parametrisation may be biased:</strong> At high \(z\), CPL forces \(w \to w_0 + w_a\) which can be very negative, potentially overweighting phantom behaviour. Non-parametric methods confirm the trend but with wider errors.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c6)"></div><div class="item-text"><strong>DESI DR3 (expected 2026–2027)</strong> with 5 years of data will settle whether this is a \(5\sigma\) detection or a statistical fluctuation. Your research timing is excellent — results from Euclid Early Release are also expected soon.</div></div>
+      </div>
+      <div class="openq"><strong>Key papers:</strong> DESI Collaboration (2025) arXiv:2503.14738 (DR2 BAO + cosmology). Lodha et al. (2025) arXiv:2503.14743 (extended DE analysis). Dinda &amp; Maartens (2025) (your supervisor's analysis of DESI results).</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 3 — CMB CONSTRAINTS ══ -->
+<div class="slide" data-color="#f472b6">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--c7)">&#9679; Topic 3 &nbsp;&mdash;&nbsp; CMB constraints on dark energy</span>
+    <span class="slide-count">4 / 10</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--c7);height:40px"></div>
+      <div>
+        <div class="slide-title">CMB Constraints on Dark Energy</div>
+        <div class="slide-sub">How Planck, ACT, and SPT constrain the dark energy equation of state</div>
+      </div>
+    </div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">How the CMB constrains dark energy</div>
+      <div class="panel-body">
+        The CMB alone has limited direct sensitivity to dark energy because the last scattering surface is at \(z \approx 1100\) — when DE was negligible. However, the CMB constrains DE <strong>indirectly</strong> through:<br><br>
+        <strong>1. The angular scale of the sound horizon:</strong>
+        \[\theta_* = \frac{r_s(z_*)}{d_A(z_*)} \approx 1.0411^\circ\]
+        Planck measures \(\theta_*\) to \(0.03\%\) precision. Since \(d_A(z_*)\) depends on the entire expansion history \(H(z)\) from \(z_*\) to today, changing DE modifies \(d_A\) and therefore changes \(\theta_*\) — unless other parameters are adjusted to compensate. This is the <strong>geometric degeneracy</strong>.<br><br>
+        <strong>2. The ISW effect:</strong> At late times, when DE starts dominating, gravitational potentials decay. This causes a secondary temperature anisotropy \(\Delta T/T \propto \int \dot\Phi\, dt\) on large scales (\(\ell \lesssim 30\)). Stronger DE \(\to\) faster potential decay \(\to\) larger ISW signal. This is a direct, redshift-dependent probe of DE.<br><br>
+        <strong>3. CMB lensing:</strong> The CMB photons are gravitationally lensed by intervening structure. The lensing power spectrum \(C_\ell^{\phi\phi}\) is sensitive to the growth of structure from \(z \sim 0.5\text{–}5\), which depends on DE through the growth factor \(D_+(z)\).
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Planck 2018 constraints and beyond</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--c7)"></div><div class="item-text"><strong>Planck 2018 (CMB alone):</strong> \(w = -1.57^{+0.50}_{-0.40}\) in \(w\)CDM — very broad because the geometric degeneracy allows \(w\) to trade off against \(\Omega_m\) and \(H_0\). CMB alone cannot usefully constrain \(w_a\).</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c7)"></div><div class="item-text"><strong>Planck + BAO:</strong> \(w_0 = -0.957 \pm 0.080\), \(w_a = -0.29^{+0.32}_{-0.26}\) — BAO breaks the degeneracy by providing distance measurements at multiple redshifts.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c7)"></div><div class="item-text"><strong>ACT DR6 (2023):</strong> The Atacama Cosmology Telescope provides an independent measurement of \(\theta_*\) and lensing, consistent with Planck. Combined: tighter \(\Omega_c h^2\) and \(n_s\) — helps constrain DE perturbations.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c7)"></div><div class="item-text"><strong>CMB-S4 (future, \(\sim 2030\)):</strong> Will measure \(\sigma(N_{\rm eff}) \approx 0.02\) and \(\sigma(\sum m_\nu) \approx 0.02\ \mathrm{eV}\) — tight enough to detect neutrino mass and new relativistic species. Combined with DESI DR5, will constrain \(w_0\) and \(w_a\) at percent level.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c7)"></div><div class="item-text"><strong>CMB + DESI DR2 finding:</strong> When combined, CMB constraints favour a phantom phase at early times (\(w < -1\) at \(z > 0.5\)), while late-universe data prefer quintessence (\(w > -1\) today). This phantom-quintessence tension is the central puzzle.</div></div>
+      </div>
+      <div class="openq"><strong>Key papers:</strong> Planck 2018 VI (arXiv:1807.06209). ACT DR6 (arXiv:2304.05203). Zhang, Xu &amp; Chen (2026) arXiv:2512.07281 (multi-model DESI DR2 + CMB).</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 4 — SNIa + WL CONSTRAINTS ══ -->
+<div class="slide" data-color="#fbbf24">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--c1)">&#9679; Topic 4 &nbsp;&mdash;&nbsp; Supernovae and weak lensing constraints</span>
+    <span class="slide-count">5 / 10</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--c1);height:40px"></div>
+      <div>
+        <div class="slide-title">SNIa &amp; Weak Lensing Constraints</div>
+        <div class="slide-sub">Standard candles and cosmic shear — the late-universe probes of dark energy</div>
+      </div>
+    </div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">Type Ia Supernovae — the three compilations</div>
+      <div class="panel-body">
+        <strong>Pantheon+ (Brout et al. 2022):</strong> 1701 SNIa over \(0.001 < z < 2.26\). The most conservative dataset. Combined with DESI DR2 + CMB: rejects \(\Lambda\)CDM at \(2.8\sigma\).<br><br>
+        <strong>Union3 (Rubin et al. 2023):</strong> Updated compilation with improved systematics. Combined with DESI DR2 + CMB: rejects \(\Lambda\)CDM at \(3.8\sigma\).<br><br>
+        <strong>DESY5 (DES Collaboration 2024):</strong> 1635 SNIa from the Dark Energy Survey 5-year sample. The most constraining. Combined with DESI DR2 + CMB: rejects \(\Lambda\)CDM at \(4.2\sigma\).<br><br>
+        <strong>How SNIa work:</strong> They are standardisable candles — after light-curve corrections (stretch, colour), their peak luminosity is nearly constant. They measure the luminosity distance:
+        \[d_L(z) = (1+z)\int_0^z \frac{c\,dz'}{H(z')}\]
+        The distance modulus \(\mu(z) = 5\log_{10}[d_L(z)/10\ \mathrm{pc}]\) is compared to theory to constrain \(w_0, w_a\).<br><br>
+        <strong>Key systematic:</strong> The tension level between \(\Lambda\)CDM and DDE depends on which SNe sample is used. This suggests either unresolved SNe systematics or genuine new physics affecting the calibration differently.
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Weak gravitational lensing</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--c5)"></div><div class="item-text"><strong>What WL measures:</strong> The distortion of background galaxy shapes by foreground mass — cosmic shear. The lensing power spectrum is proportional to \(\int W^2(z) P_\delta(k,z)\, dz\) and is directly sensitive to \(\sigma_8\) and \(\Omega_m\).</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c5)"></div><div class="item-text"><strong>\(S_8\) parameter:</strong> \(S_8 = \sigma_8(\Omega_m/0.3)^{0.5}\). WL surveys (KiDS-1000, DES Y3, HSC) consistently find \(S_8 \approx 0.76\), while Planck CMB gives \(S_8 \approx 0.83\) — a \(2\text{–}3\sigma\) tension.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c5)"></div><div class="item-text"><strong>Why this matters for DDM:</strong> Dynamical dark matter with \(w_{\rm dm} \neq 0\) or decaying DDM suppresses \(P(k)\) at small scales, <em>lowering</em> \(\sigma_8\). This can resolve the \(S_8\) tension — a key motivation for DDM models.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c5)"></div><div class="item-text"><strong>KiDS-1000 + \(\Lambda\)DDM (Bucko et al. 2024):</strong> Decaying DM with velocity kick \(v_k \sim 100\ \mathrm{km/s}\) and lifetime \(1/\Gamma \sim 100\ \mathrm{Gyr}\) can reduce \(S_8\) tension from \(3\sigma\) to \(\lesssim 1\sigma\). This is the observational benchmark for DDM.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c5)"></div><div class="item-text"><strong>Euclid (launched July 2023):</strong> Will survey 15,000 deg\(^2\), measuring WL to unprecedented precision. Combined with spectroscopic galaxy clustering, will constrain \(w_0\) and \(w_a\) to \(\sim 1\%\) and test DDM models directly.</div></div>
+      </div>
+      <div class="openq"><strong>Key papers:</strong> Brout et al. (2022) arXiv:2202.04077 (Pantheon+). Asgari et al. (2021) arXiv:2007.15633 (KiDS-1000). Bucko et al. (2024) arXiv:2309.10038 (\(\Lambda\)DDM + WL).</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 5 — ALTERNATIVE PARAMETRISATIONS ══ -->
+<div class="slide" data-color="#a78bfa">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--c4)">&#9679; Topic 5 &nbsp;&mdash;&nbsp; Alternative \(w(z)\) parametrisations beyond CPL</span>
+    <span class="slide-count">6 / 10</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--c4);height:40px"></div>
+      <div>
+        <div class="slide-title">Beyond CPL — Alternative Parametrisations</div>
+        <div class="slide-sub">Is the DESI signal real physics or a CPL artefact? These alternatives help answer that</div>
+      </div>
+    </div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">Parametric alternatives to CPL</div>
+      <div class="panel-body">
+        <strong>1. JBP (Jassal-Bagla-Padmanabhan):</strong>
+        \[w(a) = w_0 + w_a\,a(1-a)\]
+        Peaks at \(a = 0.5\) (\(z = 1\)) and vanishes at \(a \to 0\) and \(a = 1\). Better behaved at high \(z\) than CPL.<br><br>
+        <strong>2. BA (Barboza-Alcaniz):</strong>
+        \[w(z) = w_0 + w_a\frac{z(1+z)}{1+z^2}\]
+        Bounded at all \(z\) — avoids the divergence problem. Peaks at \(z = 1\).<br><br>
+        <strong>3. Logarithmic:</strong>
+        \[w(a) = w_0 + w_a\ln a\]
+        Simple and well-behaved. Commonly used in string-theory-motivated models.<br><br>
+        <strong>4. Sigmoid / step models:</strong>
+        \[w(z) = w_f + \frac{w_i - w_f}{1 + e^{(z-z_t)/\Delta z}}\]
+        Allows a sharp transition at \(z_t\) with width \(\Delta z\). Tests whether the DESI signal is a smooth evolution or a sudden change.<br><br>
+        <strong>5. Non-parametric (model-independent):</strong> Gaussian Processes (GP), flexknots, binned \(w(z)\) — let the data determine \(w(z)\) without assuming a functional form. DESI DR2 extended analysis (arXiv:2503.14743) uses all of these.
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">What the DESI extended analysis found</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--c4)"></div><div class="item-text"><strong>Consistency:</strong> All parametric and non-parametric methods find the same qualitative trend — \(w(z)\) evolves with redshift, with possible phantom crossing near \(z \approx 0.5\).</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c4)"></div><div class="item-text"><strong>CPL is sufficient:</strong> Even with the extra flexibility of GP and binned \(w(z)\), extending \(\Lambda\)CDM with a two-parameter \(w(z)\) captures all trends present in the data. Higher-order terms are not needed.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c4)"></div><div class="item-text"><strong>Phantom crossing is preferred:</strong> Models with \(w \geq -1\) everywhere (pure quintessence) are disfavoured relative to models that allow crossing. This is consistent across all methods.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c4)"></div><div class="item-text"><strong>Dinda &amp; Maartens (2025):</strong> Your supervisor's paper develops a model-agnostic diagnostic to test whether the DESI signal is robust. This is directly relevant to your research direction — ask Prof. Maartens about this on 17 May.</div></div>
+      </div>
+      <div class="openq"><strong>Key papers:</strong> Lodha et al. (2025) arXiv:2503.14743 (DESI DR2 extended DE). Dinda &amp; Maartens (2025) arXiv:2406.11418 (model-agnostic DESI assessment). Roy (2024) arXiv:2406.12106 (alternative parametrisations).</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 6 — RSD AND GROWTH RATE ══ -->
+<div class="slide" data-color="#2dd4bf">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--c5)">&#9679; Topic 6 &nbsp;&mdash;&nbsp; Growth rate \(f\sigma_8(z)\) and redshift-space distortions</span>
+    <span class="slide-count">7 / 10</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--c5);height:40px"></div>
+      <div>
+        <div class="slide-title">Growth Rate &amp; Redshift-Space Distortions</div>
+        <div class="slide-sub">How galaxy surveys measure \(f\sigma_8(z)\) to test dark energy and modified gravity</div>
+      </div>
+    </div>
+  </div>
+  <div class="fbox">
+    <div class="fbox-label">Growth rate</div>
+    <div class="fbox-expr">\(\displaystyle f(z) \equiv \frac{d\ln D_+}{d\ln a} \approx \Omega_m(z)^{\gamma},\quad \gamma \approx 0.55\ (\Lambda\mathrm{CDM})\)</div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">The physics of \(f\sigma_8\)</div>
+      <div class="panel-body">
+        The <strong>growth rate</strong> \(f(z)\) measures how fast matter perturbations grow. In the linear regime:
+        \[\delta''(\ln a) + \left(2 + \frac{H'}{H}\right)\delta'(\ln a) - \frac{3}{2}\Omega_m(a)\,\delta = 0\]
+        The growing solution is \(\delta \propto D_+(a)\), and \(f = d\ln D_+/d\ln a\). In \(\Lambda\)CDM, the growth index \(\gamma \approx 0.55\) is a robust prediction. In dynamical DE: \(\gamma\) changes. In modified gravity: \(\gamma\) can be very different (e.g. \(\gamma \approx 0.68\) in DGP gravity).<br><br>
+        <strong>Redshift-space distortions (RSD):</strong> Peculiar velocities distort galaxy clustering along the line of sight. On large scales (Kaiser regime):
+        \[P^s(k,\mu) = (b + f\mu^2)^2 P(k)\]
+        where \(b\) is galaxy bias and \(\mu = \hat{k}\cdot\hat{n}\). The combination \(f\sigma_8(z)\) is measured from the anisotropy of the galaxy power spectrum. This is a <strong>direct probe of the growth history</strong> — independent of geometry.<br><br>
+        In DDM models, \(f\sigma_8\) is modified because the effective matter density entering the growth equation changes: \(\rho_{\rm dm}^{\rm eff}\) depends on whether DM decays, has \(w_{\rm dm} \neq 0\), or interacts with DE.
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Current measurements and DDM impact</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--c5)"></div><div class="item-text"><strong>BOSS DR12:</strong> \(f\sigma_8(z=0.32) = 0.427 \pm 0.056\) and \(f\sigma_8(z=0.57) = 0.426 \pm 0.029\) — consistent with \(\Lambda\)CDM predictions but with room for deviation.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c5)"></div><div class="item-text"><strong>DESI full-shape analysis:</strong> DESI DR2 includes the first DESI full-shape galaxy power spectrum analysis (beyond BAO), constraining \(f\sigma_8(z)\) at multiple redshifts. This tightens \(w_0, w_a\) constraints and tests modified gravity.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c5)"></div><div class="item-text"><strong>EFT of dark energy:</strong> Ishak et al. (2024) use the DESI full-shape data to constrain the EFT of DE parameters \(\Omega_0\) and \(\beta\) — no significant deviation from GR found yet, but constraints will tighten with DR3.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c5)"></div><div class="item-text"><strong>Why this matters for you:</strong> Your bispectrum work includes RSD and wide-angle effects. In DDM, the Kaiser formula is modified: \(P^s(k,\mu) = (b + f_{\rm DDM}\mu^2)^2 P_{\rm DDM}(k)\) where \(f_{\rm DDM}\) and \(P_{\rm DDM}(k)\) are both changed. The bispectrum adds \(F_2\) kernel corrections.</div></div>
+      </div>
+      <div class="openq"><strong>Key papers:</strong> DESI Collaboration (2025) arXiv:2503.14745 (full-shape). Ishak et al. (2024) (EFT of DE with DESI). Guzzo et al. (2008) Nature 451, 541 (first \(f\sigma_8\) measurement from RSD).</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 7 — FUTURE SURVEYS ══ -->
+<div class="slide" data-color="#818cf8">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--c9)">&#9679; Topic 7 &nbsp;&mdash;&nbsp; Future surveys — Euclid, MegaMapper, Rubin, CMB-S4</span>
+    <span class="slide-count">8 / 10</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--c9);height:40px"></div>
+      <div>
+        <div class="slide-title">Future Surveys — Where Your Research Fits</div>
+        <div class="slide-sub">The next-generation instruments that will test dynamical dark energy and DDM</div>
+      </div>
+    </div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-label">The key future surveys</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--c9)"></div><div class="item-text"><strong>Euclid (ESA, launched July 2023):</strong> 15,000 deg\(^2\) imaging + spectroscopy. 30 million galaxy redshifts at \(0.9 < z < 1.8\). Will measure \(w_0\) to \(\pm 0.025\) and \(w_a\) to \(\pm 0.1\). Weak lensing + galaxy clustering + galaxy-galaxy lensing. Early Release data expected 2025–2026.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c9)"></div><div class="item-text"><strong>MegaMapper (proposed, \(\sim 2030\)s):</strong> \(z = 2\text{–}5\) Lyman-break galaxy (LBG) survey. 100 million+ spectra. This is the survey from your JCAP paper — you are working on its science case. Unique high-\(z\) reach gives direct access to the turnover scale \(k_0\) at multiple redshifts.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c9)"></div><div class="item-text"><strong>Vera Rubin LSST (\(\sim 2025\) start):</strong> 10-year photometric survey. 20 billion galaxies. Will discover \(\sim 10^5\) SNIa per year. Photometric BAO, WL, galaxy clusters. Enormous statistical power for \(w(z)\) reconstruction.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c9)"></div><div class="item-text"><strong>CMB-S4 (\(\sim 2030\)):</strong> Ground-based CMB. \(\sigma(r) < 0.001\), \(\sigma(N_{\rm eff}) < 0.02\), \(\sigma(\sum m_\nu) < 0.02\ \mathrm{eV}\). Combined with DESI/Euclid: definitive test of DDM and dynamical DE.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c9)"></div><div class="item-text"><strong>SKA (Square Kilometre Array, first light \(\sim 2027\)):</strong> 21-cm intensity mapping for BAO at \(z > 1\). Radio continuum survey for WL. HI galaxy survey. Complementary to optical/IR surveys — probes different systematic errors.</div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">How your research connects</div>
+      <div class="items-list">
+        <div class="item"><div class="item-dot" style="background:var(--c8)"></div><div class="item-text"><strong>Your published JCAP paper</strong> (arXiv:2511.06962) on turnover detection with \(P(k)\) and \(B(k_1,k_2,k_3)\) is a direct forecast for MegaMapper LBGs. Extending this to DDM means: computing how DDM changes the turnover \(k_0\), the growth rate \(f\sigma_8\), and the bispectrum kernel \(F_2\).</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c8)"></div><div class="item-text"><strong>Euclid forecasts for DDM:</strong> No published Fisher forecast exists for DDM parameters (\(w_{\rm dm,0}\), \(w_{\rm dm,a}\), or \(\Gamma\), \(v_k\)) using Euclid galaxy clustering. This is an open gap your research can fill.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c8)"></div><div class="item-text"><strong>Relativistic effects in DDM:</strong> Your expertise in the relativistic galaxy bispectrum (Doppler, lensing, wide-angle terms) is directly extendable to DDM models — where these corrections have not been computed.</div></div>
+        <div class="item"><div class="item-dot" style="background:var(--c8)"></div><div class="item-text"><strong>Dinda &amp; Maartens work:</strong> Your supervisor Bikash R. Dinda (your co-author) and Roy Maartens have published on model-agnostic DESI diagnostics. This is the group whose methodology you will use and extend.</div></div>
+      </div>
+      <div class="openq"><strong>Your competitive advantage:</strong> You sit at the intersection of relativistic perturbation theory + bispectrum expertise + Euclid/MegaMapper forecasting. This combination is rare and positions you to make unique contributions to DDM research.</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 8 — COMPLETE READING LIST (FOUNDATIONAL) ══ -->
+<div class="slide" data-color="#34d399">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--c8)">&#9679; Complete reading list — Part A: Foundational papers &amp; textbooks</span>
+    <span class="slide-count">9 / 10</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--c8);height:38px"></div>
+      <div>
+        <div class="slide-title">Reading List — Foundational</div>
+        <div class="slide-sub">Every textbook, review, and foundational paper you need — with arXiv links</div>
+      </div>
+    </div>
+  </div>
+  <div class="read-grid">
+    <div class="rcard" style="border-left-color:var(--c1)">
+      <div class="rtype">Landmark paper · 1989</div>
+      <div class="rtitle">The Cosmological Constant Problem</div>
+      <div class="rauth">Weinberg, S.</div>
+      <div class="rarxiv">Rev. Mod. Phys. 61, 1 (1989)</div>
+      <div class="rwhy">The foundational paper on the \(10^{123}\) discrepancy. Defines the old and new CC problems. Five approaches. Read this first.</div>
+    </div>
+    <div class="rcard" style="border-left-color:var(--c1)">
+      <div class="rtype">Review · 2001</div>
+      <div class="rtitle">The Cosmological Constant</div>
+      <div class="rauth">Carroll, S. M.</div>
+      <div class="rarxiv">arXiv:astro-ph/0004075 · Living Rev. Rel. 4, 1</div>
+      <div class="rwhy">Comprehensive review of \(\Lambda\) theory and observations. More accessible than Weinberg (1989). Excellent historical context.</div>
+    </div>
+    <div class="rcard" style="border-left-color:var(--c2)">
+      <div class="rtype">Original paper · 1988</div>
+      <div class="rtitle">Cosmology with a Time-Variable Cosmological Constant</div>
+      <div class="rauth">Ratra, B. &amp; Peebles, P. J. E.</div>
+      <div class="rarxiv">Phys. Rev. D 37, 3406 (1988)</div>
+      <div class="rwhy">The original quintessence paper. Introduces the inverse power-law potential. Foundation of all scalar field DE models.</div>
+    </div>
+    <div class="rcard" style="border-left-color:var(--c2)">
+      <div class="rtype">Review · 2013</div>
+      <div class="rtitle">Quintessence: A Review</div>
+      <div class="rauth">Tsujikawa, S.</div>
+      <div class="rarxiv">arXiv:1304.1961 · CQG 30, 214003</div>
+      <div class="rwhy">The definitive quintessence review. Tracking vs thawing. Analytic \(w\) evolution. Growth rate formulas. Read this for Phase 2.</div>
+    </div>
+    <div class="rcard" style="border-left-color:var(--c4)">
+      <div class="rtype">Review · 2006</div>
+      <div class="rtitle">Dynamics of Dark Energy</div>
+      <div class="rauth">Copeland, E. J., Sami, M. &amp; Tsujikawa, S.</div>
+      <div class="rarxiv">arXiv:hep-th/0603057 · IJMPD 15, 1753</div>
+      <div class="rwhy">The comprehensive dark energy review. Covers \(\Lambda\), quintessence, k-essence, phantom, tachyon, Chaplygin gas, modified gravity. 200+ pages — use as reference.</div>
+    </div>
+    <div class="rcard" style="border-left-color:var(--c6)">
+      <div class="rtype">Original paper · 2001</div>
+      <div class="rtitle">Accelerating Universes with Scaling Dark Matter</div>
+      <div class="rauth">Chevallier, M. &amp; Polarski, D.</div>
+      <div class="rarxiv">arXiv:gr-qc/0009008 · IJMPD 10, 213</div>
+      <div class="rwhy">The original CPL paper. Introduces \(w(a) = w_0 + w_a(1-a)\). Short but essential — defines the standard parametrisation.</div>
+    </div>
+    <div class="rcard" style="border-left-color:var(--c6)">
+      <div class="rtype">Original paper · 2003</div>
+      <div class="rtitle">Exploring the Expansion History of the Universe</div>
+      <div class="rauth">Linder, E. V.</div>
+      <div class="rarxiv">arXiv:astro-ph/0208512 · PRL 90, 091301</div>
+      <div class="rwhy">Linder's independent derivation and popularisation of the CPL form. Establishes it as the standard for survey forecasting.</div>
+    </div>
+    <div class="rcard" style="border-left-color:var(--c7)">
+      <div class="rtype">Original paper · 2005</div>
+      <div class="rtitle">Limits of Quintessence</div>
+      <div class="rauth">Caldwell, R. R. &amp; Linder, E. V.</div>
+      <div class="rarxiv">arXiv:astro-ph/0505494 · PRL 95, 141301</div>
+      <div class="rwhy">Defines the thawing vs freezing classification. Maps quintessence models onto \((w_0, w_a)\) plane. Essential for interpreting DESI results.</div>
+    </div>
+    <div class="rcard" style="border-left-color:var(--c3)">
+      <div class="rtype">Textbook · 2010</div>
+      <div class="rtitle">Dark Energy: Theory and Observations</div>
+      <div class="rauth">Amendola, L. &amp; Tsujikawa, S.</div>
+      <div class="rarxiv">Cambridge University Press (2010)</div>
+      <div class="rwhy">The dark energy textbook. Chapters on quintessence, k-essence, IDE, perturbations. Essential reference for Phase 2 and beyond.</div>
+    </div>
+    <div class="rcard" style="border-left-color:var(--c3)">
+      <div class="rtype">Review · 2022</div>
+      <div class="rtitle">Challenges for \(\Lambda\)CDM</div>
+      <div class="rauth">Perivolaropoulos, L. &amp; Skara, F.</div>
+      <div class="rarxiv">arXiv:2105.05208 · New Astron. Rev. 95, 101659</div>
+      <div class="rwhy">\(H_0\) and \(\sigma_8\) tensions reviewed comprehensively. The empirical case for beyond-\(\Lambda\)CDM. Covers 50+ anomalies. Essential motivation.</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+<!-- ══ SLIDE 9 — READING LIST (DESI + DDM + YOUR GROUP) ══ -->
+<div class="slide" data-color="#34d399">
+<div class="slide-inner">
+  <div class="slide-header">
+    <span class="slide-eyebrow" style="color:var(--c8)">&#9679; Complete reading list — Part B: DESI, DDM, and your research group</span>
+    <span class="slide-count">10 / 10</span>
+  </div>
+  <div class="title-block">
+    <div class="accent-line">
+      <div class="accent-bar" style="background:var(--c8);height:38px"></div>
+      <div>
+        <div class="slide-title">Reading List — DESI &amp; DDM</div>
+        <div class="slide-sub">The latest observational papers, DDM theory papers, and your own group's work</div>
+      </div>
+    </div>
+  </div>
+  <div class="read-grid">
+    <div class="rcard" style="border-left-color:var(--c2)">
+      <div class="rtype">DESI key paper · 2024</div>
+      <div class="rtitle">DESI 2024 VI: Cosmological Constraints from BAO</div>
+      <div class="rauth">DESI Collaboration</div>
+      <div class="rarxiv">arXiv:2404.03002</div>
+      <div class="rwhy">DR1 BAO results. First DESI evidence for \(w \neq -1\). Must read — the paper that started the current wave.</div>
+    </div>
+    <div class="rcard" style="border-left-color:var(--c6)">
+      <div class="rtype">DESI key paper · 2025</div>
+      <div class="rtitle">DESI DR2 II: BAO and Cosmological Constraints</div>
+      <div class="rauth">DESI Collaboration</div>
+      <div class="rarxiv">arXiv:2503.14738</div>
+      <div class="rwhy">DR2 headline paper. 14M objects. \(\Lambda\)CDM rejected at \(2.8\text{–}4.2\sigma\). Neutrino mass limits. The primary reference for your Phase 2 study.</div>
+    </div>
+    <div class="rcard" style="border-left-color:var(--c6)">
+      <div class="rtype">DESI extended analysis · 2025</div>
+      <div class="rtitle">Extended Dark Energy Analysis Using DESI DR2 BAO</div>
+      <div class="rauth">Lodha, K. et al. (DESI)</div>
+      <div class="rarxiv">arXiv:2503.14743</div>
+      <div class="rwhy">Non-parametric and alternative parametric analyses of DESI DR2. Confirms phantom crossing. Tests quintessence scenarios.</div>
+    </div>
+    <div class="rcard" style="border-left-color:var(--c5)">
+      <div class="rtype">Your supervisor · 2025</div>
+      <div class="rtitle">Model-Agnostic Assessment of Dark Energy after DESI DR1</div>
+      <div class="rauth">Dinda, B. R. &amp; Maartens, R.</div>
+      <div class="rarxiv">arXiv:2406.11418</div>
+      <div class="rwhy">Prof. Maartens and your co-author Dinda's analysis of DESI. Directly relevant — use this methodology. Discuss with supervisor on 17 May.</div>
+    </div>
+    <div class="rcard" style="border-left-color:var(--c7)">
+      <div class="rtype">DDM theory · 2025</div>
+      <div class="rtitle">Evidence for Dynamic Dark Matter</div>
+      <div class="rauth">Wang, J. S. et al.</div>
+      <div class="rarxiv">arXiv:2504.21481</div>
+      <div class="rwhy">CPL parametrisation for DM EoS. DDM + DDE coexistence. "Super Rip" scenario. DESI + CMB constraints. The key DDM theory paper.</div>
+    </div>
+    <div class="rcard" style="border-left-color:var(--c7)">
+      <div class="rtype">\(\Lambda\)DDM observational · 2024</div>
+      <div class="rtitle">Decaying Dark Matter with Weak Lensing</div>
+      <div class="rauth">Bucko, J. et al.</div>
+      <div class="rarxiv">arXiv:2309.10038 · A&amp;A 683, A63</div>
+      <div class="rwhy">Two-body DDM, velocity kick, \(P(k)\) suppression, KiDS-1000 + Planck constraints. Observational DDM benchmark.</div>
+    </div>
+    <div class="rcard" style="border-left-color:var(--c4)">
+      <div class="rtype">IDE theory · 2023</div>
+      <div class="rtitle">Dynamical Systems Analysis of Interacting DE-DM at Linearized Inhomogeneous Level</div>
+      <div class="rauth">Sharma, M. K. &amp; Sur, S.</div>
+      <div class="rarxiv">Phys. Dark Univ. 40, 101206 (2023)</div>
+      <div class="rwhy">Interaction kernel \(\mathcal{Q}\), perturbation-level stability, phase space dynamics. Essential for understanding IDE perturbation theory.</div>
+    </div>
+    <div class="rcard" style="border-left-color:var(--c4)">
+      <div class="rtype">Quintessential interpretation · 2024</div>
+      <div class="rtitle">Quintessential Interpretation of Evolving Dark Energy</div>
+      <div class="rauth">Tada, Y. &amp; Terada, T.</div>
+      <div class="rarxiv">arXiv:2404.05722</div>
+      <div class="rwhy">Interprets DESI \(w_0 w_a\) in terms of quintessence scalar field. Shows phantom crossing breaks single-field models. Swampland conjectures discussed.</div>
+    </div>
+    <div class="rcard" style="border-left-color:var(--c9)">
+      <div class="rtype">Your paper · 2025</div>
+      <div class="rtitle">Turnover Detection Using Power Spectrum and Bispectrum</div>
+      <div class="rauth">Dinda, B. R., Jolicoeur, S., Maartens, R. &amp; Dube, Y.</div>
+      <div class="rarxiv">arXiv:2511.06962 · JCAP</div>
+      <div class="rwhy">Your published paper. Re-read in light of DDM: how does \(k_0\) shift? How does the bispectrum change? This is your research starting point.</div>
+    </div>
+    <div class="rcard" style="border-left-color:var(--c9)">
+      <div class="rtype">Textbook · 2012</div>
+      <div class="rtitle">Relativistic Cosmology</div>
+      <div class="rauth">Ellis, G. F. R., Maartens, R. &amp; MacCallum, M. A. H.</div>
+      <div class="rarxiv">Cambridge University Press</div>
+      <div class="rwhy">The \(1+3\) covariant formalism for DDM perturbations. Your supervisor is co-author. This is your theoretical toolkit for extending bispectrum work to DDM.</div>
+    </div>
+  </div>
+  <div class="slide-footer">Yolanda Dube &copy; 2026 &nbsp;·&nbsp; University of the Western Cape &nbsp;·&nbsp; Relativistic Cosmology</div>
+</div>
+</div>
+
+</div><!-- /deck -->
+
+<script>
+const canvas=document.getElementById('stars'),ctx=canvas.getContext('2d');
+let W,H,stars=[];
+function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight}
+function makeStars(){stars=Array.from({length:240},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.3+0.2,o:Math.random()*0.5+0.1,sp:Math.random()*0.007+0.002,ph:Math.random()*Math.PI*2}))}
+function draw(t){ctx.clearRect(0,0,W,H);stars.forEach(s=>{const o=Math.max(0,Math.min(1,s.o+Math.sin(t*s.sp+s.ph)*0.12));ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(180,210,255,${o.toFixed(2)})`;ctx.fill()});requestAnimationFrame(draw)}
+resize();makeStars();
+window.addEventListener('resize',()=>{resize();makeStars()});
+requestAnimationFrame(draw);
+
+const slides=Array.from(document.querySelectorAll('.slide'));
+const colors=slides.map(s=>s.dataset.color||'#60a5fa');
+const bar=document.getElementById('progress-bar');
+const dotsEl=document.getElementById('dots');
+let cur=0;
+slides.forEach((_,i)=>{const d=document.createElement('div');d.className='dot'+(i===0?' active':'');d.style.background=i===0?colors[0]:'';d.onclick=()=>go(i);dotsEl.appendChild(d)});
+const dotEls=Array.from(dotsEl.querySelectorAll('.dot'));
+function go(n){
+  if(n<0||n>=slides.length)return;
+  slides[cur].classList.remove('active');dotEls[cur].classList.remove('active');dotEls[cur].style.background='';
+  cur=n;
+  slides[cur].classList.add('active');dotEls[cur].classList.add('active');dotEls[cur].style.background=colors[cur];
+  bar.style.width=((cur/(slides.length-1))*100)+'%';bar.style.background=colors[cur];
+  if(window.MathJax&&MathJax.typesetPromise)MathJax.typesetPromise([slides[cur]]).catch(()=>{});
+}
+document.getElementById('prev').onclick=()=>go(cur-1);
+document.getElementById('next').onclick=()=>go(cur+1);
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown')go(cur+1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(cur-1)});
+bar.style.width='0%';bar.style.background=colors[0];
+</script>
+</body>
+</html>
