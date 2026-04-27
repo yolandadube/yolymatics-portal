@@ -743,18 +743,26 @@ function saveToken(){
 }
 
 
-// ── SANITISE titles loaded from GitHub (fix any previously stored corrupted chars) ──
-function sanitisePages(arr){
-  return arr.map(p=>({
-    ...p,
-    title:(p.title||'').replace(/[À-ÿ][-¿]+/g, s=>{
-      try{return decodeURIComponent(escape(s));}catch(e){return s;}
-    }),
-    desc:(p.desc||'').replace(/[À-ÿ][-¿]+/g, s=>{
-      try{return decodeURIComponent(escape(s));}catch(e){return s;}
-    }),
-  }));
+// -- SANITISE titles loaded from GitHub (fix previously stored corrupted chars) --
+function cleanStr(s){
+  if(!s)return '';
+  // Strip ALL non-ASCII characters - kills any ABABAB corruption permanently
+  return s.replace(/[^\x00-\x7F]/g,' ').replace(/\s{2,}/g,' ').trim();
 }
+function sanitisePages(arr){
+  return arr.map(function(p){return Object.assign({},p,{title:cleanStr(p.title),desc:cleanStr(p.desc)});});
+}
+
+// After sanitising, force re-save clean data to GitHub so corruption never comes back
+async function forceCleanMeta(){
+  if(!getToken())return;
+  var dirty = pages.some(function(p){return /[^\x00-\x7F]/.test(p.title||'')||/[^\x00-\x7F]/.test(p.desc||'');});
+  if(dirty){
+    pages = sanitisePages(pages);
+    await saveMeta();
+  }
+}
+
 function seedPages(){
   return [
     {id:'ddm_study_plan',     platform:'phd',subject:'Study Plan',       topic:'General',          title:'Dynamic Dark Matter - 21-Day Study Plan',                desc:'Structured 21-day roadmap through DDM: theory, formalism, observational signatures, and model constraints.',   accent:'#a78bfa',date:'2026-04-26',filename:'ddm_study_plan.html'},
@@ -1334,8 +1342,11 @@ window.navigate=function(sec,el){
 syncSubjectSelect();
 // Load everything from GitHub (falls back to localStorage if offline/no token)
 Promise.all([fetchMeta(), fetchRL()]).then(()=>{
+  // Force-clean any corrupted titles and re-save to GitHub
+  pages = sanitisePages(pages);
   renderAll();
   updateRLCounts();
+  forceCleanMeta();
 });
 </script>
 </body>
