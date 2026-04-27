@@ -1,5 +1,16 @@
 [
   {
+    "id": "rl_1777306516394_bn2",
+    "url": "https://arxiv.org/pdf/2604.12032",
+    "title": "Constraints on Coupled Dark Energy in the DESI Era",
+    "authors": "Adri`a G´omez-Valenta, Ziyang Zhengb, Luca Amendola",
+    "type": "arxiv",
+    "tag": "Dark Energy, Cosmology",
+    "notes": "",
+    "status": "unread",
+    "date": "2026-04-27"
+  },
+  {
     "id": "rl_1777283530212_16i",
     "url": "https://arxiv.org/abs/2511.06962",
     "title": "Turnover detection with the power spectrum and bispectrum",
@@ -8,6 +19,7 @@
     "tag": "Cosmology",
     "notes": "",
     "status": "unread",
-    "date": "2026-04-27"
+    "date": "2026-04-27",
+    "desc": ""
   }
 ]
