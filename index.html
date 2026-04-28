@@ -720,18 +720,33 @@ function cleanPages(arr){
 }
 
 async function fetchMeta(){
+  // Layer 1: GitHub API (authenticated, fastest, needed for writes)
   try{
     var r = await fetch(GH_API+'/contents/'+META_FILE, {headers:ghHeaders()});
     if(r.status===404){pages=[];return;}
-    var j = await r.json();
-    metaSha = j.sha;
-    pages = cleanPages(JSON.parse(safeAtob(j.content)));
-    localStorage.setItem('yoly_pages_local', JSON.stringify(pages));
-  }catch(e){
-    var ls = localStorage.getItem('yoly_pages_local');
-    pages = ls ? cleanPages(JSON.parse(ls)) : [];
-  }
+    if(r.ok){
+      var j = await r.json();
+      metaSha = j.sha;
+      pages = cleanPages(JSON.parse(safeAtob(j.content)));
+      localStorage.setItem('yoly_pages_local', JSON.stringify(pages));
+      return;
+    }
+  }catch(e){}
+  // Layer 2: public raw URL - works on any device without token (repo is public)
+  try{
+    var raw = 'https://raw.githubusercontent.com/'+GH_OWNER+'/'+GH_REPO+'/'+GH_BRANCH+'/'+META_FILE+'?nocache='+Date.now();
+    var r2 = await fetch(raw);
+    if(r2.ok){
+      pages = cleanPages(await r2.json());
+      localStorage.setItem('yoly_pages_local', JSON.stringify(pages));
+      return;
+    }
+  }catch(e){}
+  // Layer 3: localStorage (offline fallback)
+  var ls = localStorage.getItem('yoly_pages_local');
+  pages = ls ? cleanPages(JSON.parse(ls)) : [];
 }
+
 async function saveMeta(){
   localStorage.setItem('yoly_pages_local', JSON.stringify(pages));
   if(!getToken()) return;
@@ -745,18 +760,33 @@ async function saveMeta(){
 }
 
 async function fetchRL(){
+  // Layer 1: GitHub API
   try{
     var r = await fetch(GH_API+'/contents/'+RL_FILE, {headers:ghHeaders()});
     if(r.status===404){readingList=[];return;}
-    var j = await r.json();
-    rlSha = j.sha;
-    readingList = JSON.parse(safeAtob(j.content));
-    localStorage.setItem('yoly_rl_local', JSON.stringify(readingList));
-  }catch(e){
-    var ls = localStorage.getItem('yoly_rl_local');
-    readingList = ls ? JSON.parse(ls) : [];
-  }
+    if(r.ok){
+      var j = await r.json();
+      rlSha = j.sha;
+      readingList = JSON.parse(safeAtob(j.content));
+      localStorage.setItem('yoly_rl_local', JSON.stringify(readingList));
+      return;
+    }
+  }catch(e){}
+  // Layer 2: public raw URL
+  try{
+    var raw = 'https://raw.githubusercontent.com/'+GH_OWNER+'/'+GH_REPO+'/'+GH_BRANCH+'/'+RL_FILE+'?nocache='+Date.now();
+    var r2 = await fetch(raw);
+    if(r2.ok){
+      readingList = await r2.json();
+      localStorage.setItem('yoly_rl_local', JSON.stringify(readingList));
+      return;
+    }
+  }catch(e){}
+  // Layer 3: localStorage
+  var ls = localStorage.getItem('yoly_rl_local');
+  readingList = ls ? JSON.parse(ls) : [];
 }
+
 async function saveRL(){
   localStorage.setItem('yoly_rl_local', JSON.stringify(readingList));
   if(!getToken()) return;
@@ -1121,33 +1151,73 @@ document.querySelectorAll('.dropzone').forEach(function(zone){
 function today(){return new Date().toISOString().slice(0,10);}
 
 // ============================================================
-// OPEN PAGE
+// OPEN PAGE - works on all devices, with or without token
 // ============================================================
 async function openPage(id){
   var p = pages.find(function(x){return x.id===id;});
   if(!p) return;
-  // Fetch from GitHub API and open as blob - works in all browsers
-  try{
-    var r = await fetch(GH_API+'/contents/'+p.filename, {headers:ghHeaders()});
-    if(r.ok){
-      var j = await r.json();
-      var html = safeAtob(j.content);
-      var blob = new Blob([html],{type:'text/html'});
-      window.open(URL.createObjectURL(blob),'_blank');
-      return;
-    }
-  }catch(e){}
-  // Fallback: open GitHub Pages URL
-  window.open('https://'+GH_OWNER+'.github.io/'+GH_REPO+'/'+p.filename,'_blank');
+
+  // Strategy 1: if token available, fetch via API and open as blob (best quality)
+  if(getToken()){
+    try{
+      var r = await fetch(GH_API+'/contents/'+p.filename, {headers:ghHeaders()});
+      if(r.ok){
+        var j = await r.json();
+        var html = safeAtob(j.content);
+        var blob = new Blob([html],{type:'text/html'});
+        window.open(URL.createObjectURL(blob),'_blank');
+        return;
+      }
+    }catch(e){}
+  }
+
+  // Strategy 2: open via GitHub Pages URL - works on ALL devices, no token needed
+  // Files are served publicly since the repo is public
+  var ghPagesUrl = 'https://'+GH_OWNER+'.github.io/'+GH_REPO+'/'+p.filename;
+  window.open(ghPagesUrl,'_blank');
 }
 
 // ============================================================
-// DELETE PAGE
+// DELETE PAGE - removes from portal AND from GitHub repo
 // ============================================================
 async function deletePage(id){
-  if(!confirm('Remove this page from the portal?')) return;
-  pages = pages.filter(function(p){return p.id!==id;});
-  await saveMeta(); renderAll(); showToast('Page removed.');
+  var p = pages.find(function(x){return x.id===id;});
+  if(!p) return;
+  if(!confirm('Remove "'+p.title+'" from the portal?\n\nThis will also delete the file from your GitHub repo.')) return;
+
+  // Remove from metadata list first
+  pages = pages.filter(function(x){return x.id!==id;});
+  renderAll();
+  showToast('Removing...');
+
+  // Save updated metadata
+  await saveMeta();
+
+  // Delete the actual HTML file from GitHub if token available
+  if(getToken() && p.filename){
+    try{
+      // Get the file sha first (required by GitHub API to delete)
+      var r = await fetch(GH_API+'/contents/'+p.filename, {headers:ghHeaders()});
+      if(r.ok){
+        var j = await r.json();
+        var delBody = {
+          message: 'Delete '+p.filename+' via Yolymatics Portal',
+          sha: j.sha,
+          branch: GH_BRANCH
+        };
+        await fetch(GH_API+'/contents/'+p.filename, {
+          method:'DELETE', headers:ghHeaders(), body:JSON.stringify(delBody)
+        });
+        showToast('Page deleted from portal and GitHub.');
+      } else {
+        showToast('Removed from portal. File not found on GitHub.');
+      }
+    }catch(e){
+      showToast('Removed from portal. Could not delete file from GitHub.');
+    }
+  } else {
+    showToast('Page removed from portal.');
+  }
 }
 
 // ============================================================
@@ -1201,15 +1271,17 @@ function renderRL(){
   var scls   = {unread:'',reading:'reading',done:'done'};
   var sico   = {unread:'&#9675;',reading:'&#9681;',done:'&#10003;'};
   cont.innerHTML = list.map(function(e){
-    return '<div class="rle" id="rle-'+e.id+'">'+
+    var eid = e.id;
+    var url = (e.url||'').replace(/'/g,'%27');
+    return '<div class="rle" id="rle-'+eid+'">'+
       '<div class="rle-left">'+
         '<div class="rle-badge" style="background:'+(bgmap[e.type]||bgmap.other)+'">'+(icons[e.type]||icons.other)+'</div>'+
-        '<div class="rle-status '+(scls[e.status]||'')+'" onclick="cycleStatus(\''+e.id+\')">'+(sico[e.status]||sico.unread)+'</div>'+
+        '<div class="rle-status '+(scls[e.status]||'')+'" onclick="cycleStatus(\''+eid+'\')">'+(sico[e.status]||sico.unread)+'</div>'+
       '</div>'+
       '<div class="rle-body">'+
-        '<div class="rle-title" onclick="window.open(\''+e.url+'\',\'_blank\')">'+(e.title||'Untitled')+'</div>'+
+        '<div class="rle-title" onclick="window.open(\''+url+'\',\'_blank\')">'+(e.title||'Untitled')+'</div>'+
         (e.authors?'<div class="rle-authors">'+e.authors+'</div>':'')+
-        '<a class="rle-url" href="'+e.url+'" target="_blank" rel="noopener">'+e.url+'</a>'+
+        '<a class="rle-url" href="'+url+'" target="_blank" rel="noopener">'+e.url+'</a>'+
         (e.notes?'<div class="rle-notes">'+e.notes+'</div>':'')+
         '<div class="rle-foot">'+
           (e.tag?'<span class="rle-tag">'+e.tag+'</span>':'')+
@@ -1217,7 +1289,7 @@ function renderRL(){
         '</div>'+
       '</div>'+
       '<div class="rle-acts">'+
-        '<div class="rle-act" onclick="editRL(\''+e.id+'\')">&#9998;</div>'+
+        '<div class="rle-act" onclick="editRL(\''+eid+'\')">&#9998;</div>'+
         '<div class="rle-act del" onclick="deleteRL(\''+e.id+'\')">&#10005;</div>'+
       '</div>'+
     '</div>';
@@ -1286,22 +1358,95 @@ async function deleteRL(id){
   renderRL(); await saveRL(); showToast('Entry removed.');
 }
 async function autoFillArxiv(){
-  var url=document.getElementById('rlm-url').value.trim();
+  var url = document.getElementById('rlm-url').value.trim();
   if(!url){showToast('Paste a URL first.');return;}
-  var m=url.match(/arxiv\.org\/(?:abs|pdf)\/([0-9]{4}\.[0-9]+)/i);
-  if(!m){showToast('Auto-fill works for arXiv links. Fill in title manually for other sources.');return;}
-  showToast('Fetching arXiv metadata...');
+
+  // Extract arXiv ID from various URL formats:
+  // https://arxiv.org/abs/2511.06962
+  // https://arxiv.org/pdf/2511.06962
+  // https://arxiv.org/abs/2511.06962v2
+  // 2511.06962 (just the ID)
+  var arxivId = null;
+  var patterns = [
+    /arxiv\.org\/(?:abs|pdf)\/(\d{4}\.\d{4,5}(?:v\d+)?)/i,
+    /arxiv\.org\/abs\/([a-z\-]+\/\d+)/i,
+    /^(\d{4}\.\d{4,5}(?:v\d+)?)$/
+  ];
+  for(var i=0;i<patterns.length;i++){
+    var m = url.match(patterns[i]);
+    if(m){arxivId=m[1];break;}
+  }
+
+  if(!arxivId){
+    showToast('Could not find an arXiv ID in that URL. Please fill in manually.');
+    return;
+  }
+
+  showToast('Fetching paper details...');
+
+  // Use arXiv export API - returns Atom XML
+  // We use a CORS-friendly approach via the arXiv API endpoint
   try{
-    var r=await fetch('https://export.arxiv.org/api/query?id_list='+m[1]);
-    var text=await r.text();
-    var xml=new DOMParser().parseFromString(text,'application/xml');
-    var title=(xml.querySelector('entry > title')||{}).textContent||'';
-    var authors=[...xml.querySelectorAll('author > name')].map(function(a){return a.textContent.trim();}).join(', ');
-    if(title) document.getElementById('rlm-title-inp').value=title.trim().replace(/\s+/g,' ');
-    if(authors) document.getElementById('rlm-authors').value=authors;
-    document.getElementById('rlm-type').value='arxiv';
-    showToast('arXiv metadata fetched!');
-  }catch(e){showToast('Could not fetch metadata - fill in manually.');}
+    var apiUrl = 'https://export.arxiv.org/api/query?id_list='+encodeURIComponent(arxivId)+'&max_results=1';
+    var r = await fetch(apiUrl);
+    if(!r.ok) throw new Error('API error '+r.status);
+    var text = await r.text();
+    var xml = new DOMParser().parseFromString(text, 'application/xml');
+
+    // Extract title
+    var titleEl = xml.querySelector('entry title');
+    var rawTitle = titleEl ? titleEl.textContent.trim().replace(/\s+/g,' ') : '';
+
+    // Extract authors
+    var authorEls = xml.querySelectorAll('entry author name');
+    var authors = Array.from(authorEls).map(function(a){return a.textContent.trim();}).join(', ');
+
+    // Extract abstract (optional - put in notes)
+    var summaryEl = xml.querySelector('entry summary');
+    var abstract = summaryEl ? summaryEl.textContent.trim().replace(/\s+/g,' ') : '';
+
+    // Extract published year
+    var pubEl = xml.querySelector('entry published');
+    var year = pubEl ? pubEl.textContent.slice(0,4) : '';
+
+    // Check if we actually got a result
+    var totalResults = xml.querySelector('opensearch\\:totalResults, totalResults');
+    if(totalResults && totalResults.textContent.trim()==='0'){
+      showToast('arXiv ID not found. Please fill in manually.');
+      return;
+    }
+
+    if(rawTitle){
+      document.getElementById('rlm-title-inp').value = rawTitle;
+    }
+    if(authors){
+      // Format: Last1, Last2, ... (Year)
+      var authorList = Array.from(authorEls).map(function(a){
+        var name = a.textContent.trim();
+        var parts = name.split(' ');
+        return parts[parts.length-1]; // last name
+      });
+      var authStr = authorList.length > 4
+        ? authorList.slice(0,3).join(', ')+' et al.'
+        : authorList.join(', ');
+      if(year) authStr += ' ('+year+')';
+      document.getElementById('rlm-authors').value = authStr;
+    }
+    if(abstract && !document.getElementById('rlm-notes').value){
+      // Put first 200 chars of abstract as notes
+      document.getElementById('rlm-notes').value = abstract.slice(0,220)+(abstract.length>220?'...':'');
+    }
+    document.getElementById('rlm-type').value = 'arxiv';
+
+    // Make sure URL is the canonical abs link
+    document.getElementById('rlm-url').value = 'https://arxiv.org/abs/'+arxivId;
+
+    showToast('Paper details filled in from arXiv!');
+  }catch(e){
+    // arXiv API might be blocked - give manual instructions
+    showToast('Could not reach arXiv API. Fill in title and authors manually.');
+    console.warn('arXiv fetch error:', e);
+  }
 }
 
 // ============================================================
