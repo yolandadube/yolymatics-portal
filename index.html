@@ -1525,94 +1525,145 @@ async function deleteRL(id){
 }
 async function autoFillArxiv(){
   var url = document.getElementById('rlm-url').value.trim();
-  if(!url){showToast('Paste a URL first.');return;}
+  var btn = document.querySelector('.rlm-fetch');
+  if(!url){showToast('Paste an arXiv URL or ID first.');return;}
 
-  // Extract arXiv ID from various URL formats:
-  // https://arxiv.org/abs/2511.06962
-  // https://arxiv.org/pdf/2511.06962
-  // https://arxiv.org/abs/2511.06962v2
-  // 2511.06962 (just the ID)
+  // ── Extract arXiv ID from any format ──────────────────────────
   var arxivId = null;
-  var patterns = [
+  var pats = [
     /arxiv\.org\/(?:abs|pdf)\/(\d{4}\.\d{4,5}(?:v\d+)?)/i,
-    /arxiv\.org\/abs\/([a-z\-]+\/\d+)/i,
-    /^(\d{4}\.\d{4,5}(?:v\d+)?)$/
+    /arxiv\.org\/(?:abs|pdf)\/([a-z\-]+\/\d{7})/i,
+    /^(\d{4}\.\d{4,5}(?:v\d+)?)$/,
+    /^([a-z\-]+\/\d{7})$/i
   ];
-  for(var i=0;i<patterns.length;i++){
-    var m = url.match(patterns[i]);
-    if(m){arxivId=m[1];break;}
-  }
-
+  for(var i=0;i<pats.length;i++){var m=url.match(pats[i]);if(m){arxivId=m[1];break;}}
   if(!arxivId){
-    showToast('Could not find an arXiv ID in that URL. Please fill in manually.');
+    showToast('No arXiv ID found in that URL. Fill in manually.');
     return;
   }
 
-  showToast('Fetching paper details...');
+  // Normalize URL to canonical form immediately
+  document.getElementById('rlm-url').value = 'https://arxiv.org/abs/'+arxivId;
 
-  // Use arXiv export API - returns Atom XML
-  // We use a CORS-friendly approach via the arXiv API endpoint
+  if(btn){btn.textContent='Fetching...';btn.disabled=true;}
+  showToast('Looking up paper...');
+
+  // ── Strategy 1: arXiv API via allorigins CORS proxy ──────────
+  var filled = false;
+  var apiUrl = 'https://export.arxiv.org/api/query?id_list='+arxivId+'&max_results=1';
+
+  // Try three different CORS proxies in sequence
+  var proxies = [
+    'https://api.allorigins.win/get?url='+encodeURIComponent(apiUrl),
+    'https://corsproxy.io/?'+encodeURIComponent(apiUrl),
+    'https://cors-anywhere.herokuapp.com/'+apiUrl
+  ];
+
+  for(var pi=0;pi<proxies.length && !filled;pi++){
+    try{
+      var resp = await fetch(proxies[pi], {signal: AbortSignal.timeout(8000)});
+      if(!resp.ok) continue;
+      var data = await resp.json();
+      // allorigins wraps in {contents:...}, corsproxy.io returns raw text
+      var xmlText = data.contents || data;
+      if(typeof xmlText !== 'string') xmlText = JSON.stringify(xmlText);
+      if(!xmlText.includes('<entry>')) continue;
+
+      filled = parseArxivXML(xmlText, arxivId);
+      if(filled) break;
+    }catch(e){ continue; }
+  }
+
+  // ── Strategy 2: direct fetch (works in some browsers/configs) ─
+  if(!filled){
+    try{
+      var resp2 = await fetch(apiUrl, {signal: AbortSignal.timeout(6000)});
+      if(resp2.ok){
+        var xmlText2 = await resp2.text();
+        if(xmlText2.includes('<entry>')) filled = parseArxivXML(xmlText2, arxivId);
+      }
+    }catch(e){}
+  }
+
+  // ── Strategy 3: fetch via GitHub's own API (no CORS issues!) ──
+  // We upload a tiny serverless request through the GitHub API
+  // Actually: use the Semantic Scholar API which has CORS enabled
+  if(!filled){
+    try{
+      var s2url = 'https://api.semanticscholar.org/graph/v1/paper/arXiv:'+arxivId+'?fields=title,authors,year,abstract,externalIds';
+      var s2resp = await fetch(s2url, {signal: AbortSignal.timeout(8000)});
+      if(s2resp.ok){
+        var s2 = await s2resp.json();
+        if(s2.title){
+          document.getElementById('rlm-title-inp').value = s2.title;
+          if(s2.authors && s2.authors.length){
+            var lastNames = s2.authors.map(function(a){
+              var parts = (a.name||'').trim().split(' ');
+              return parts[parts.length-1];
+            });
+            var authStr = lastNames.length > 4
+              ? lastNames.slice(0,3).join(', ')+' et al.'
+              : lastNames.join(', ');
+            if(s2.year) authStr += ' ('+s2.year+')';
+            document.getElementById('rlm-authors').value = authStr;
+          }
+          if(s2.abstract && !document.getElementById('rlm-notes').value){
+            document.getElementById('rlm-notes').value = s2.abstract.slice(0,250)+(s2.abstract.length>250?'...':'');
+          }
+          document.getElementById('rlm-type').value = 'arxiv';
+          filled = true;
+        }
+      }
+    }catch(e){}
+  }
+
+  if(btn){btn.textContent='Auto-fill';btn.disabled=false;}
+
+  if(filled){
+    showToast('Paper details filled in successfully!');
+  } else {
+    showToast('Auto-fill unavailable — please type title and authors manually.');
+    // Still set type to arxiv and clean URL
+    document.getElementById('rlm-type').value = 'arxiv';
+  }
+}
+
+function parseArxivXML(xmlText, arxivId){
   try{
-    var apiUrl = 'https://export.arxiv.org/api/query?id_list='+encodeURIComponent(arxivId)+'&max_results=1';
-    var r = await fetch(apiUrl);
-    if(!r.ok) throw new Error('API error '+r.status);
-    var text = await r.text();
-    var xml = new DOMParser().parseFromString(text, 'application/xml');
+    var xml = new DOMParser().parseFromString(xmlText, 'application/xml');
+    var entry = xml.querySelector('entry');
+    if(!entry) return false;
 
-    // Extract title
-    var titleEl = xml.querySelector('entry title');
+    var titleEl = entry.querySelector('title');
     var rawTitle = titleEl ? titleEl.textContent.trim().replace(/\s+/g,' ') : '';
+    if(!rawTitle) return false;
 
-    // Extract authors
-    var authorEls = xml.querySelectorAll('entry author name');
-    var authors = Array.from(authorEls).map(function(a){return a.textContent.trim();}).join(', ');
+    document.getElementById('rlm-title-inp').value = rawTitle;
 
-    // Extract abstract (optional - put in notes)
-    var summaryEl = xml.querySelector('entry summary');
-    var abstract = summaryEl ? summaryEl.textContent.trim().replace(/\s+/g,' ') : '';
-
-    // Extract published year
-    var pubEl = xml.querySelector('entry published');
-    var year = pubEl ? pubEl.textContent.slice(0,4) : '';
-
-    // Check if we actually got a result
-    var totalResults = xml.querySelector('opensearch\\:totalResults, totalResults');
-    if(totalResults && totalResults.textContent.trim()==='0'){
-      showToast('arXiv ID not found. Please fill in manually.');
-      return;
-    }
-
-    if(rawTitle){
-      document.getElementById('rlm-title-inp').value = rawTitle;
-    }
-    if(authors){
-      // Format: Last1, Last2, ... (Year)
-      var authorList = Array.from(authorEls).map(function(a){
-        var name = a.textContent.trim();
-        var parts = name.split(' ');
-        return parts[parts.length-1]; // last name
+    var authorEls = entry.querySelectorAll('author name');
+    if(authorEls.length){
+      var lastNames = Array.from(authorEls).map(function(a){
+        var parts = a.textContent.trim().split(' ');
+        return parts[parts.length-1];
       });
-      var authStr = authorList.length > 4
-        ? authorList.slice(0,3).join(', ')+' et al.'
-        : authorList.join(', ');
+      var pubEl = entry.querySelector('published');
+      var year = pubEl ? pubEl.textContent.slice(0,4) : '';
+      var authStr = lastNames.length > 4
+        ? lastNames.slice(0,3).join(', ')+' et al.'
+        : lastNames.join(', ');
       if(year) authStr += ' ('+year+')';
       document.getElementById('rlm-authors').value = authStr;
     }
-    if(abstract && !document.getElementById('rlm-notes').value){
-      // Put first 200 chars of abstract as notes
-      document.getElementById('rlm-notes').value = abstract.slice(0,220)+(abstract.length>220?'...':'');
+
+    var summaryEl = entry.querySelector('summary');
+    if(summaryEl && !document.getElementById('rlm-notes').value){
+      var abs = summaryEl.textContent.trim().replace(/\s+/g,' ');
+      document.getElementById('rlm-notes').value = abs.slice(0,250)+(abs.length>250?'...':'');
     }
+
     document.getElementById('rlm-type').value = 'arxiv';
-
-    // Make sure URL is the canonical abs link
-    document.getElementById('rlm-url').value = 'https://arxiv.org/abs/'+arxivId;
-
-    showToast('Paper details filled in from arXiv!');
-  }catch(e){
-    // arXiv API might be blocked - give manual instructions
-    showToast('Could not reach arXiv API. Fill in title and authors manually.');
-    console.warn('arXiv fetch error:', e);
-  }
+    return true;
+  }catch(e){return false;}
 }
 
 // ============================================================
