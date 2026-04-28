@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4.6 Inheritance, Variation and Evolution</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0B1A2E;
+    --cyan: #00D4FF;
+    --gold: #FFD166;
+    --coral: #FF6B6B;
+    --mint: #06D6A0;
+    --purple: #C77DFF;
+    --soft-white: #E8F4FD;
+    --card-bg: rgba(255,255,255,0.05);
+    --card-border: rgba(255,255,255,0.1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--navy);
+    font-family: 'Nunito', sans-serif;
+    color: var(--soft-white);
+    height: 100vh;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  /* Progress Bar */
+  #progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--cyan), var(--purple));
+    transition: width 0.4s ease;
+    z-index: 100;
+    box-shadow: 0 0 10px var(--cyan);
+  }
+
+  /* Slide Container */
+  .slides-wrapper {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .slide {
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    padding: 50px 70px;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .slide.active { display: flex; }
+
+  .scroll-slide {
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    padding: 50px 70px;
+    flex-direction: column;
+    justify-content: flex-start;
+    position: relative;
+    overflow-y: auto;
+  }
+
+  .scroll-slide.active { display: flex; }
+
+  /* Background particles */
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.15;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(180deg); }
+  }
+
+  /* Section Label */
+  .section-label {
+    position: absolute;
+    top: 20px;
+    right: 70px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    opacity: 0.7;
+  }
+
+  /* Slide Number */
+  .slide-num {
+    position: absolute;
+    bottom: 20px;
+    right: 70px;
+    font-size: 0.8rem;
+    opacity: 0.4;
+    font-family: 'Fredoka One', sans-serif;
+  }
+
+  /* Cover Slide */
+  .cover-slide {
+    background: radial-gradient(ellipse at 30% 50%, rgba(0,212,255,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(199,125,255,0.08) 0%, transparent 50%),
+                var(--navy);
+    align-items: center;
+    text-align: center;
+  }
+
+  .cover-dna {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0; left: 0;
+  }
+
+  .cover-topic {
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 1rem;
+    color: var(--cyan);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+    opacity: 0.8;
+  }
+
+  .cover-title {
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 3.8rem;
+    line-height: 1.1;
+    background: linear-gradient(135deg, var(--cyan), var(--purple), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 20px;
+  }
+
+  .cover-subtitle {
+    font-size: 1.1rem;
+    color: var(--soft-white);
+    opacity: 0.7;
+    margin-bottom: 40px;
+  }
+
+  .cover-credit {
+    font-size: 0.85rem;
+    color: var(--gold);
+    opacity: 0.8;
+    letter-spacing: 1px;
+  }
+
+  .cover-badge {
+    display: inline-flex;
+    gap: 20px;
+    margin-top: 30px;
+  }
+
+  .badge {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 30px;
+    padding: 8px 20px;
+    font-size: 0.8rem;
+    color: var(--mint);
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  /* Headings */
+  h1 {
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 2.8rem;
+    color: var(--cyan);
+    margin-bottom: 10px;
+  }
+
+  h2 {
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 1.9rem;
+    color: var(--gold);
+    margin-bottom: 18px;
+  }
+
+  h3 {
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 1.3rem;
+    color: var(--mint);
+    margin-bottom: 10px;
+  }
+
+  .topic-tag {
+    display: inline-block;
+    background: rgba(0,212,255,0.12);
+    border: 1px solid rgba(0,212,255,0.3);
+    border-radius: 20px;
+    padding: 4px 16px;
+    font-size: 0.78rem;
+    color: var(--cyan);
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  /* Content Cards */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    backdrop-filter: blur(8px);
+  }
+
+  .card-cyan { border-left: 4px solid var(--cyan); }
+  .card-gold { border-left: 4px solid var(--gold); }
+  .card-coral { border-left: 4px solid var(--coral); }
+  .card-mint { border-left: 4px solid var(--mint); }
+  .card-purple { border-left: 4px solid var(--purple); }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 10px;
+  }
+
+  .three-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-top: 10px;
+  }
+
+  p, li {
+    font-size: 1.0rem;
+    line-height: 1.65;
+    color: var(--soft-white);
+    opacity: 0.9;
+  }
+
+  ul { padding-left: 20px; }
+  li { margin-bottom: 6px; }
+
+  .highlight {
+    color: var(--gold);
+    font-weight: 800;
+  }
+
+  .hl-cyan { color: var(--cyan); font-weight: 700; }
+  .hl-mint { color: var(--mint); font-weight: 700; }
+  .hl-coral { color: var(--coral); font-weight: 700; }
+  .hl-purple { color: var(--purple); font-weight: 700; }
+
+  /* Key Term Pills */
+  .term-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  .term-pill {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 10px 18px;
+    font-size: 0.9rem;
+  }
+
+  .term-pill strong {
+    color: var(--cyan);
+    font-size: 1rem;
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  /* Punnett Square */
+  .punnett {
+    display: grid;
+    grid-template-columns: 50px 1fr 1fr;
+    grid-template-rows: 50px 1fr 1fr;
+    gap: 4px;
+    width: 280px;
+    margin: 16px auto;
+  }
+
+  .punnett-cell {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 1.3rem;
+    height: 70px;
+  }
+
+  .punnett-header {
+    background: rgba(0,212,255,0.15);
+    border: 1px solid rgba(0,212,255,0.3);
+    color: var(--cyan);
+  }
+
+  .punnett-corner { background: transparent; border: none; }
+
+  .punnett-dominant { color: var(--gold); }
+  .punnett-recessive { color: var(--coral); }
+
+  /* Comparison table */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 14px;
+    font-size: 0.92rem;
+  }
+
+  .compare-table th {
+    background: rgba(0,212,255,0.15);
+    color: var(--cyan);
+    padding: 10px 16px;
+    text-align: left;
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 1rem;
+    border-bottom: 2px solid rgba(0,212,255,0.3);
+  }
+
+  .compare-table td {
+    padding: 9px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    color: var(--soft-white);
+    opacity: 0.9;
+  }
+
+  .compare-table tr:nth-child(even) td {
+    background: rgba(255,255,255,0.03);
+  }
+
+  /* Quiz */
+  .quiz-box {
+    background: rgba(255,209,102,0.07);
+    border: 2px solid rgba(255,209,102,0.3);
+    border-radius: 18px;
+    padding: 28px 36px;
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .quiz-q {
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 1.5rem;
+    color: var(--gold);
+    margin-bottom: 24px;
+    line-height: 1.3;
+  }
+
+  .quiz-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .quiz-btn {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 14px 20px;
+    color: var(--soft-white);
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s;
+    text-align: left;
+  }
+
+  .quiz-btn:hover { background: rgba(255,255,255,0.12); transform: translateY(-2px); }
+  .quiz-btn.correct { background: rgba(6,214,160,0.2); border-color: var(--mint); color: var(--mint); }
+  .quiz-btn.wrong { background: rgba(255,107,107,0.2); border-color: var(--coral); color: var(--coral); }
+
+  .quiz-feedback {
+    margin-top: 18px;
+    font-size: 1rem;
+    font-weight: 700;
+    min-height: 28px;
+  }
+
+  .feedback-correct { color: var(--mint); }
+  .feedback-wrong { color: var(--coral); }
+
+  /* Navigation */
+  .nav-btns {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 14px;
+    z-index: 200;
+  }
+
+  .nav-btn {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 50px;
+    padding: 10px 28px;
+    color: var(--soft-white);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+
+  .nav-btn:hover { background: rgba(0,212,255,0.15); border-color: var(--cyan); }
+
+  /* SVG diagram containers */
+  .svg-wrap {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+  }
+
+  /* Chromosome animation */
+  @keyframes pulse-glow {
+    0%, 100% { filter: drop-shadow(0 0 4px currentColor); }
+    50% { filter: drop-shadow(0 0 12px currentColor); }
+  }
+
+  .glow-anim { animation: pulse-glow 2.5s ease-in-out infinite; }
+
+  /* Spin for DNA */
+  @keyframes dna-spin {
+    from { transform: rotateY(0deg); }
+    to { transform: rotateY(360deg); }
+  }
+
+  .fade-in {
+    animation: fadeIn 0.6s ease forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Scroll styling */
+  .scroll-slide::-webkit-scrollbar { width: 6px; }
+  .scroll-slide::-webkit-scrollbar-track { background: transparent; }
+  .scroll-slide::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.3); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<div class="slides-wrapper">
+
+  <!-- ===================== SLIDE 1: COVER ===================== -->
+  <div class="slide cover-slide active" id="slide-1">
+    <svg class="cover-dna" viewBox="0 0 1200 700" xmlns="http://www.w3.org/2000/svg" opacity="0.12">
+      <!-- Animated DNA strand -->
+      <g transform="translate(80,50)">
+        <path d="M0,0 Q30,30 0,60 Q-30,90 0,120 Q30,150 0,180 Q-30,210 0,240 Q30,270 0,300 Q-30,330 0,360 Q30,390 0,420 Q-30,450 0,480 Q30,510 0,540 Q-30,570 0,600" fill="none" stroke="#00D4FF" stroke-width="3">
+          <animateTransform attributeName="transform" type="translate" values="0,0;5,0;0,0" dur="3s" repeatCount="indefinite"/>
+        </path>
+        <path d="M60,0 Q30,30 60,60 Q90,90 60,120 Q30,150 60,180 Q90,210 60,240 Q30,270 60,300 Q90,330 60,360 Q30,390 60,420 Q90,450 60,480 Q30,510 60,540 Q90,570 60,600" fill="none" stroke="#C77DFF" stroke-width="3"/>
+        <line x1="0" y1="0" x2="60" y2="0" stroke="#FFD166" stroke-width="2" opacity="0.7"/>
+        <line x1="0" y1="60" x2="60" y2="60" stroke="#06D6A0" stroke-width="2" opacity="0.7"/>
+        <line x1="0" y1="120" x2="60" y2="120" stroke="#FF6B6B" stroke-width="2" opacity="0.7"/>
+        <line x1="0" y1="180" x2="60" y2="180" stroke="#FFD166" stroke-width="2" opacity="0.7"/>
+        <line x1="0" y1="240" x2="60" y2="240" stroke="#06D6A0" stroke-width="2" opacity="0.7"/>
+        <line x1="0" y1="300" x2="60" y2="300" stroke="#C77DFF" stroke-width="2" opacity="0.7"/>
+        <line x1="0" y1="360" x2="60" y2="360" stroke="#FFD166" stroke-width="2" opacity="0.7"/>
+        <line x1="0" y1="420" x2="60" y2="420" stroke="#FF6B6B" stroke-width="2" opacity="0.7"/>
+        <line x1="0" y1="480" x2="60" y2="480" stroke="#06D6A0" stroke-width="2" opacity="0.7"/>
+        <line x1="0" y1="540" x2="60" y2="540" stroke="#FFD166" stroke-width="2" opacity="0.7"/>
+        <line x1="0" y1="600" x2="60" y2="600" stroke="#C77DFF" stroke-width="2" opacity="0.7"/>
+      </g>
+      <!-- Right side DNA -->
+      <g transform="translate(1060,50)">
+        <path d="M0,0 Q30,30 0,60 Q-30,90 0,120 Q30,150 0,180 Q-30,210 0,240 Q30,270 0,300 Q-30,330 0,360 Q30,390 0,420 Q-30,450 0,480 Q30,510 0,540 Q-30,570 0,600" fill="none" stroke="#C77DFF" stroke-width="3"/>
+        <path d="M60,0 Q30,30 60,60 Q90,90 60,120 Q30,150 60,180 Q90,210 60,240 Q30,270 60,300 Q90,330 60,360 Q30,390 60,420 Q90,450 60,480 Q30,510 60,540 Q90,570 60,600" fill="none" stroke="#00D4FF" stroke-width="3"/>
+        <line x1="0" y1="60" x2="60" y2="60" stroke="#FF6B6B" stroke-width="2" opacity="0.7"/>
+        <line x1="0" y1="120" x2="60" y2="120" stroke="#FFD166" stroke-width="2" opacity="0.7"/>
+        <line x1="0" y1="240" x2="60" y2="240" stroke="#06D6A0" stroke-width="2" opacity="0.7"/>
+        <line x1="0" y1="360" x2="60" y2="360" stroke="#FFD166" stroke-width="2" opacity="0.7"/>
+        <line x1="0" y1="480" x2="60" y2="480" stroke="#C77DFF" stroke-width="2" opacity="0.7"/>
+        <line x1="0" y1="540" x2="60" y2="540" stroke="#FF6B6B" stroke-width="2" opacity="0.7"/>
+      </g>
+      <!-- Floating circles -->
+      <circle cx="600" cy="100" r="60" fill="#00D4FF"/>
+      <circle cx="900" cy="350" r="40" fill="#C77DFF"/>
+      <circle cx="300" cy="500" r="50" fill="#FFD166"/>
+      <circle cx="700" cy="580" r="35" fill="#06D6A0"/>
+    </svg>
+
+    <div class="cover-topic">AQA Biology · Topic 4.6</div>
+    <div class="cover-title">Inheritance, Variation<br>&amp; Evolution</div>
+    <div class="cover-subtitle">Meiosis · DNA · Genetics · Natural Selection · Genetic Engineering</div>
+    <div class="cover-credit">Prepared by: Yolanda Dube © 2026</div>
+    <div class="cover-badge">
+      <span class="badge">🧬 Genetics</span>
+      <span class="badge">🌿 Evolution</span>
+      <span class="badge">🔬 AQA GCSE</span>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 2: Overview ===================== -->
+  <div class="slide active" id="slide-2" style="display:none;">
+    <div class="particle" style="width:120px;height:120px;background:var(--cyan);top:5%;right:8%;animation-delay:0s;"></div>
+    <div class="particle" style="width:80px;height:80px;background:var(--purple);bottom:10%;left:5%;animation-delay:1.5s;"></div>
+    <div class="section-label">Overview</div>
+    <div class="slide-num">2</div>
+    <div class="topic-tag">🗺 Topic Map</div>
+    <h1>What We Will Cover</h1>
+    <div class="three-col" style="margin-top:20px;">
+      <div class="card card-cyan">
+        <h3>🧬 Reproduction</h3>
+        <ul>
+          <li>Sexual vs Asexual</li>
+          <li>Meiosis</li>
+          <li>DNA & the Genome</li>
+          <li>Genetic Inheritance</li>
+          <li>Inherited Disorders</li>
+          <li>Sex Determination</li>
+        </ul>
+      </div>
+      <div class="card card-mint">
+        <h3>🌿 Variation & Evolution</h3>
+        <ul>
+          <li>Causes of Variation</li>
+          <li>Mutations</li>
+          <li>Natural Selection</li>
+          <li>Selective Breeding</li>
+          <li>Cloning</li>
+          <li>Genetic Engineering</li>
+        </ul>
+      </div>
+      <div class="card card-gold">
+        <h3>📌 Key Skills</h3>
+        <ul>
+          <li>Punnett Square diagrams</li>
+          <li>Probability in genetics</li>
+          <li>Interpreting family trees</li>
+          <li>Ratios from crosses</li>
+          <li>Ethical judgements</li>
+          <li>Modelling meiosis</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 3: Sexual vs Asexual ===================== -->
+  <div class="slide" id="slide-3" style="display:none;">
+    <div class="particle" style="width:100px;height:100px;background:var(--mint);top:8%;right:5%;animation-delay:0.5s;"></div>
+    <div class="section-label">4.6.1.1 Reproduction</div>
+    <div class="slide-num">3</div>
+    <div class="topic-tag">🔬 Reproduction</div>
+    <h1>Sexual vs Asexual Reproduction</h1>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>🌸 Sexual Reproduction</th>
+          <th>🌱 Asexual Reproduction</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Parents needed</strong></td><td>Two (male & female)</td><td>One</td></tr>
+        <tr><td><strong>Gametes involved?</strong></td><td>Yes — sperm + egg (animals); pollen + egg (plants)</td><td>No</td></tr>
+        <tr><td><strong>Fusion of gametes?</strong></td><td>Yes</td><td>No</td></tr>
+        <tr><td><strong>Genetic mixing?</strong></td><td>Yes → <span class="hl-mint">variety in offspring</span></td><td>No → <span class="hl-cyan">genetically identical (clones)</span></td></tr>
+        <tr><td><strong>Cell division type</strong></td><td>Meiosis (to form gametes)</td><td>Mitosis only</td></tr>
+        <tr><td><strong>Offspring type</strong></td><td>Non-identical</td><td>Clones</td></tr>
+      </tbody>
+    </table>
+    <div class="card card-gold" style="margin-top:18px;">
+      <p>💡 <span class="highlight">Key idea:</span> Sexual reproduction introduces <span class="hl-mint">genetic variation</span> which is the raw material for evolution. Asexual reproduction is faster but produces no variety.</p>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 4: Meiosis ===================== -->
+  <div class="slide" id="slide-4" style="display:none;">
+    <div class="particle" style="width:90px;height:90px;background:var(--purple);top:5%;left:10%;animation-delay:1s;"></div>
+    <div class="section-label">4.6.1.2 Meiosis</div>
+    <div class="slide-num">4</div>
+    <div class="topic-tag">🔬 Meiosis</div>
+    <h1>Meiosis — Forming Gametes</h1>
+    <div class="two-col">
+      <div>
+        <div class="card card-cyan">
+          <h3>What happens in Meiosis?</h3>
+          <ul>
+            <li>Copies of genetic information are <span class="hl-cyan">first made</span></li>
+            <li>Cell divides <span class="highlight">twice</span> → produces <span class="highlight">4 gametes</span></li>
+            <li>Each gamete has a <span class="hl-mint">single set of chromosomes</span> (haploid)</li>
+            <li>All gametes are <span class="hl-coral">genetically different</span> from each other</li>
+          </ul>
+        </div>
+        <div class="card card-mint" style="margin-top:16px;">
+          <h3>After Fertilisation</h3>
+          <ul>
+            <li>Two gametes <span class="hl-gold">fuse</span> → normal chromosome number restored (diploid)</li>
+            <li>New cell divides by <span class="hl-cyan">mitosis</span> → cell number increases</li>
+            <li>As embryo develops → cells <span class="hl-purple">differentiate</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="svg-wrap" style="align-items:center;">
+        <svg viewBox="0 0 320 380" width="280" xmlns="http://www.w3.org/2000/svg">
+          <!-- Parent cell -->
+          <ellipse cx="160" cy="45" rx="70" ry="35" fill="rgba(0,212,255,0.12)" stroke="#00D4FF" stroke-width="2"/>
+          <text x="160" y="40" text-anchor="middle" fill="#00D4FF" font-family="Fredoka One" font-size="13">Parent Cell</text>
+          <text x="160" y="58" text-anchor="middle" fill="#E8F4FD" font-family="Nunito" font-size="11">46 chromosomes</text>
+          <!-- Arrow down -->
+          <line x1="160" y1="82" x2="160" y2="110" stroke="#FFD166" stroke-width="2" marker-end="url(#arr)"/>
+          <text x="170" y="100" fill="#FFD166" font-family="Nunito" font-size="10" font-weight="700">DNA copied</text>
+          <!-- After first division -->
+          <ellipse cx="90" cy="145" rx="55" ry="28" fill="rgba(199,125,255,0.1)" stroke="#C77DFF" stroke-width="2"/>
+          <text x="90" y="141" text-anchor="middle" fill="#C77DFF" font-family="Fredoka One" font-size="11">Cell A</text>
+          <text x="90" y="156" text-anchor="middle" fill="#E8F4FD" font-family="Nunito" font-size="10">23 pairs</text>
+          <ellipse cx="230" cy="145" rx="55" ry="28" fill="rgba(199,125,255,0.1)" stroke="#C77DFF" stroke-width="2"/>
+          <text x="230" y="141" text-anchor="middle" fill="#C77DFF" font-family="Fredoka One" font-size="11">Cell B</text>
+          <text x="230" y="156" text-anchor="middle" fill="#E8F4FD" font-family="Nunito" font-size="10">23 pairs</text>
+          <line x1="130" y1="82" x2="90" y2="118" stroke="#C77DFF" stroke-width="1.5"/>
+          <line x1="190" y1="82" x2="230" y2="118" stroke="#C77DFF" stroke-width="1.5"/>
+          <text x="160" y="130" text-anchor="middle" fill="#C77DFF" font-family="Nunito" font-size="9" font-weight="700">Division 1</text>
+          <!-- 4 gametes -->
+          <ellipse cx="45" cy="240" rx="40" ry="22" fill="rgba(6,214,160,0.12)" stroke="#06D6A0" stroke-width="2"/>
+          <text x="45" y="237" text-anchor="middle" fill="#06D6A0" font-family="Fredoka One" font-size="10">Gamete 1</text>
+          <text x="45" y="250" text-anchor="middle" fill="#E8F4FD" font-family="Nunito" font-size="9">23 chr.</text>
+          <ellipse cx="135" cy="240" rx="40" ry="22" fill="rgba(6,214,160,0.12)" stroke="#06D6A0" stroke-width="2"/>
+          <text x="135" y="237" text-anchor="middle" fill="#06D6A0" font-family="Fredoka One" font-size="10">Gamete 2</text>
+          <text x="135" y="250" text-anchor="middle" fill="#E8F4FD" font-family="Nunito" font-size="9">23 chr.</text>
+          <ellipse cx="195" cy="240" rx="40" ry="22" fill="rgba(6,214,160,0.12)" stroke="#06D6A0" stroke-width="2"/>
+          <text x="195" y="237" text-anchor="middle" fill="#06D6A0" font-family="Fredoka One" font-size="10">Gamete 3</text>
+          <text x="195" y="250" text-anchor="middle" fill="#E8F4FD" font-family="Nunito" font-size="9">23 chr.</text>
+          <ellipse cx="280" cy="240" rx="40" ry="22" fill="rgba(6,214,160,0.12)" stroke="#06D6A0" stroke-width="2"/>
+          <text x="280" y="237" text-anchor="middle" fill="#06D6A0" font-family="Fredoka One" font-size="10">Gamete 4</text>
+          <text x="280" y="250" text-anchor="middle" fill="#E8F4FD" font-family="Nunito" font-size="9">23 chr.</text>
+          <line x1="70" y1="173" x2="45" y2="218" stroke="#06D6A0" stroke-width="1.2"/>
+          <line x1="110" y1="173" x2="135" y2="218" stroke="#06D6A0" stroke-width="1.2"/>
+          <line x1="190" y1="173" x2="195" y2="218" stroke="#06D6A0" stroke-width="1.2"/>
+          <line x1="260" y1="173" x2="280" y2="218" stroke="#06D6A0" stroke-width="1.2"/>
+          <text x="160" y="215" text-anchor="middle" fill="#06D6A0" font-family="Nunito" font-size="9" font-weight="700">Division 2</text>
+          <!-- Note -->
+          <rect x="30" y="285" width="260" height="40" rx="8" fill="rgba(255,209,102,0.08)" stroke="rgba(255,209,102,0.3)" stroke-width="1"/>
+          <text x="160" y="301" text-anchor="middle" fill="#FFD166" font-family="Fredoka One" font-size="12">All 4 gametes genetically DIFFERENT</text>
+          <text x="160" y="317" text-anchor="middle" fill="#E8F4FD" font-family="Nunito" font-size="10">This creates genetic variation!</text>
+          <!-- Arrow marker -->
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="#FFD166"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 5: DNA & Genome ===================== -->
+  <div class="slide" id="slide-5" style="display:none;">
+    <div class="particle" style="width:100px;height:100px;background:var(--gold);top:5%;right:5%;animation-delay:0.3s;"></div>
+    <div class="section-label">4.6.1.3 DNA & Genome</div>
+    <div class="slide-num">5</div>
+    <div class="topic-tag">🧬 DNA Structure</div>
+    <h1>DNA and the Genome</h1>
+    <div class="two-col">
+      <div>
+        <div class="card card-cyan">
+          <h3>DNA Structure</h3>
+          <ul>
+            <li>DNA is a <span class="hl-cyan">polymer</span> made of two strands</li>
+            <li>Forms a <span class="highlight">double helix</span> shape</li>
+            <li>Contained in structures called <span class="hl-mint">chromosomes</span></li>
+            <li>Found in the <span class="hl-purple">nucleus</span> of a cell</li>
+          </ul>
+        </div>
+        <div class="card card-gold" style="margin-top:14px;">
+          <h3>Genes</h3>
+          <ul>
+            <li>A <span class="highlight">gene</span> = a small section of DNA on a chromosome</li>
+            <li>Each gene codes for a specific <span class="hl-cyan">sequence of amino acids</span></li>
+            <li>This makes a <span class="hl-mint">specific protein</span></li>
+          </ul>
+        </div>
+        <div class="card card-purple" style="margin-top:14px;">
+          <h3>The Genome</h3>
+          <ul>
+            <li>The <span class="hl-purple">genome</span> = the <em>entire</em> genetic material of an organism</li>
+            <li>The human genome has now been fully sequenced</li>
+            <li>Important for: finding genes linked to disease, treating inherited disorders, tracing human migration</li>
+          </ul>
+        </div>
+      </div>
+      <div class="svg-wrap" style="align-items:center;">
+        <svg viewBox="0 0 260 400" width="230" xmlns="http://www.w3.org/2000/svg">
+          <!-- Double helix DNA -->
+          <g>
+            <path d="M80,20 Q110,55 80,90 Q50,125 80,160 Q110,195 80,230 Q50,265 80,300 Q110,335 80,370" fill="none" stroke="#00D4FF" stroke-width="3.5">
+              <animate attributeName="d" values="M80,20 Q110,55 80,90 Q50,125 80,160 Q110,195 80,230 Q50,265 80,300 Q110,335 80,370;M80,20 Q50,55 80,90 Q110,125 80,160 Q50,195 80,230 Q110,265 80,300 Q50,335 80,370;M80,20 Q110,55 80,90 Q50,125 80,160 Q110,195 80,230 Q50,265 80,300 Q110,335 80,370" dur="4s" repeatCount="indefinite"/>
+            </path>
+            <path d="M170,20 Q140,55 170,90 Q200,125 170,160 Q140,195 170,230 Q200,265 170,300 Q140,335 170,370" fill="none" stroke="#C77DFF" stroke-width="3.5">
+              <animate attributeName="d" values="M170,20 Q140,55 170,90 Q200,125 170,160 Q140,195 170,230 Q200,265 170,300 Q140,335 170,370;M170,20 Q200,55 170,90 Q140,125 170,160 Q200,195 170,230 Q140,265 170,300 Q200,335 170,370;M170,20 Q140,55 170,90 Q200,125 170,160 Q140,195 170,230 Q200,265 170,300 Q140,335 170,370" dur="4s" repeatCount="indefinite"/>
+            </path>
+            <!-- Base pairs -->
+            <line x1="80" y1="55" x2="170" y2="55" stroke="#FFD166" stroke-width="2.5" opacity="0.8"/>
+            <line x1="80" y1="125" x2="170" y2="125" stroke="#06D6A0" stroke-width="2.5" opacity="0.8"/>
+            <line x1="80" y1="195" x2="170" y2="195" stroke="#FF6B6B" stroke-width="2.5" opacity="0.8"/>
+            <line x1="80" y1="265" x2="170" y2="265" stroke="#FFD166" stroke-width="2.5" opacity="0.8"/>
+            <line x1="80" y1="335" x2="170" y2="335" stroke="#06D6A0" stroke-width="2.5" opacity="0.8"/>
+            <!-- Labels -->
+            <text x="130" y="15" text-anchor="middle" fill="#00D4FF" font-family="Fredoka One" font-size="12">Double Helix</text>
+            <text x="30" y="92" fill="#00D4FF" font-family="Nunito" font-size="10" font-weight="700">Strand 1</text>
+            <text x="175" y="92" fill="#C77DFF" font-family="Nunito" font-size="10" font-weight="700">Strand 2</text>
+            <text x="130" y="137" text-anchor="middle" fill="#FFD166" font-family="Nunito" font-size="10" font-weight="700">Base pair</text>
+          </g>
+          <!-- Gene highlight -->
+          <rect x="60" y="110" width="130" height="75" rx="6" fill="none" stroke="#FF6B6B" stroke-width="2" stroke-dasharray="5,3"/>
+          <text x="130" y="205" text-anchor="middle" fill="#FF6B6B" font-family="Fredoka One" font-size="11">← Gene (section of DNA)</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 6: Key Genetic Terms ===================== -->
+  <div class="scroll-slide" id="slide-6" style="display:none;">
+    <div class="section-label">4.6.1.4 Genetic Inheritance</div>
+    <div class="slide-num">6</div>
+    <div class="topic-tag">📚 Key Terms</div>
+    <h1>Genetic Inheritance — Key Terms</h1>
+    <div class="term-grid" style="margin-top:14px;">
+      <div class="term-pill"><strong>Gamete</strong>Sex cell (sperm, egg, pollen)</div>
+      <div class="term-pill"><strong>Chromosome</strong>Structure in nucleus carrying genes</div>
+      <div class="term-pill"><strong>Gene</strong>Section of DNA coding for a protein</div>
+      <div class="term-pill"><strong>Allele</strong>Different form of a gene</div>
+      <div class="term-pill"><strong>Dominant</strong>Always expressed — even if only one copy present</div>
+      <div class="term-pill"><strong>Recessive</strong>Only expressed if TWO copies present</div>
+      <div class="term-pill"><strong>Homozygous</strong>Both alleles are the same (AA or aa)</div>
+      <div class="term-pill"><strong>Heterozygous</strong>Alleles are different (Aa)</div>
+      <div class="term-pill"><strong>Genotype</strong>The alleles present (e.g. Aa, BB, bb)</div>
+      <div class="term-pill"><strong>Phenotype</strong>The observable characteristic (e.g. brown eyes)</div>
+    </div>
+    <div class="card card-coral" style="margin-top:18px;">
+      <p>💡 <span class="highlight">Remember:</span> Most characteristics result from <span class="hl-cyan">multiple genes interacting</span>, not just one gene. Single-gene inheritance (like fur colour in mice, red-green colour blindness) is used to teach the principles.</p>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 7: Punnett Square ===================== -->
+  <div class="slide" id="slide-7" style="display:none;">
+    <div class="section-label">4.6.1.4 Genetic Inheritance</div>
+    <div class="slide-num">7</div>
+    <div class="topic-tag">📊 Punnett Square</div>
+    <h1>Punnett Square — Monohybrid Cross</h1>
+    <div class="two-col">
+      <div>
+        <div class="card card-cyan">
+          <h3>Example: Fur Colour in Mice</h3>
+          <p><span class="hl-cyan">B</span> = brown fur (dominant) &nbsp;|&nbsp; <span class="hl-coral">b</span> = white fur (recessive)</p>
+          <p style="margin-top:10px;">Cross: Two heterozygous parents <span class="hl-gold">Bb × Bb</span></p>
+        </div>
+        <div class="punnett">
+          <div class="punnett-cell punnett-corner"></div>
+          <div class="punnett-cell punnett-header"><span class="punnett-dominant">B</span></div>
+          <div class="punnett-cell punnett-header"><span class="punnett-recessive">b</span></div>
+          <div class="punnett-cell punnett-header"><span class="punnett-dominant">B</span></div>
+          <div class="punnett-cell"><span class="punnett-dominant">BB</span></div>
+          <div class="punnett-cell"><span class="punnett-dominant">B</span><span class="punnett-recessive">b</span></div>
+          <div class="punnett-cell punnett-header"><span class="punnett-recessive">b</span></div>
+          <div class="punnett-cell"><span class="punnett-dominant">B</span><span class="punnett-recessive">b</span></div>
+          <div class="punnett-cell"><span class="punnett-recessive">bb</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="card card-gold">
+          <h3>Results</h3>
+          <p><span class="hl-cyan">BB</span> — 1 in 4 → Homozygous dominant (brown)</p>
+          <p style="margin-top:6px;"><span class="hl-mint">Bb</span> — 2 in 4 → Heterozygous (brown)</p>
+          <p style="margin-top:6px;"><span class="hl-coral">bb</span> — 1 in 4 → Homozygous recessive (white)</p>
+        </div>
+        <div class="card card-mint" style="margin-top:14px;">
+          <h3>Phenotype Ratio</h3>
+          <p><span class="highlight">3 Brown : 1 White</span></p>
+          <p style="margin-top:8px;">Probability of white = <span class="hl-gold">¼ = 25%</span></p>
+          <p>Probability of brown = <span class="hl-mint">¾ = 75%</span></p>
+        </div>
+        <div class="card card-coral" style="margin-top:14px;">
+          <p>💡 These ratios are <span class="hl-gold">theoretical probabilities</span> — in reality the actual numbers in offspring may differ!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 8: Inherited Disorders ===================== -->
+  <div class="slide" id="slide-8" style="display:none;">
+    <div class="particle" style="width:110px;height:110px;background:var(--coral);top:5%;right:5%;animation-delay:0.8s;"></div>
+    <div class="section-label">4.6.1.5 Inherited Disorders</div>
+    <div class="slide-num">8</div>
+    <div class="topic-tag">🧬 Inherited Disorders</div>
+    <h1>Inherited Disorders</h1>
+    <div class="two-col">
+      <div class="card card-coral">
+        <h3>🖐 Polydactyly</h3>
+        <ul>
+          <li>Having <span class="hl-coral">extra fingers or toes</span></li>
+          <li>Caused by a <span class="highlight">dominant allele</span></li>
+          <li>Only ONE copy needed to show the disorder</li>
+          <li>An affected parent with Pp has 50% chance of passing it on</li>
+        </ul>
+      </div>
+      <div class="card card-cyan">
+        <h3>💨 Cystic Fibrosis</h3>
+        <ul>
+          <li>A disorder of <span class="hl-cyan">cell membranes</span></li>
+          <li>Caused by a <span class="highlight">recessive allele</span></li>
+          <li><span class="hl-mint">TWO copies</span> needed to be affected (ff)</li>
+          <li>Carriers (Ff) are unaffected but can pass it on</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card card-gold" style="margin-top:18px;">
+      <h3>⚖ Embryo Screening — Ethical Considerations</h3>
+      <div class="two-col" style="margin-top:10px;">
+        <div>
+          <p><span class="hl-mint">Benefits:</span></p>
+          <ul>
+            <li>Can prevent suffering</li>
+            <li>May alleviate inherited disorders</li>
+            <li>Parents can make informed choices</li>
+          </ul>
+        </div>
+        <div>
+          <p><span class="hl-coral">Ethical concerns:</span></p>
+          <ul>
+            <li>Who decides which embryos are "acceptable"?</li>
+            <li>Could lead to "designer babies"</li>
+            <li>Discarding embryos raises moral questions</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 9: Sex Determination ===================== -->
+  <div class="slide" id="slide-9" style="display:none;">
+    <div class="section-label">4.6.1.6 Sex Determination</div>
+    <div class="slide-num">9</div>
+    <div class="topic-tag">🧬 Sex Chromosomes</div>
+    <h1>Sex Determination</h1>
+    <div class="two-col">
+      <div>
+        <div class="card card-purple">
+          <h3>Chromosomes in Human Body Cells</h3>
+          <ul>
+            <li>23 pairs of chromosomes = <span class="hl-purple">46 total</span></li>
+            <li>22 pairs: control other characteristics only</li>
+            <li>1 pair: <span class="highlight">sex chromosomes</span> — determine whether male or female</li>
+          </ul>
+        </div>
+        <div class="two-col" style="margin-top:16px;">
+          <div class="card card-cyan" style="text-align:center;">
+            <p style="font-size:2.2rem;">♀</p>
+            <p><span class="hl-cyan">XX</span></p>
+            <p style="font-size:0.9rem;">Female</p>
+          </div>
+          <div class="card card-gold" style="text-align:center;">
+            <p style="font-size:2.2rem;">♂</p>
+            <p><span class="hl-gold">XY</span></p>
+            <p style="font-size:0.9rem;">Male</p>
+          </div>
+        </div>
+        <div class="card card-mint" style="margin-top:16px;">
+          <p>💡 The <span class="hl-gold">Y chromosome comes from the father</span>. Whether the sperm carries X or Y determines the sex of the child.</p>
+        </div>
+      </div>
+      <div class="svg-wrap" style="align-items:center;">
+        <svg viewBox="0 0 280 320" width="260" xmlns="http://www.w3.org/2000/svg">
+          <!-- Punnett for sex -->
+          <text x="140" y="20" text-anchor="middle" fill="#C77DFF" font-family="Fredoka One" font-size="14">Sex Inheritance Cross</text>
+          <!-- Mother label -->
+          <text x="140" y="42" text-anchor="middle" fill="#00D4FF" font-family="Nunito" font-size="11" font-weight="700">Mother (XX)</text>
+          <!-- Father label -->
+          <text x="20" y="155" fill="#FFD166" font-family="Nunito" font-size="11" font-weight="700" transform="rotate(-90,20,155)">Father (XY)</text>
+          <!-- Headers -->
+          <rect x="100" y="50" width="70" height="35" rx="6" fill="rgba(0,212,255,0.15)" stroke="#00D4FF" stroke-width="1.5"/>
+          <text x="135" y="73" text-anchor="middle" fill="#00D4FF" font-family="Fredoka One" font-size="16">X</text>
+          <rect x="175" y="50" width="70" height="35" rx="6" fill="rgba(0,212,255,0.15)" stroke="#00D4FF" stroke-width="1.5"/>
+          <text x="210" y="73" text-anchor="middle" fill="#00D4FF" font-family="Fredoka One" font-size="16">X</text>
+          <rect x="30" y="88" width="65" height="50" rx="6" fill="rgba(255,209,102,0.12)" stroke="#FFD166" stroke-width="1.5"/>
+          <text x="63" y="118" text-anchor="middle" fill="#FFD166" font-family="Fredoka One" font-size="16">X</text>
+          <rect x="30" y="142" width="65" height="50" rx="6" fill="rgba(255,209,102,0.12)" stroke="#FFD166" stroke-width="1.5"/>
+          <text x="63" y="172" text-anchor="middle" fill="#FFD166" font-family="Fredoka One" font-size="16">Y</text>
+          <!-- Results -->
+          <rect x="100" y="88" width="70" height="50" rx="6" fill="rgba(0,212,255,0.08)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+          <text x="135" y="118" text-anchor="middle" fill="#00D4FF" font-family="Fredoka One" font-size="16">XX ♀</text>
+          <rect x="175" y="88" width="70" height="50" rx="6" fill="rgba(0,212,255,0.08)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+          <text x="210" y="118" text-anchor="middle" fill="#00D4FF" font-family="Fredoka One" font-size="16">XX ♀</text>
+          <rect x="100" y="142" width="70" height="50" rx="6" fill="rgba(255,209,102,0.08)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+          <text x="135" y="172" text-anchor="middle" fill="#FFD166" font-family="Fredoka One" font-size="16">XY ♂</text>
+          <rect x="175" y="142" width="70" height="50" rx="6" fill="rgba(255,209,102,0.08)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+          <text x="210" y="172" text-anchor="middle" fill="#FFD166" font-family="Fredoka One" font-size="16">XY ♂</text>
+          <!-- Result label -->
+          <rect x="60" y="215" width="175" height="45" rx="10" fill="rgba(6,214,160,0.1)" stroke="#06D6A0" stroke-width="1.5"/>
+          <text x="148" y="234" text-anchor="middle" fill="#06D6A0" font-family="Fredoka One" font-size="13">Ratio: 1 Female : 1 Male</text>
+          <text x="148" y="252" text-anchor="middle" fill="#E8F4FD" font-family="Nunito" font-size="11">50% chance of each sex</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 10: QUIZ 1 ===================== -->
+  <div class="slide" id="slide-10" style="display:none;align-items:center;justify-content:center;flex-direction:column;">
+    <div class="section-label">Quiz Checkpoint</div>
+    <div class="slide-num">10</div>
+    <div class="quiz-box">
+      <div class="quiz-q">🎯 A woman has cystic fibrosis. Which combination of alleles does she have?</div>
+      <div class="quiz-options">
+        <button class="quiz-btn" onclick="checkQ(this, false)">A. FF — two dominant alleles</button>
+        <button class="quiz-btn" onclick="checkQ(this, false)">B. Ff — one dominant, one recessive</button>
+        <button class="quiz-btn" onclick="checkQ(this, true)">C. ff — two recessive alleles</button>
+        <button class="quiz-btn" onclick="checkQ(this, false)">D. XY — sex chromosomes</button>
+      </div>
+      <div class="quiz-feedback" id="qfeedback1"></div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 11: Variation ===================== -->
+  <div class="slide" id="slide-11" style="display:none;">
+    <div class="particle" style="width:90px;height:90px;background:var(--mint);bottom:15%;right:5%;animation-delay:1s;"></div>
+    <div class="section-label">4.6.2.1 Variation</div>
+    <div class="slide-num">11</div>
+    <div class="topic-tag">🌿 Variation</div>
+    <h1>Variation</h1>
+    <p style="margin-bottom:18px;">Differences in characteristics among individuals in a population is called <span class="hl-cyan">variation</span>. It may be due to:</p>
+    <div class="three-col">
+      <div class="card card-cyan" style="text-align:center;">
+        <p style="font-size:2rem;">🧬</p>
+        <h3>Genetic</h3>
+        <p>Differences in the <span class="hl-cyan">genes inherited</span> from parents</p>
+        <p style="margin-top:8px; font-size:0.85rem;">e.g. eye colour, blood type</p>
+      </div>
+      <div class="card card-mint" style="text-align:center;">
+        <p style="font-size:2rem;">🌍</p>
+        <h3>Environmental</h3>
+        <p>Conditions in which the organism <span class="hl-mint">developed</span></p>
+        <p style="margin-top:8px; font-size:0.85rem;">e.g. language spoken, scars, diet effects</p>
+      </div>
+      <div class="card card-gold" style="text-align:center;">
+        <p style="font-size:2rem;">🔀</p>
+        <h3>Both</h3>
+        <p><span class="hl-gold">Combination</span> of genes and environment</p>
+        <p style="margin-top:8px; font-size:0.85rem;">e.g. height, skin colour, intelligence</p>
+      </div>
+    </div>
+    <div class="card card-purple" style="margin-top:20px;">
+      <h3>Mutations and Variation</h3>
+      <ul>
+        <li>All variants arise from <span class="hl-purple">mutations</span> — changes in DNA</li>
+        <li><span class="highlight">Most</span> mutations → no effect on phenotype</li>
+        <li><span class="hl-mint">Some</span> mutations → influence the phenotype</li>
+        <li><span class="hl-coral">Very few</span> mutations → determine the phenotype</li>
+        <li>Mutations occur <span class="hl-gold">continuously</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 12: Natural Selection ===================== -->
+  <div class="slide" id="slide-12" style="display:none;">
+    <div class="particle" style="width:100px;height:100px;background:var(--coral);top:5%;left:8%;animation-delay:0.7s;"></div>
+    <div class="section-label">4.6.2 Evolution</div>
+    <div class="slide-num">12</div>
+    <div class="topic-tag">🌿 Natural Selection</div>
+    <h1>Natural Selection &amp; Evolution</h1>
+    <div class="two-col">
+      <div>
+        <div class="card card-coral">
+          <h3>How Natural Selection Works</h3>
+          <ul>
+            <li>Variation exists in a population</li>
+            <li>Some individuals have <span class="hl-mint">advantageous traits</span></li>
+            <li>These individuals are more likely to <span class="hl-gold">survive and reproduce</span></li>
+            <li>They pass on their <span class="hl-cyan">beneficial alleles</span> to offspring</li>
+            <li>Over generations → the trait becomes more common</li>
+          </ul>
+        </div>
+        <div class="card card-mint" style="margin-top:16px;">
+          <h3>Mutations and New Phenotypes</h3>
+          <ul>
+            <li>Mutations occur continuously</li>
+            <li>Very rarely a mutation → <span class="hl-gold">new phenotype</span></li>
+            <li>If suited to environmental change → <span class="hl-mint">rapid change in species</span></li>
+            <li>This is how evolution happens!</li>
+          </ul>
+        </div>
+      </div>
+      <div class="svg-wrap" style="align-items:center;">
+        <svg viewBox="0 0 280 340" width="260" xmlns="http://www.w3.org/2000/svg">
+          <!-- Generation 1 -->
+          <text x="140" y="18" text-anchor="middle" fill="#FFD166" font-family="Fredoka One" font-size="13">Generation 1</text>
+          <!-- Many individuals, mostly one colour -->
+          <circle cx="50" cy="40" r="14" fill="#FF6B6B" opacity="0.7"/>
+          <circle cx="85" cy="40" r="14" fill="#FF6B6B" opacity="0.7"/>
+          <circle cx="120" cy="40" r="14" fill="#FF6B6B" opacity="0.7"/>
+          <circle cx="155" cy="40" r="14" fill="#06D6A0" opacity="0.95"/><!-- advantageous -->
+          <circle cx="190" cy="40" r="14" fill="#FF6B6B" opacity="0.7"/>
+          <circle cx="225" cy="40" r="14" fill="#FF6B6B" opacity="0.7"/>
+          <!-- Environment pressure -->
+          <text x="140" y="78" text-anchor="middle" fill="#00D4FF" font-family="Nunito" font-size="10" font-weight="700">Environmental pressure (e.g. disease, predation)</text>
+          <!-- Arrow -->
+          <line x1="140" y1="82" x2="140" y2="105" stroke="#FFD166" stroke-width="2"/>
+          <polygon points="135,105 145,105 140,115" fill="#FFD166"/>
+          <!-- Survivors -->
+          <text x="140" y="130" text-anchor="middle" fill="#FFD166" font-family="Fredoka One" font-size="13">Survivors (more fit)</text>
+          <circle cx="100" cy="155" r="16" fill="#06D6A0" opacity="0.95"/>
+          <circle cx="145" cy="155" r="16" fill="#06D6A0" opacity="0.95"/>
+          <circle cx="190" cy="155" r="14" fill="#FF6B6B" opacity="0.5"/>
+          <!-- Arrow -->
+          <line x1="140" y1="175" x2="140" y2="195" stroke="#FFD166" stroke-width="2"/>
+          <polygon points="135,195 145,195 140,205" fill="#FFD166"/>
+          <!-- Generation 2 -->
+          <text x="140" y="220" text-anchor="middle" fill="#FFD166" font-family="Fredoka One" font-size="13">Next Generation</text>
+          <circle cx="55" cy="245" r="14" fill="#06D6A0" opacity="0.9"/>
+          <circle cx="88" cy="245" r="14" fill="#06D6A0" opacity="0.9"/>
+          <circle cx="121" cy="245" r="14" fill="#06D6A0" opacity="0.9"/>
+          <circle cx="154" cy="245" r="14" fill="#06D6A0" opacity="0.9"/>
+          <circle cx="187" cy="245" r="14" fill="#FF6B6B" opacity="0.5"/>
+          <circle cx="220" cy="245" r="14" fill="#06D6A0" opacity="0.9"/>
+          <!-- Label -->
+          <rect x="50" y="278" width="190" height="40" rx="8" fill="rgba(6,214,160,0.1)" stroke="#06D6A0" stroke-width="1.5"/>
+          <text x="145" y="296" text-anchor="middle" fill="#06D6A0" font-family="Fredoka One" font-size="12">Favourable trait increases</text>
+          <text x="145" y="312" text-anchor="middle" fill="#E8F4FD" font-family="Nunito" font-size="10">Species evolves over time</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 13: Selective Breeding ===================== -->
+  <div class="slide" id="slide-13" style="display:none;">
+    <div class="particle" style="width:80px;height:80px;background:var(--gold);bottom:10%;right:8%;animation-delay:0.5s;"></div>
+    <div class="section-label">4.6 Selective Breeding</div>
+    <div class="slide-num">13</div>
+    <div class="topic-tag">🐄 Selective Breeding</div>
+    <h1>Selective Breeding</h1>
+    <div class="card card-gold" style="margin-bottom:18px;">
+      <p>Scientists use understanding of inheritance to <span class="hl-gold">selectively breed</span> livestock and plants with favoured characteristics.</p>
+    </div>
+    <div class="two-col">
+      <div>
+        <div class="card card-cyan">
+          <h3>How It Works</h3>
+          <ul>
+            <li>Choose parents with the <span class="hl-cyan">desired trait</span></li>
+            <li>Breed them together</li>
+            <li>Select offspring with the best expression of the trait</li>
+            <li>Repeat over many generations</li>
+          </ul>
+        </div>
+        <div class="card card-mint" style="margin-top:14px;">
+          <h3>Examples</h3>
+          <ul>
+            <li>🐄 Cattle with <span class="hl-mint">high milk yield</span></li>
+            <li>🌾 Wheat with <span class="hl-gold">disease resistance</span></li>
+            <li>🐕 Dogs bred for <span class="hl-cyan">specific temperament</span></li>
+            <li>🌸 Flowers with <span class="hl-purple">larger, brighter blooms</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="card card-coral" style="align-self:start;">
+        <h3>⚠ Concerns</h3>
+        <ul>
+          <li><span class="hl-coral">Reduced genetic diversity</span> → whole population vulnerable to new disease</li>
+          <li>Inbreeding can introduce harmful recessive alleles</li>
+          <li>Animal welfare concerns</li>
+          <li>Loss of natural traits</li>
+        </ul>
+        <div style="margin-top:14px; padding:10px; background:rgba(255,255,255,0.04); border-radius:10px;">
+          <p>💡 Compare with <span class="hl-mint">natural selection</span>: selective breeding is <em>directed by humans</em>, natural selection is directed by the <em>environment</em>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 14: Cloning ===================== -->
+  <div class="slide" id="slide-14" style="display:none;">
+    <div class="section-label">4.6 Cloning</div>
+    <div class="slide-num">14</div>
+    <div class="topic-tag">🔬 Cloning</div>
+    <h1>Cloning</h1>
+    <div class="card card-cyan" style="margin-bottom:16px;">
+      <p>Once new varieties of plants or animals are produced, <span class="hl-cyan">cloning</span> can produce large numbers of identical individuals — all carrying the favourable characteristic.</p>
+    </div>
+    <div class="two-col">
+      <div class="card card-mint">
+        <h3>🌱 Plant Cloning</h3>
+        <ul>
+          <li><span class="hl-mint">Cuttings</span> — take a stem/leaf and grow a new plant</li>
+          <li><span class="hl-cyan">Tissue culture</span> — small piece of plant tissue grown in sterile nutrient medium</li>
+          <li>Fast and inexpensive</li>
+          <li>Produces large numbers of identical plants</li>
+        </ul>
+      </div>
+      <div class="card card-purple">
+        <h3>🐑 Animal Cloning</h3>
+        <ul>
+          <li><span class="hl-purple">Embryo transplants</span> — split embryo early on, implant in surrogate mothers</li>
+          <li><span class="hl-gold">Nuclear transfer</span> (e.g. Dolly the sheep) — transfer nucleus from adult cell into enucleated egg</li>
+          <li>Much more difficult than plant cloning</li>
+        </ul>
+      </div>
+    </div>
+    <div class="two-col" style="margin-top:16px;">
+      <div class="card card-gold">
+        <h3>✅ Benefits</h3>
+        <ul>
+          <li>Preserve endangered species</li>
+          <li>Mass produce organisms with useful traits</li>
+          <li>Medical research</li>
+        </ul>
+      </div>
+      <div class="card card-coral">
+        <h3>⚠ Concerns</h3>
+        <ul>
+          <li>Reduces genetic diversity</li>
+          <li>Ethical issues in animal cloning</li>
+          <li>Cloned animals may age faster</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 15: Genetic Engineering ===================== -->
+  <div class="slide" id="slide-15" style="display:none;">
+    <div class="particle" style="width:90px;height:90px;background:var(--purple);top:5%;right:8%;animation-delay:1.2s;"></div>
+    <div class="section-label">4.6 Genetic Engineering</div>
+    <div class="slide-num">15</div>
+    <div class="topic-tag">🧬 Genetic Engineering</div>
+    <h1>Genetic Engineering</h1>
+    <div class="card card-purple" style="margin-bottom:16px;">
+      <p>Scientists can take a gene from one species and introduce it into the genome of another. This is called <span class="hl-purple">genetic engineering</span> (or genetic modification / GM).</p>
+    </div>
+    <div class="two-col">
+      <div>
+        <div class="card card-cyan">
+          <h3>How It Works (General)</h3>
+          <ul>
+            <li>Identify the desired gene in the <span class="hl-cyan">donor organism</span></li>
+            <li>The gene is removed and inserted into the <span class="hl-mint">recipient organism's</span> DNA</li>
+            <li>The organism now expresses the new gene — producing the desired characteristic</li>
+          </ul>
+        </div>
+        <div class="card card-mint" style="margin-top:14px;">
+          <h3>Examples</h3>
+          <ul>
+            <li>🩺 Bacteria engineered to produce <span class="hl-mint">human insulin</span></li>
+            <li>🌾 GM crops resistant to <span class="hl-gold">pests or herbicides</span></li>
+            <li>Golden Rice — produces <span class="hl-gold">beta-carotene</span> (vitamin A)</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="card card-gold">
+          <h3>✅ Potential Benefits</h3>
+          <ul>
+            <li>Treat or cure genetic diseases</li>
+            <li>Produce medicines cheaply</li>
+            <li>Improve crop yields and nutrition</li>
+            <li>Adapt crops to climate change</li>
+          </ul>
+        </div>
+        <div class="card card-coral" style="margin-top:14px;">
+          <h3>⚠ Controversy</h3>
+          <ul>
+            <li>Unknown long-term ecological effects</li>
+            <li>Ethical concerns about "playing God"</li>
+            <li>Corporate control over food supply</li>
+            <li>Possible allergen introduction</li>
+            <li><span class="hl-coral">Remains highly controversial</span> despite potential</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 16: QUIZ 2 ===================== -->
+  <div class="slide" id="slide-16" style="display:none;align-items:center;justify-content:center;flex-direction:column;">
+    <div class="section-label">Quiz Checkpoint</div>
+    <div class="slide-num">16</div>
+    <div class="quiz-box">
+      <div class="quiz-q">🎯 Which of the following is the CORRECT definition of the genome?</div>
+      <div class="quiz-options">
+        <button class="quiz-btn" onclick="checkQ2(this, false)">A. A single gene that codes for one protein</button>
+        <button class="quiz-btn" onclick="checkQ2(this, false)">B. All the chromosomes found in the nucleus</button>
+        <button class="quiz-btn" onclick="checkQ2(this, true)">C. The entire genetic material of an organism</button>
+        <button class="quiz-btn" onclick="checkQ2(this, false)">D. The double helix structure of DNA</button>
+      </div>
+      <div class="quiz-feedback" id="qfeedback2"></div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 17: Summary ===================== -->
+  <div class="scroll-slide" id="slide-17" style="display:none;">
+    <div class="section-label">Summary</div>
+    <div class="slide-num">17</div>
+    <div class="topic-tag">📋 Topic Summary</div>
+    <h1>Topic 4.6 — Key Points Summary</h1>
+    <div class="two-col" style="margin-top:16px;">
+      <div>
+        <div class="card card-cyan">
+          <h3>🔬 Reproduction & Meiosis</h3>
+          <ul>
+            <li>Sexual reproduction → variety (meiosis + fertilisation)</li>
+            <li>Asexual reproduction → clones (mitosis only)</li>
+            <li>Meiosis: 1 cell → 4 genetically different gametes (haploid)</li>
+            <li>Fertilisation restores the diploid number</li>
+          </ul>
+        </div>
+        <div class="card card-gold" style="margin-top:14px;">
+          <h3>🧬 DNA & Inheritance</h3>
+          <ul>
+            <li>DNA → double helix polymer → in chromosomes</li>
+            <li>Gene = section of DNA → codes for one protein</li>
+            <li>Genome = ALL genetic material of an organism</li>
+            <li>Dominant allele always expressed; recessive needs two copies</li>
+            <li>Punnett squares → read and interpret genotype/phenotype outcomes</li>
+          </ul>
+        </div>
+        <div class="card card-purple" style="margin-top:14px;">
+          <h3>🧬 Inherited Disorders</h3>
+          <ul>
+            <li>Polydactyly → dominant allele</li>
+            <li>Cystic fibrosis → recessive allele</li>
+            <li>Embryo screening → ethical debate</li>
+            <li>Sex: XX = female; XY = male; 50:50 ratio</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="card card-mint">
+          <h3>🌿 Variation & Evolution</h3>
+          <ul>
+            <li>Variation: genetic, environmental, or both</li>
+            <li>All variants arise from mutations</li>
+            <li>Mutations are continuous but mostly have no phenotype effect</li>
+            <li>Natural selection → beneficial traits increase in population → evolution</li>
+          </ul>
+        </div>
+        <div class="card card-coral" style="margin-top:14px;">
+          <h3>⚗ Human Intervention</h3>
+          <ul>
+            <li>Selective breeding → choose parents with desired traits</li>
+            <li>Cloning → large numbers of genetically identical individuals</li>
+            <li>Genetic engineering → insert gene from one species into another</li>
+            <li>All carry benefits AND ethical/ecological concerns</li>
+          </ul>
+        </div>
+        <div class="card card-gold" style="margin-top:14px;">
+          <h3>📸 Image Suggestions for Enhancement</h3>
+          <ul>
+            <li>🖼 Animated DNA double helix diagram</li>
+            <li>🖼 Meiosis stages diagram</li>
+            <li>🖼 Polydactyly photo</li>
+            <li>🖼 Dolly the sheep (cloning)</li>
+            <li>🖼 GM crop comparison photo</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end slides-wrapper -->
+
+<!-- Navigation -->
+<div class="nav-btns">
+  <button class="nav-btn" onclick="changeSlide(-1)">← Prev</button>
+  <button class="nav-btn" id="slide-counter">1 / 17</button>
+  <button class="nav-btn" onclick="changeSlide(1)">Next →</button>
+</div>
+
+<script>
+  const totalSlides = 17;
+  let current = 1;
+
+  function getSlide(n) {
+    return document.getElementById('slide-' + n);
+  }
+
+  function updateProgress() {
+    const pct = ((current - 1) / (totalSlides - 1)) * 100;
+    document.getElementById('progress-bar').style.width = pct + '%';
+    document.getElementById('slide-counter').textContent = current + ' / ' + totalSlides;
+  }
+
+  function changeSlide(dir) {
+    const old = getSlide(current);
+    old.style.display = 'none';
+    old.classList.remove('active');
+    current = Math.max(1, Math.min(totalSlides, current + dir));
+    const next = getSlide(current);
+    // Detect scroll-slide
+    if (next.classList.contains('scroll-slide')) {
+      next.style.display = 'flex';
+    } else {
+      next.style.display = 'flex';
+    }
+    next.classList.add('active');
+    next.classList.add('fade-in');
+    setTimeout(() => next.classList.remove('fade-in'), 700);
+    updateProgress();
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changeSlide(1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') changeSlide(-1);
+  });
+
+  // Initialise
+  updateProgress();
+  getSlide(1).style.display = 'flex';
+
+  // Quiz 1
+  function checkQ(btn, correct) {
+    const btns = btn.parentElement.querySelectorAll('.quiz-btn');
+    btns.forEach(b => { b.disabled = true; });
+    const fb = document.getElementById('qfeedback1');
+    if (correct) {
+      btn.classList.add('correct');
+      fb.innerHTML = '<span class="feedback-correct">✅ Correct! Cystic fibrosis is caused by a recessive allele, so the person must have TWO copies — genotype ff.</span>';
+    } else {
+      btn.classList.add('wrong');
+      const allBtns = btn.parentElement.querySelectorAll('.quiz-btn');
+      allBtns[2].classList.add('correct');
+      fb.innerHTML = '<span class="feedback-wrong">❌ Not quite. Cystic fibrosis is recessive — you need two copies of the recessive allele (ff) to be affected.</span>';
+    }
+  }
+
+  // Quiz 2
+  function checkQ2(btn, correct) {
+    const btns = btn.parentElement.querySelectorAll('.quiz-btn');
+    btns.forEach(b => { b.disabled = true; });
+    const fb = document.getElementById('qfeedback2');
+    if (correct) {
+      btn.classList.add('correct');
+      fb.innerHTML = '<span class="feedback-correct">✅ Correct! The genome is the ENTIRE genetic material of an organism — all its DNA.</span>';
+    } else {
+      btn.classList.add('wrong');
+      const allBtns = btn.parentElement.querySelectorAll('.quiz-btn');
+      allBtns[2].classList.add('correct');
+      fb.innerHTML = '<span class="feedback-wrong">❌ Not quite. Answer C is correct — the genome is the entire genetic material of an organism.</span>';
+    }
+  }
+</script>
+</body>
+</html>
