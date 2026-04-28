@@ -233,6 +233,9 @@ main{flex:1;padding:28px 28px 60px;min-width:0;}
       <svg id="sync-icon" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
       Sync
     </button>
+    <button class="hbtn" style="background:rgba(167,139,250,.08);border-color:rgba(167,139,250,.3);color:#a78bfa;" onclick="showTokenPanel()">
+      &#128273; Token
+    </button>
     <button class="hbtn hbtn-gold" onclick="openUploadModal()">
       <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
       Upload Page
@@ -372,15 +375,16 @@ main{flex:1;padding:28px 28px 60px;min-width:0;}
         <div class="tb-steps">
           1. Go to <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens/new</a><br>
           2. Name: <strong>yolymatics-portal</strong> &nbsp;|&nbsp; Expiration: <strong>No expiration</strong><br>
-          3. Tick the <strong>repo</strong> checkbox (the big one at top)<br>
-          4. Click <strong>Generate token</strong> - copy it (starts with ghp_)<br>
-          5. Paste it below and click Save
+          3. Tick the <strong>repo</strong> checkbox (the very first big one at the top)<br>
+          4. Scroll down, click <strong>Generate token</strong><br>
+          5. Copy the token (starts with <strong>ghp_</strong>) and paste it below
         </div>
         <div class="tb-row">
-          <input class="tb-input" type="password" id="tok-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-          <button class="tb-save" onclick="saveToken()">Save Token</button>
+          <input class="tb-input" type="text" id="tok-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" spellcheck="false">
+          <button class="tb-save" onclick="saveToken()">Save &amp; Test</button>
         </div>
-        <div class="tb-dismiss" onclick="dismissTok()">I will do this later</div>
+        <div id="tok-feedback" style="font-size:12px;margin-top:8px;min-height:18px;font-family:'JetBrains Mono',monospace;"></div>
+        <div class="tb-dismiss" onclick="dismissTok()">Skip for now (portal still works, but cannot save uploads to GitHub)</div>
       </div>
     </div>
     <div class="frow">
@@ -462,6 +466,38 @@ main{flex:1;padding:28px 28px 60px;min-width:0;}
   </div>
 
 </main>
+</div>
+
+<!-- TOKEN MODAL (accessible from anywhere via header button) -->
+<div id="tok-modal" style="position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:30px;width:100%;max-width:480px;">
+    <div style="font-family:'Crimson Pro',serif;font-size:1.4rem;margin-bottom:6px;">GitHub Token</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.6;">
+      Your token lets the portal save files directly to GitHub.<br>
+      Generate one at <a href="https://github.com/settings/tokens/new" target="_blank" style="color:var(--cyan);">github.com/settings/tokens/new</a> with <strong>repo</strong> scope ticked.
+    </div>
+    <div id="tok-current" style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--teal);margin-bottom:14px;min-height:16px;"></div>
+    <div style="display:flex;gap:8px;margin-bottom:10px;">
+      <input type="text" id="tok-modal-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+        style="flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:9px 13px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;"
+        autocomplete="off" spellcheck="false">
+      <button onclick="saveTokenFromModal()"
+        style="background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);border-radius:8px;padding:9px 18px;color:var(--gold);cursor:pointer;font-size:13px;font-weight:500;">
+        Save &amp; Test
+      </button>
+    </div>
+    <div id="tok-modal-feedback" style="font-family:'JetBrains Mono',monospace;font-size:11px;min-height:16px;margin-bottom:16px;"></div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="clearToken()"
+        style="background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.25);border-radius:8px;padding:7px 16px;color:#f43f5e;cursor:pointer;font-size:12px;">
+        Clear Token
+      </button>
+      <button onclick="document.getElementById('tok-modal').style.display='none'"
+        style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:7px 16px;color:var(--muted);cursor:pointer;font-size:12px;margin-left:auto;">
+        Close
+      </button>
+    </div>
+  </div>
 </div>
 
 <!-- UPLOAD MODAL -->
@@ -674,22 +710,152 @@ function getToken(){
   var raw = localStorage.getItem('yoly_gh_token') || '';
   return raw.replace(/[^\x20-\x7E]/g,'').trim();
 }
+
 function saveToken(){
   var raw = document.getElementById('tok-input').value;
   var t = raw.replace(/[^\x20-\x7E]/g,'').trim();
-  if(!t){showToast('Please paste your token first.');return;}
+
+  // Clear validation feedback
+  var inp = document.getElementById('tok-input');
+  var feedback = document.getElementById('tok-feedback');
+
+  if(!t){
+    feedback.style.color = '#f43f5e';
+    feedback.textContent = 'Please paste your token first.';
+    return;
+  }
+  if(!t.startsWith('ghp_') && !t.startsWith('github_pat_')){
+    feedback.style.color = '#fb923c';
+    feedback.textContent = 'Warning: token should start with ghp_ - are you sure this is correct?';
+  } else {
+    feedback.style.color = '#34d399';
+    feedback.textContent = 'Token looks good - saving...';
+  }
+
   localStorage.setItem('yoly_gh_token', t);
-  showToast('Token saved! You can now upload to GitHub.');
-  document.getElementById('tok-banner').classList.add('hidden');
+
+  // Test the token immediately with a real API call
+  testAndSaveToken(t);
 }
+
+async function testAndSaveToken(t){
+  var feedback = document.getElementById('tok-feedback');
+  feedback.textContent = 'Testing connection to GitHub...';
+  feedback.style.color = '#60a5fa';
+  try{
+    var r = await fetch('https://api.github.com/repos/'+GH_OWNER+'/'+GH_REPO, {
+      headers: {'Authorization':'Bearer '+t, 'Accept':'application/vnd.github+json'}
+    });
+    if(r.status === 200){
+      feedback.style.color = '#34d399';
+      feedback.textContent = 'Connected! Token is working perfectly.';
+      setTimeout(function(){
+        document.getElementById('tok-banner').classList.add('hidden');
+        // Now sync everything fresh with the new token
+        syncFromGitHub();
+      }, 1200);
+    } else if(r.status === 401){
+      feedback.style.color = '#f43f5e';
+      feedback.textContent = 'Token rejected (401) - token may be expired or invalid. Generate a new one.';
+      localStorage.removeItem('yoly_gh_token');
+    } else if(r.status === 403){
+      feedback.style.color = '#f43f5e';
+      feedback.textContent = 'Token blocked (403) - make sure "repo" scope is ticked when generating.';
+      localStorage.removeItem('yoly_gh_token');
+    } else if(r.status === 404){
+      feedback.style.color = '#f43f5e';
+      feedback.textContent = 'Repo not found (404) - token may not have repo access.';
+      localStorage.removeItem('yoly_gh_token');
+    } else {
+      feedback.style.color = '#fb923c';
+      feedback.textContent = 'Unexpected response: '+r.status+'. Token saved, but verify it works.';
+    }
+  } catch(err){
+    feedback.style.color = '#fb923c';
+    feedback.textContent = 'Network error. Token saved locally - try Sync button when online.';
+  }
+}
+
+function showTokenPanel(){
+  var modal = document.getElementById('tok-modal');
+  var cur = getToken();
+  var curEl = document.getElementById('tok-current');
+  if(cur){
+    curEl.textContent = 'Current token: ' + cur.slice(0,8) + '...' + cur.slice(-4) + ' (saved)';
+  } else {
+    curEl.textContent = 'No token saved yet.';
+    curEl.style.color = 'var(--coral)';
+  }
+  document.getElementById('tok-modal-input').value = '';
+  document.getElementById('tok-modal-feedback').textContent = '';
+  modal.style.display = 'flex';
+}
+
+async function saveTokenFromModal(){
+  var raw = document.getElementById('tok-modal-input').value;
+  var t = raw.replace(/[^\x20-\x7E]/g,'').trim();
+  var feedback = document.getElementById('tok-modal-feedback');
+  if(!t){ feedback.style.color='#f43f5e'; feedback.textContent='Paste a token first.'; return; }
+  localStorage.setItem('yoly_gh_token', t);
+  feedback.style.color = '#60a5fa';
+  feedback.textContent = 'Testing connection...';
+  try{
+    var r = await fetch('https://api.github.com/repos/'+GH_OWNER+'/'+GH_REPO, {
+      headers: {'Authorization':'Bearer '+t, 'Accept':'application/vnd.github+json'}
+    });
+    if(r.status===200){
+      feedback.style.color = '#34d399';
+      feedback.textContent = 'Connected! Token works perfectly.';
+      document.getElementById('tok-current').textContent = 'Current token: '+t.slice(0,8)+'...'+t.slice(-4)+' (active)';
+      document.getElementById('tok-banner').classList.add('hidden');
+      setTimeout(function(){
+        document.getElementById('tok-modal').style.display = 'none';
+        syncFromGitHub();
+      }, 1500);
+    } else if(r.status===401){
+      feedback.style.color='#f43f5e';
+      feedback.textContent='401 Unauthorized - token is invalid or expired. Generate a new one.';
+      localStorage.removeItem('yoly_gh_token');
+    } else if(r.status===403){
+      feedback.style.color='#f43f5e';
+      feedback.textContent='403 Forbidden - token does not have "repo" scope. Generate a new one with repo ticked.';
+      localStorage.removeItem('yoly_gh_token');
+    } else {
+      feedback.style.color='#fb923c';
+      feedback.textContent='Unexpected status '+r.status+'. Token saved, may still work.';
+    }
+  }catch(err){
+    feedback.style.color='#fb923c';
+    feedback.textContent='Network error - token saved. Check your connection and try Sync.';
+  }
+}
+
+function clearToken(){
+  localStorage.removeItem('yoly_gh_token');
+  document.getElementById('tok-current').textContent = 'Token cleared.';
+  document.getElementById('tok-current').style.color = 'var(--coral)';
+  document.getElementById('tok-banner').classList.remove('hidden');
+  showToast('Token cleared. Enter a new one to reconnect.');
+}
+
+// Close token modal on background click
+document.getElementById('tok-modal').addEventListener('click', function(e){
+  if(e.target === this) this.style.display = 'none';
+});
+
 function dismissTok(){document.getElementById('tok-banner').classList.add('hidden');}
+
 function ghHeaders(){
   var t = getToken();
   var h = {'Content-Type':'application/json','Accept':'application/vnd.github+json'};
   if(t) h['Authorization'] = 'Bearer ' + t;
   return h;
 }
-if(getToken()) document.getElementById('tok-banner').classList.add('hidden');
+
+// Show/hide token banner based on whether token is already stored
+if(getToken()){
+  document.getElementById('tok-banner').classList.add('hidden');
+}
 
 // ============================================================
 // DATA - pages & reading list
