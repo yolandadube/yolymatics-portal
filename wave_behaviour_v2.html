@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wave Behaviour – Physics Lesson</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Configure MathJax BEFORE loading it -->
+<script>
+  MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+    options: { skipHtmlTags: ['script','noscript','style','textarea'] },
+    startup: { typeset: false }   // we call typeset manually after DOM ready
+  };
+</script>
+<script id="MathJax-script" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js"></script>
+
+<style>
+  /* ── MathJax colour override ──────────────────────────────── */
+  mjx-container, mjx-container * { color: #f0c84a !important; }
+  mjx-container[display="true"] { margin: 6px auto !important; }
+
+  :root {
+    --purple:      #2a0047;
+    --purple-mid:  #480078;
+    --purple-light:#7a0fc8;
+    --gold:        #C9A227;
+    --gold-light:  #f0c84a;
+    --cyan:        #00e5ff;
+    --teal:        #00b4c8;
+    --white:       #f8f4ff;
+    --cream:       #fffdf5;
+    --slide-w:     100vw;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  html, body {
+    height:100%; overflow:hidden;
+    background:#0a0015;
+    font-family:'DM Sans', sans-serif;
+  }
+
+  /* ── TRACK ── */
+  #slides-track {
+    display:flex; height:100vh;
+    overflow-x:scroll; overflow-y:hidden;
+    scroll-snap-type:x mandatory; scroll-behavior:smooth;
+  }
+  #slides-track::-webkit-scrollbar { height:5px; }
+  #slides-track::-webkit-scrollbar-track { background:#0a0015; }
+  #slides-track::-webkit-scrollbar-thumb { background:var(--gold); border-radius:3px; }
+
+  /* ── SLIDE ── */
+  .slide {
+    min-width:var(--slide-w); width:var(--slide-w); height:100vh;
+    scroll-snap-align:start;
+    position:relative; display:flex; flex-direction:column;
+    overflow:hidden; border-right:1px solid rgba(201,162,39,.12);
+  }
+  .slide-content { position:relative; z-index:2; width:100%; height:100%; }
+
+  /* ── NAV ── */
+  #navbar {
+    position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+    display:flex; gap:9px; z-index:999;
+    background:rgba(10,0,21,.75); backdrop-filter:blur(12px);
+    padding:9px 16px; border-radius:40px;
+    border:1px solid rgba(201,162,39,.3);
+  }
+  .nav-dot {
+    width:9px; height:9px; border-radius:50%;
+    background:rgba(201,162,39,.25); border:1px solid var(--gold);
+    cursor:pointer; transition:all .3s;
+  }
+  .nav-dot.active { background:var(--gold); transform:scale(1.35); }
+  #nav-arrows { position:fixed; bottom:20px; right:28px; display:flex; gap:9px; z-index:999; }
+  .arrow-btn {
+    background:rgba(201,162,39,.12); border:1px solid var(--gold);
+    color:var(--gold); width:36px; height:36px; border-radius:50%;
+    font-size:17px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:all .25s;
+  }
+  .arrow-btn:hover { background:var(--gold); color:#0a0015; }
+  #slide-counter {
+    position:fixed; top:17px; right:26px;
+    color:rgba(201,162,39,.6); font-family:'DM Mono',monospace;
+    font-size:12px; z-index:999; letter-spacing:2px;
+  }
+
+  /* ── BACKGROUNDS ── */
+  .bg-cosmos { background:radial-gradient(ellipse at 20% 50%,#1a0030,#0a0015 65%); }
+  .bg-deep   { background:radial-gradient(ellipse at 80% 20%,#0d001f,#070010 70%); }
+  .bg-teal   { background:radial-gradient(ellipse at 30% 70%,#001a20,#070010 70%); }
+  .bg-gold   { background:radial-gradient(ellipse at 70% 30%,#1a1000,#0a0005 70%); }
+  .bg-royal  { background:radial-gradient(ellipse at 50% 50%,#0f001a,#050008 70%); }
+  .bg-navy   { background:radial-gradient(ellipse at 20% 80%,#000d1a,#040008 70%); }
+
+  /* ── TYPOGRAPHY ── */
+  .section-tag {
+    font-family:'DM Mono',monospace; font-size:11px;
+    letter-spacing:4px; text-transform:uppercase; color:var(--gold); opacity:.8;
+  }
+  h1.hero-title {
+    font-family:'Playfair Display',serif;
+    font-size:clamp(50px,7vw,88px); font-weight:900;
+    color:var(--white); line-height:1.0; letter-spacing:-2px;
+  }
+  h1.hero-title span { color:var(--gold); }
+  h2.slide-title {
+    font-family:'Playfair Display',serif;
+    font-size:clamp(32px,4vw,48px); font-weight:700;
+    color:var(--white); line-height:1.1;
+  }
+  h2.slide-title span { color:var(--gold); }
+  h3.sub-title {
+    font-family:'Playfair Display',serif;
+    font-size:20px; font-weight:700; color:var(--gold-light);
+  }
+  .body-text { font-size:16px; line-height:1.78; color:rgba(248,244,255,.82); font-weight:300; }
+  .divider { width:55px; height:3px; background:linear-gradient(90deg,var(--gold),transparent); border-radius:2px; margin:10px 0; }
+
+  /* ── BOXES ── */
+  .highlight-box {
+    background:rgba(201,162,39,.07);
+    border:1px solid rgba(201,162,39,.35); border-left:4px solid var(--gold);
+    border-radius:8px; padding:15px 19px;
+  }
+  .cyan-box {
+    background:rgba(0,229,255,.05);
+    border:1px solid rgba(0,229,255,.28); border-left:4px solid var(--cyan);
+    border-radius:8px; padding:15px 19px;
+  }
+  .formula-box {
+    background:rgba(42,0,71,.55);
+    border:1px solid rgba(201,162,39,.38);
+    border-radius:11px; padding:18px 26px; text-align:center;
+    backdrop-filter:blur(8px);
+  }
+  .pill {
+    display:inline-block;
+    background:rgba(201,162,39,.13); border:1px solid rgba(201,162,39,.38);
+    color:var(--gold-light); font-size:13px;
+    font-family:'DM Mono',monospace; letter-spacing:1px;
+    padding:4px 13px; border-radius:20px;
+  }
+  .lbl {
+    display:inline-flex; align-items:center; gap:7px;
+    background:rgba(0,229,255,.07); border:1px solid rgba(0,229,255,.24);
+    padding:4px 13px; border-radius:20px;
+    font-size:13px; color:var(--cyan); font-family:'DM Mono',monospace;
+  }
+  .lbl-gold { background:rgba(201,162,39,.09); border-color:rgba(201,162,39,.33); color:var(--gold-light); }
+
+  /* ── LAYOUT ── */
+  .two-col   { display:grid; grid-template-columns:1fr 1fr; gap:36px; align-items:start; }
+  .three-col { display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; }
+
+  /* ── PROBLEM CARDS ── */
+  .problem-card {
+    background:rgba(42,0,71,.45); border:1px solid rgba(201,162,39,.28);
+    border-radius:13px; padding:20px 24px; backdrop-filter:blur(6px);
+  }
+  .problem-number {
+    font-family:'Playfair Display',serif; font-size:34px;
+    font-weight:900; color:var(--gold); opacity:.28; line-height:1;
+  }
+
+  /* ── TITLE SLIDE ── */
+  #s1 .slide-content { display:flex; flex-direction:column; justify-content:center; padding:60px 80px; gap:8px; max-width:1150px; width:100%; margin:0 auto; }
+  #s1 .prepared-by { font-family:'DM Mono',monospace; font-size:13px; color:rgba(201,162,39,.8); letter-spacing:2px; margin-top:18px; }
+  #s1 .subtitle-list { display:flex; flex-wrap:wrap; gap:9px; margin:18px 0 26px; }
+  .star-field { position:absolute; top:0; right:0; width:52%; height:100%; overflow:hidden; z-index:1; }
+
+  /* ── GENERIC SLIDE CONTENT PADDING ── */
+  .sc {
+    padding:46px 70px;
+    display:flex; flex-direction:column; gap:20px;
+    max-width:1150px; width:100%; margin:0 auto;
+  }
+
+  /* ── SVG labels always DM Sans ── */
+  svg text { font-family:'DM Sans',sans-serif; }
+
+  /* footer tag */
+  .footer-tag { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:2px; color:rgba(201,162,39,.45); }
+</style>
+</head>
+<body>
+
+<div id="slide-counter">01 / 11</div>
+<div id="navbar"></div>
+<div id="nav-arrows">
+  <button class="arrow-btn" id="prev-btn">&#8592;</button>
+  <button class="arrow-btn" id="next-btn">&#8594;</button>
+</div>
+
+<div id="slides-track">
+
+<!-- ═══════ SLIDE 1 – TITLE ═══════ -->
+<section class="slide bg-cosmos" id="s1">
+  <div class="star-field">
+    <canvas id="starCanvas" style="width:100%;height:100%;"></canvas>
+  </div>
+  <div class="slide-content">
+    <div class="section-tag">Physics — Waves &amp; Optics</div>
+    <div class="divider"></div>
+    <h1 class="hero-title">Wave<br><span>Behaviour</span></h1>
+    <div class="subtitle-list">
+      <span class="pill">Reflection</span><span class="pill">Refraction</span>
+      <span class="pill">Diffraction</span><span class="pill">Interference</span>
+      <span class="pill">Beats</span><span class="pill">Doppler Effect</span>
+      <span class="pill">Wave Calculations</span>
+    </div>
+    <p class="body-text" style="max-width:460px;font-size:15px;">
+      An exploration of wave phenomena — from the bending of light to the shifting pitch of a passing siren. Qualitative and quantitative analysis of wave motion.
+    </p>
+    <p class="prepared-by">PREPARED BY: YOLANDA DUBE</p>
+  </div>
+</section>
+
+<!-- ═══════ SLIDE 2 – INTRODUCTION ═══════ -->
+<section class="slide bg-deep" id="s2">
+  <div class="slide-content sc">
+    <div class="section-tag">Introduction</div>
+    <div class="divider"></div>
+    <h2 class="slide-title">What Are <span>Wave Behaviours</span>?</h2>
+    <div class="two-col" style="align-items:center;">
+      <div>
+        <p class="body-text" style="margin-bottom:14px;">
+          Waves transfer <strong style="color:var(--gold)">energy</strong> through a medium without transporting matter. Understanding wave behaviour means understanding how they reflect, refract, diffract, and interfere.
+        </p>
+        <div class="three-col" style="margin-top:4px;">
+          <div class="cyan-box" style="text-align:center;padding:12px 10px;">
+            <div style="font-size:24px;">🪞</div><h3 class="sub-title" style="font-size:14px;margin:4px 0 3px;">Reflection</h3>
+            <p style="font-size:12px;color:rgba(248,244,255,.6);">Bounces off surface</p>
+          </div>
+          <div class="cyan-box" style="text-align:center;padding:12px 10px;">
+            <div style="font-size:24px;">🌊</div><h3 class="sub-title" style="font-size:14px;margin:4px 0 3px;">Refraction</h3>
+            <p style="font-size:12px;color:rgba(248,244,255,.6);">Bends at medium boundary</p>
+          </div>
+          <div class="cyan-box" style="text-align:center;padding:12px 10px;">
+            <div style="font-size:24px;">〰️</div><h3 class="sub-title" style="font-size:14px;margin:4px 0 3px;">Diffraction</h3>
+            <p style="font-size:12px;color:rgba(248,244,255,.6);">Bends around obstacles</p>
+          </div>
+        </div>
+        <div class="formula-box" style="margin-top:14px;">
+          \[ v = f\lambda \qquad T = \dfrac{1}{f} \]
+        </div>
+      </div>
+      <!-- Accurate wave anatomy canvas -->
+      <div>
+        <canvas id="waveAnatomy" width="440" height="220" style="width:100%;border-radius:10px;"></canvas>
+        <p style="text-align:center;font-size:12px;color:rgba(248,244,255,.45);margin-top:6px;font-family:'DM Mono',monospace;">WAVE ANATOMY DIAGRAM</p>
+      </div>
+    </div>
+    <div class="highlight-box" style="margin-top:2px;">
+      <div style="display:flex;gap:30px;flex-wrap:wrap;">
+        <span class="body-text" style="font-size:14px;">📏 <strong style="color:var(--gold)">λ</strong> — wavelength (m)</span>
+        <span class="body-text" style="font-size:14px;">🔄 <strong style="color:var(--gold)">f</strong> — frequency (Hz)</span>
+        <span class="body-text" style="font-size:14px;">⏱ <strong style="color:var(--gold)">T</strong> — period (s)</span>
+        <span class="body-text" style="font-size:14px;">📶 <strong style="color:var(--gold)">A</strong> — amplitude (m)</span>
+        <span class="body-text" style="font-size:14px;">⚡ <strong style="color:var(--gold)">v</strong> — wave speed (m/s)</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ SLIDE 3 – REFLECTION ═══════ -->
+<section class="slide bg-royal" id="s3">
+  <div class="slide-content sc">
+    <div class="section-tag">Section 01</div>
+    <div class="divider"></div>
+    <h2 class="slide-title"><span>Reflection</span> of Waves</h2>
+    <div class="two-col" style="align-items:center;gap:50px;">
+      <canvas id="reflectionDiagram" width="440" height="320" style="width:100%;border-radius:10px;"></canvas>
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="highlight-box">
+          <h3 class="sub-title" style="font-size:17px;margin-bottom:8px;">Law of Reflection</h3>
+          <p class="body-text">The <strong style="color:var(--cyan)">angle of incidence</strong> always equals the <strong style="color:var(--gold)">angle of reflection</strong>, both measured from the <em>normal</em> to the surface.</p>
+        </div>
+        <div class="formula-box">
+          \[ \theta_i = \theta_r \]
+        </div>
+        <div class="cyan-box">
+          <h3 class="sub-title" style="font-size:14px;margin-bottom:8px;">💡 Mirror Thought Experiment</h3>
+          <p class="body-text" style="font-size:14px;">
+            Looking directly at a mirror: θᵢ = <strong style="color:var(--cyan)">0°</strong>. The ray travels along the normal, strikes the mirror, and returns along the <strong style="color:var(--gold)">same path</strong>. θᵣ = 0° also.
+          </p>
+        </div>
+        <div style="display:flex;gap:9px;flex-wrap:wrap;">
+          <span class="lbl">Specular reflection</span>
+          <span class="lbl">Diffuse reflection</span>
+          <span class="lbl-gold lbl">EM waves</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ SLIDE 4 – REFRACTION ═══════ -->
+<section class="slide bg-teal" id="s4">
+  <div class="slide-content sc">
+    <div class="section-tag">Section 02</div>
+    <div class="divider"></div>
+    <h2 class="slide-title"><span>Refraction</span> &amp; Speed Change</h2>
+    <div class="two-col" style="align-items:center;gap:50px;">
+      <canvas id="refractionDiagram" width="440" height="320" style="width:100%;border-radius:10px;"></canvas>
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <p class="body-text">When a wave crosses a boundary between two media of different densities, it <strong style="color:var(--cyan)">changes speed</strong> and consequently <strong style="color:var(--gold)">bends (refracts)</strong>.</p>
+        <div class="highlight-box">
+          <h3 class="sub-title" style="font-size:16px;margin-bottom:8px;">Snell's Law</h3>
+          <div class="formula-box">
+            \[ n_1 \sin\theta_1 = n_2 \sin\theta_2 \]
+          </div>
+          <p class="body-text" style="font-size:13px;margin-top:10px;opacity:.75;">where \(n = c/v\) is the refractive index.</p>
+        </div>
+        <div class="cyan-box">
+          <p class="body-text" style="font-size:14px;">
+            🔑 Entering <strong style="color:var(--cyan)">denser medium</strong> (n₂ &gt; n₁): wave slows → bends <strong style="color:var(--gold)">toward the normal</strong> (θ₂ &lt; θ₁).<br><br>
+            Entering <strong style="color:var(--cyan)">less dense</strong>: wave speeds → bends <strong style="color:var(--gold)">away from normal</strong>.
+          </p>
+        </div>
+        <div class="formula-box">
+          \[ n = \frac{c}{v} \qquad \lambda_2 = \frac{\lambda_1 n_1}{n_2} \]
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ SLIDE 5 – DIFFRACTION ═══════ -->
+<section class="slide bg-deep" id="s5">
+  <div class="slide-content sc">
+    <div class="section-tag">Section 03</div>
+    <div class="divider"></div>
+    <h2 class="slide-title"><span>Diffraction</span> — Bending Around Obstacles</h2>
+    <div class="two-col" style="align-items:start;gap:48px;">
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <p class="body-text">
+          <strong style="color:var(--cyan)">Diffraction</strong> is the spreading of waves after passing through an opening or around an obstacle. Significant diffraction occurs when the wavelength is comparable to the gap size.
+        </p>
+        <div class="formula-box" style="text-align:left;padding:14px 18px;">
+          \[ \text{Significant diffraction when:} \quad \lambda \approx d \]
+          <p style="color:rgba(248,244,255,.45);font-size:12px;margin-top:8px;font-family:'DM Mono',monospace;">d = slit / gap width</p>
+        </div>
+        <div class="highlight-box">
+          <h3 class="sub-title" style="font-size:15px;margin-bottom:8px;">Key Rules</h3>
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:7px;">
+            <li class="body-text" style="font-size:14px;">📈 Larger λ → <strong style="color:var(--gold)">more</strong> diffraction</li>
+            <li class="body-text" style="font-size:14px;">📉 Smaller λ → <strong style="color:var(--gold)">less</strong> diffraction</li>
+            <li class="body-text" style="font-size:14px;">🔊 Sound (λ ≈ 0.1–10 m) diffracts easily around walls</li>
+            <li class="body-text" style="font-size:14px;">💡 Visible light (λ ≈ 400–700 nm) needs very narrow slits</li>
+          </ul>
+        </div>
+        <div class="cyan-box">
+          <p class="body-text" style="font-size:14px;">🎵 You hear someone around a corner because sound diffracts — light does not, so you can't <em>see</em> them.</p>
+        </div>
+      </div>
+      <canvas id="diffractionDiagram" width="420" height="320" style="width:100%;border-radius:10px;"></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ SLIDE 6 – INTERFERENCE ═══════ -->
+<section class="slide bg-cosmos" id="s6">
+  <div class="slide-content sc">
+    <div class="section-tag">Section 04</div>
+    <div class="divider"></div>
+    <h2 class="slide-title">Wave <span>Interference</span></h2>
+    <div class="two-col" style="align-items:start;gap:36px;">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <p class="body-text">When two waves overlap, their displacements <strong style="color:var(--gold)">add algebraically</strong> at every point (principle of superposition).</p>
+        <!-- Constructive -->
+        <div style="background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.28);border-radius:11px;padding:14px 16px;">
+          <h3 class="sub-title" style="color:#00e5ff;font-size:15px;margin-bottom:8px;">✅ Constructive Interference</h3>
+          <canvas id="constructiveDiagram" width="340" height="110" style="width:100%;"></canvas>
+          <p style="font-size:13px;color:rgba(248,244,255,.7);margin-top:6px;">Crests align → amplitude <strong style="color:#00e5ff;">doubles</strong></p>
+        </div>
+        <!-- Destructive -->
+        <div style="background:rgba(201,162,39,.05);border:1px solid rgba(201,162,39,.28);border-radius:11px;padding:14px 16px;">
+          <h3 class="sub-title" style="color:#C9A227;font-size:15px;margin-bottom:8px;">❌ Destructive Interference</h3>
+          <canvas id="destructiveDiagram" width="340" height="110" style="width:100%;"></canvas>
+          <p style="font-size:13px;color:rgba(248,244,255,.7);margin-top:6px;">Crest meets trough → <strong style="color:#C9A227;">cancellation</strong></p>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="highlight-box">
+          <h3 class="sub-title" style="font-size:16px;margin-bottom:10px;">Principle of Superposition</h3>
+          <p class="body-text" style="font-size:14px;">At any point, the resultant displacement is the <strong style="color:var(--gold)">algebraic sum</strong> of all individual wave displacements.</p>
+          <div class="formula-box" style="margin-top:12px;">
+            \[ y_{\text{total}} = y_1 + y_2 \]
+          </div>
+        </div>
+        <div class="cyan-box">
+          <h3 class="sub-title" style="font-size:14px;margin-bottom:8px;">Important Notes</h3>
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:6px;">
+            <li class="body-text" style="font-size:13px;">• Amplitudes need NOT be equal for interference to occur</li>
+            <li class="body-text" style="font-size:13px;">• After passing through, each wave continues unchanged</li>
+            <li class="body-text" style="font-size:13px;">• Applies to light, sound, water waves, EM waves</li>
+          </ul>
+        </div>
+        <div style="background:rgba(122,15,200,.12);border:1px solid rgba(122,15,200,.35);border-radius:10px;padding:14px;">
+          <h3 class="sub-title" style="font-size:14px;margin-bottom:6px;color:#b070ff;">Real Examples</h3>
+          <p class="body-text" style="font-size:13px;"><span class="lbl" style="font-size:11px;margin-right:6px;">Young's double slit</span><span class="lbl" style="font-size:11px;margin-right:6px;">Noise-cancelling headphones</span><span class="lbl" style="font-size:11px;">Thin-film colour</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ SLIDE 7 – BEATS ═══════ -->
+<section class="slide bg-gold" id="s7">
+  <div class="slide-content sc">
+    <div class="section-tag">Section 05</div>
+    <div class="divider"></div>
+    <h2 class="slide-title">Beats &amp; <span>Standing Waves</span></h2>
+    <div class="two-col" style="align-items:start;gap:36px;">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <p class="body-text">When two waves with <strong style="color:var(--gold)">nearly equal frequencies</strong> superpose, the amplitude periodically rises and falls — creating a <em>beat</em>.</p>
+        <canvas id="beatsDiagram" width="440" height="210" style="width:100%;border-radius:8px;"></canvas>
+        <div class="formula-box">
+          \[ f_{\text{beat}} = |f_2 - f_1| \]
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="highlight-box">
+          <h3 class="sub-title" style="font-size:15px;margin-bottom:8px;">Standing Waves</h3>
+          <p class="body-text" style="font-size:14px;">The beat produces a <strong style="color:var(--gold)">standing wave</strong> pattern with fixed <strong style="color:var(--cyan)">nodes</strong> (zero amplitude) and <strong style="color:var(--gold)">antinodes</strong> (maximum amplitude).</p>
+          <canvas id="standingWaveDiagram" width="340" height="90" style="width:100%;margin-top:10px;"></canvas>
+        </div>
+        <div class="cyan-box">
+          <h3 class="sub-title" style="font-size:14px;margin-bottom:8px;">🎵 Real Applications</h3>
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:6px;">
+            <li class="body-text" style="font-size:13px;">🎸 Tuning instruments — hear the beat, adjust until it disappears</li>
+            <li class="body-text" style="font-size:13px;">✈️ Multi-engine aircraft synchronise throttles to eliminate beat</li>
+            <li class="body-text" style="font-size:13px;">🔧 Tuning forks provide a precise reference frequency</li>
+          </ul>
+        </div>
+        <div class="formula-box" style="padding:12px;">
+          <p style="font-size:12px;font-family:'DM Mono',monospace;color:rgba(248,244,255,.5);margin-bottom:8px;">440 Hz and 441 Hz played together →</p>
+          \[ f_{\text{beat}} = |441 - 440| = 1 \text{ Hz} \]
+          <p style="font-size:12px;color:rgba(248,244,255,.5);margin-top:8px;">One "pulse" in amplitude per second</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ SLIDE 8 – DOPPLER ═══════ -->
+<section class="slide bg-navy" id="s8">
+  <div class="slide-content sc">
+    <div class="section-tag">Section 06</div>
+    <div class="divider"></div>
+    <h2 class="slide-title">The <span>Doppler Effect</span></h2>
+    <div class="two-col" style="align-items:start;gap:40px;">
+      <canvas id="dopplerDiagram" width="440" height="300" style="width:100%;border-radius:10px;"></canvas>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <p class="body-text">An <strong style="color:var(--gold)">apparent shift in frequency</strong> heard by an observer when the wave source and observer are in relative motion.</p>
+        <div class="highlight-box">
+          <h3 class="sub-title" style="font-size:15px;margin-bottom:8px;">Doppler Formula (Sound)</h3>
+          <div class="formula-box">
+            \[ f_{\text{obs}} = f_s \left(\frac{v \pm v_o}{v \mp v_s}\right) \]
+          </div>
+          <p class="body-text" style="font-size:12px;margin-top:10px;opacity:.7;">
+            Use <strong style="color:var(--cyan)">+v_o / −v_s</strong> when approaching;<br>
+            <strong style="color:var(--gold)">−v_o / +v_s</strong> when receding.
+          </p>
+        </div>
+        <div class="cyan-box">
+          <h3 class="sub-title" style="font-size:14px;margin-bottom:8px;">What the diagram shows</h3>
+          <p class="body-text" style="font-size:13px;">Each circle is a wavefront emitted when the source was at an earlier position. As the source moves <strong style="color:var(--gold)">right</strong>, wavefronts ahead are <strong style="color:var(--cyan)">compressed</strong> (higher f) and behind are <strong style="color:var(--gold)">stretched</strong> (lower f).</p>
+        </div>
+        <div class="highlight-box">
+          <h3 class="sub-title" style="font-size:14px;margin-bottom:6px;">Applications</h3>
+          <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:6px;">
+            <span class="lbl" style="font-size:12px;">🏥 Medical ultrasound</span>
+            <span class="lbl" style="font-size:12px;">🔭 Galaxy recession</span>
+            <span class="lbl" style="font-size:12px;">🚗 Speed radar</span>
+            <span class="lbl" style="font-size:12px;">🌦️ Weather radar</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ SLIDE 9 – WAVE CALCULATIONS ═══════ -->
+<section class="slide bg-teal" id="s9">
+  <div class="slide-content sc">
+    <div class="section-tag">Section 07</div>
+    <div class="divider"></div>
+    <h2 class="slide-title">Wave <span>Calculations</span></h2>
+    <div class="two-col" style="align-items:start;gap:40px;">
+      <div style="display:flex;flex-direction:column;gap:18px;">
+        <div class="formula-box" style="text-align:left;padding:22px 28px;">
+          <p style="color:rgba(248,244,255,.45);font-size:11px;font-family:'DM Mono',monospace;letter-spacing:2px;margin-bottom:14px;">CORE EQUATIONS</p>
+          \[ v = f\lambda \]
+          <div style="height:10px;"></div>
+          \[ v = \frac{d}{t} \]
+          <div style="height:10px;"></div>
+          \[ T = \frac{1}{f} \]
+        </div>
+        <div class="formula-box" style="text-align:left;padding:16px 22px;">
+          <p style="color:rgba(248,244,255,.45);font-size:11px;font-family:'DM Mono',monospace;letter-spacing:2px;margin-bottom:12px;">DERIVED RELATIONS</p>
+          \[ \lambda = \frac{v}{f} \qquad f = \frac{v}{\lambda} \]
+          <div style="height:8px;"></div>
+          \[ f = \frac{1}{T} \qquad \lambda = vT \]
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:18px;">
+        <div class="highlight-box">
+          <h3 class="sub-title" style="font-size:15px;margin-bottom:10px;">Variable Reference</h3>
+          <table style="width:100%;border-collapse:collapse;font-size:14px;">
+            <tr style="border-bottom:1px solid rgba(201,162,39,.2);">
+              <td style="padding:6px 8px;color:var(--gold);font-family:'DM Mono',monospace;font-weight:600;">v</td>
+              <td style="padding:6px 8px;color:rgba(248,244,255,.8);">Wave speed</td>
+              <td style="padding:6px 8px;color:var(--cyan);font-family:'DM Mono',monospace;">m s⁻¹</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(201,162,39,.2);">
+              <td style="padding:6px 8px;color:var(--gold);font-family:'DM Mono',monospace;font-weight:600;">f</td>
+              <td style="padding:6px 8px;color:rgba(248,244,255,.8);">Frequency</td>
+              <td style="padding:6px 8px;color:var(--cyan);font-family:'DM Mono',monospace;">Hz = s⁻¹</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(201,162,39,.2);">
+              <td style="padding:6px 8px;color:var(--gold);font-family:'DM Mono',monospace;font-weight:600;">λ</td>
+              <td style="padding:6px 8px;color:rgba(248,244,255,.8);">Wavelength</td>
+              <td style="padding:6px 8px;color:var(--cyan);font-family:'DM Mono',monospace;">m</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(201,162,39,.2);">
+              <td style="padding:6px 8px;color:var(--gold);font-family:'DM Mono',monospace;font-weight:600;">T</td>
+              <td style="padding:6px 8px;color:rgba(248,244,255,.8);">Period</td>
+              <td style="padding:6px 8px;color:var(--cyan);font-family:'DM Mono',monospace;">s</td>
+            </tr>
+            <tr>
+              <td style="padding:6px 8px;color:var(--gold);font-family:'DM Mono',monospace;font-weight:600;">d</td>
+              <td style="padding:6px 8px;color:rgba(248,244,255,.8);">Distance</td>
+              <td style="padding:6px 8px;color:var(--cyan);font-family:'DM Mono',monospace;">m</td>
+            </tr>
+          </table>
+        </div>
+        <div class="cyan-box">
+          <h3 class="sub-title" style="font-size:14px;margin-bottom:8px;">⚡ Reference Speeds</h3>
+          <div class="formula-box" style="padding:12px;text-align:left;">
+            \[ c = 3\times10^8 \text{ m s}^{-1} \quad\text{(light, vacuum)} \]
+            <div style="height:8px;"></div>
+            \[ v_{\text{sound}} \approx 340 \text{ m s}^{-1} \quad\text{(air, 20°C)} \]
+          </div>
+        </div>
+        <div class="formula-box" style="padding:14px;">
+          \[ f_{\text{beat}} = |f_2 - f_1| \]
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ SLIDE 10 – PROBLEMS PART 1 ═══════ -->
+<section class="slide bg-deep" id="s10">
+  <div class="slide-content sc" style="gap:16px;">
+    <div class="section-tag">Practice Problems — Part 1 of 2</div>
+    <div class="divider"></div>
+    <h2 class="slide-title">Solve It: <span>Wave Problems</span></h2>
+    <p class="body-text" style="font-size:14px;color:rgba(248,244,255,.55);">Show all working. Include units at every step.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:2px;">
+
+      <div class="problem-card">
+        <div class="problem-number">01</div>
+        <h3 class="sub-title" style="font-size:15px;margin:5px 0 9px;">Wave Speed</h3>
+        <p class="body-text" style="font-size:14px;margin-bottom:10px;">A wave on a rope has wavelength \(\lambda = 0.80\text{ m}\) and frequency \(f = 5.0\text{ Hz}\).</p>
+        <p class="body-text" style="font-size:13px;color:rgba(248,244,255,.6);margin-bottom:10px;">(a) Calculate the wave speed.<br>(b) Find the period \(T\).</p>
+        <div class="formula-box" style="padding:9px;text-align:left;">
+          \[ v = f\lambda = \;? \qquad T = \frac{1}{f} = \;? \]
+        </div>
+      </div>
+
+      <div class="problem-card">
+        <div class="problem-number">02</div>
+        <h3 class="sub-title" style="font-size:15px;margin:5px 0 9px;">Finding Wavelength</h3>
+        <p class="body-text" style="font-size:14px;margin-bottom:10px;">Sound travels at \(v = 340\text{ m s}^{-1}\) with frequency \(f = 680\text{ Hz}\).</p>
+        <p class="body-text" style="font-size:13px;color:rgba(248,244,255,.6);margin-bottom:10px;">(a) Calculate \(\lambda\).<br>(b) If \(f\) doubles, what happens to \(\lambda\)?</p>
+        <div class="formula-box" style="padding:9px;text-align:left;">
+          \[ \lambda = \frac{v}{f} = \;? \]
+        </div>
+      </div>
+
+      <div class="problem-card">
+        <div class="problem-number">03</div>
+        <h3 class="sub-title" style="font-size:15px;margin:5px 0 9px;">Beat Frequency</h3>
+        <p class="body-text" style="font-size:14px;margin-bottom:10px;">Two tuning forks vibrate at \(f_1 = 440\text{ Hz}\) and \(f_2 = 436\text{ Hz}\) simultaneously.</p>
+        <p class="body-text" style="font-size:13px;color:rgba(248,244,255,.6);margin-bottom:10px;">(a) Find the beat frequency.<br>(b) How many beats are heard in \(5\text{ s}\)?</p>
+        <div class="formula-box" style="padding:9px;text-align:left;">
+          \[ f_{\text{beat}} = |f_2 - f_1| = \;? \]
+        </div>
+      </div>
+
+      <div class="problem-card">
+        <div class="problem-number">04</div>
+        <h3 class="sub-title" style="font-size:15px;margin:5px 0 9px;">Law of Reflection</h3>
+        <p class="body-text" style="font-size:14px;margin-bottom:10px;">A laser beam strikes a mirror at an angle of incidence of \(\theta_i = 35°\) to the normal.</p>
+        <p class="body-text" style="font-size:13px;color:rgba(248,244,255,.6);margin-bottom:10px;">(a) State the angle of reflection.<br>(b) What angle does the reflected ray make with the <em>mirror surface</em>?</p>
+        <div class="formula-box" style="padding:9px;text-align:left;">
+          \[ \theta_r = \theta_i \qquad \theta_{\text{surf}} = 90° - \theta_r \]
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ SLIDE 11 – PROBLEMS PART 2 ═══════ -->
+<section class="slide bg-cosmos" id="s11">
+  <div class="slide-content sc" style="gap:16px;">
+    <div class="section-tag">Practice Problems — Part 2 of 2</div>
+    <div class="divider"></div>
+    <h2 class="slide-title">Solve It: <span>Advanced Problems</span></h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:2px;">
+
+      <div class="problem-card">
+        <div class="problem-number">05</div>
+        <h3 class="sub-title" style="font-size:15px;margin:5px 0 9px;">Snell's Law</h3>
+        <p class="body-text" style="font-size:14px;margin-bottom:10px;">Light goes from air (\(n_1=1.00\)) into glass (\(n_2=1.50\)) with \(\theta_1=45°\).</p>
+        <p class="body-text" style="font-size:13px;color:rgba(248,244,255,.6);margin-bottom:10px;">(a) Find \(\theta_2\).<br>(b) Does the ray bend toward or away from the normal?</p>
+        <div class="formula-box" style="padding:9px;text-align:left;">
+          \[ \sin\theta_2 = \frac{n_1}{n_2}\sin\theta_1 = \;? \]
+        </div>
+      </div>
+
+      <div class="problem-card">
+        <div class="problem-number">06</div>
+        <h3 class="sub-title" style="font-size:15px;margin:5px 0 9px;">Doppler Effect</h3>
+        <p class="body-text" style="font-size:14px;margin-bottom:10px;">Ambulance siren: \(f_s=800\text{ Hz}\), speed \(v_s=30\text{ m s}^{-1}\), \(v_{\text{sound}}=340\text{ m s}^{-1}\).</p>
+        <p class="body-text" style="font-size:13px;color:rgba(248,244,255,.6);margin-bottom:10px;">(a) Frequency heard as ambulance approaches.<br>(b) Frequency as it recedes.</p>
+        <div class="formula-box" style="padding:9px;text-align:left;">
+          \[ f = f_s\!\left(\frac{v}{v\mp v_s}\right) = \;? \]
+        </div>
+      </div>
+
+      <div class="problem-card">
+        <div class="problem-number">07</div>
+        <h3 class="sub-title" style="font-size:15px;margin:5px 0 9px;">Sonar Depth</h3>
+        <p class="body-text" style="font-size:14px;margin-bottom:10px;">A sonar pulse returns in \(t=0.40\text{ s}\). Speed of sound in seawater: \(v=1500\text{ m s}^{-1}\).</p>
+        <p class="body-text" style="font-size:13px;color:rgba(248,244,255,.6);margin-bottom:10px;">(a) Total distance travelled by pulse.<br>(b) Depth of the ocean floor.</p>
+        <div class="formula-box" style="padding:9px;text-align:left;">
+          \[ d_{\text{total}} = vt \qquad \text{depth} = \frac{d_{\text{total}}}{2} \]
+        </div>
+      </div>
+
+      <div class="problem-card" style="border-color:rgba(0,229,255,.42);background:rgba(0,229,255,.04);">
+        <div class="problem-number" style="color:var(--cyan);">★</div>
+        <h3 class="sub-title" style="font-size:15px;margin:5px 0 9px;color:var(--cyan);">Challenge: Radio Waves</h3>
+        <p class="body-text" style="font-size:14px;margin-bottom:10px;">A radio station broadcasts at \(f=100\text{ MHz}\). Use \(c=3\times10^8\text{ m s}^{-1}\).</p>
+        <p class="body-text" style="font-size:13px;color:rgba(248,244,255,.6);margin-bottom:8px;">
+          (a) Find \(\lambda\).<br>
+          (b) The wave reflects off a wall with \(\theta_i=62°\). State \(\theta_r\).<br>
+          (c) A second station broadcasts at \(100.003\text{ MHz}\). Find \(f_{\text{beat}}\) in kHz.
+        </p>
+        <div class="formula-box" style="padding:8px;text-align:left;">
+          \[ \lambda=\tfrac{c}{f}, \quad \theta_r=\theta_i, \quad f_b=|f_2-f_1| \]
+        </div>
+      </div>
+
+    </div>
+    <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center;">
+      <p class="footer-tag">© YOLYMATICS TUTORIALS — ALL RIGHTS RESERVED</p>
+      <div style="display:flex;gap:7px;">
+        <span class="pill" style="font-size:11px;">v = fλ</span>
+        <span class="pill" style="font-size:11px;">T = 1/f</span>
+        <span class="pill" style="font-size:11px;">θᵢ = θᵣ</span>
+        <span class="pill" style="font-size:11px;">f_beat = |f₂−f₁|</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- end slides-track -->
+
+<!-- ══════════════════════════════════════════════
+     ALL DIAGRAMS DRAWN WITH JAVASCRIPT
+═══════════════════════════════════════════════ -->
+<script>
+// ── Utility helpers ────────────────────────────
+const PI  = Math.PI;
+const TAU = 2*PI;
+
+function sinePoints(x0,y0,A,wavelength,nCycles,phase=0,npts=300){
+  const pts=[];
+  const W=nCycles*wavelength;
+  for(let i=0;i<=npts;i++){
+    const t=i/npts;
+    pts.push([x0+t*W, y0-A*Math.sin(TAU*nCycles*t+phase)]);
+  }
+  return pts;
+}
+
+function drawPolyline(ctx,pts,color,lw=2){
+  ctx.beginPath();
+  ctx.moveTo(pts[0][0],pts[0][1]);
+  pts.forEach(p=>ctx.lineTo(p[0],p[1]));
+  ctx.strokeStyle=color; ctx.lineWidth=lw; ctx.stroke();
+}
+
+function drawArrow(ctx,x1,y1,x2,y2,color,hw=8,hl=14){
+  const angle=Math.atan2(y2-y1,x2-x1);
+  ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2);
+  ctx.strokeStyle=color; ctx.lineWidth=2; ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-hl*Math.cos(angle-0.35),y2-hl*Math.sin(angle-0.35));
+  ctx.lineTo(x2-hl*Math.cos(angle+0.35),y2-hl*Math.sin(angle+0.35));
+  ctx.closePath(); ctx.fillStyle=color; ctx.fill();
+}
+
+function label(ctx,txt,x,y,color='rgba(248,244,255,0.8)',size=13,align='left'){
+  ctx.font=`${size}px "DM Sans",sans-serif`;
+  ctx.fillStyle=color; ctx.textAlign=align;
+  ctx.fillText(txt,x,y);
+}
+
+function dashedLine(ctx,x1,y1,x2,y2,color,dash=[8,5]){
+  ctx.setLineDash(dash);
+  ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2);
+  ctx.strokeStyle=color; ctx.lineWidth=1.2; ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+// ──────────────────────────────────────────────
+// SLIDE 1 — animated star field canvas
+// ──────────────────────────────────────────────
+(function(){
+  const c=document.getElementById('starCanvas');
+  if(!c) return;
+  const ctx=c.getContext('2d');
+  c.width=c.parentElement.clientWidth||600;
+  c.height=c.parentElement.clientHeight||800;
+  const W=c.width, H=c.height;
+  const stars=Array.from({length:80},()=>({
+    x:Math.random()*W, y:Math.random()*H,
+    r:Math.random()*1.8+0.3, a:Math.random()
+  }));
+  const wavePts=[];
+  for(let i=0;i<3;i++) wavePts.push({A:18+i*10,freq:.012+i*.004,speed:0.3+i*.15,phase:Math.random()*TAU,y:H*(0.35+i*.22),col:['rgba(0,229,255,','rgba(201,162,39,','rgba(122,15,200,'][i]});
+
+  let t=0;
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // stars
+    stars.forEach(s=>{
+      s.a=0.3+0.5*Math.abs(Math.sin(t*0.5+s.x));
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,TAU);
+      ctx.fillStyle=`rgba(255,255,255,${s.a})`; ctx.fill();
+    });
+    // sine waves
+    wavePts.forEach(w=>{
+      ctx.beginPath();
+      for(let x=0;x<=W;x+=2){
+        const y=w.y+w.A*Math.sin(TAU*w.freq*x-t*w.speed+w.phase);
+        x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+      }
+      const op=0.4+0.3*Math.sin(t*0.4);
+      ctx.strokeStyle=w.col+op+')'; ctx.lineWidth=1.8; ctx.stroke();
+    });
+    t+=0.04;
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ──────────────────────────────────────────────
+// SLIDE 2 — accurate wave anatomy diagram
+// ──────────────────────────────────────────────
+(function(){
+  const c=document.getElementById('waveAnatomy');
+  if(!c) return;
+  const ctx=c.getContext('2d');
+  const W=c.width, H=c.height;
+  ctx.fillStyle='rgba(10,0,21,0.8)'; ctx.fillRect(0,0,W,H);
+  const cy=H/2, A=62, lam=120, pad=30;
+
+  // Equilibrium dashed line
+  dashedLine(ctx,pad,cy,W-pad,cy,'rgba(248,244,255,0.2)',[6,4]);
+
+  // Gradient for wave
+  const grd=ctx.createLinearGradient(pad,0,W-pad,0);
+  grd.addColorStop(0,'#7a0fc8'); grd.addColorStop(0.5,'#00e5ff'); grd.addColorStop(1,'#C9A227');
+
+  // Draw accurate sine wave (3 cycles)
+  const pts=sinePoints(pad,cy,A,lam,3);
+  ctx.beginPath();
+  pts.forEach((p,i)=>i===0?ctx.moveTo(p[0],p[1]):ctx.lineTo(p[0],p[1]));
+  ctx.strokeStyle=grd; ctx.lineWidth=3; ctx.lineJoin='round'; ctx.stroke();
+
+  // ── Amplitude annotation (at first crest x = pad + lam/4)
+  const xA=pad+lam/4;
+  drawArrow(ctx,xA,cy,xA,cy-A,'#C9A227');
+  drawArrow(ctx,xA,cy,xA,cy+A,'#C9A227');
+  label(ctx,'A',xA+5,cy-A/2,'#C9A227',13);
+  label(ctx,'A',xA+5,cy+A/2,'#C9A227',13);
+
+  // ── Wavelength annotation (from first crest to second crest)
+  const x1c=pad+lam/4, x2c=pad+lam+lam/4;
+  const yArr=cy+A+20;
+  drawArrow(ctx,x1c,yArr,x2c,yArr,'#00e5ff');
+  drawArrow(ctx,x2c,yArr,x1c,yArr,'#00e5ff');
+  label(ctx,'λ (wavelength)',x1c+(x2c-x1c)/2-30,yArr+16,'#00e5ff',12);
+
+  // Crest / Trough labels
+  label(ctx,'Crest',pad+lam/4-15,cy-A-8,'rgba(248,244,255,0.65)',12);
+  label(ctx,'Trough',pad+3*lam/4-18,cy+A+18,'rgba(248,244,255,0.65)',12);
+  label(ctx,'Equilibrium',pad,cy-8,'rgba(248,244,255,0.35)',11);
+
+  // Period bracket
+  const xP1=pad, xP2=pad+lam;
+  ctx.beginPath(); ctx.moveTo(xP1,18); ctx.lineTo(xP2,18);
+  ctx.strokeStyle='rgba(201,162,39,0.5)'; ctx.lineWidth=1.2; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(xP1,12); ctx.lineTo(xP1,24); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(xP2,12); ctx.lineTo(xP2,24); ctx.stroke();
+  label(ctx,'T (period)',xP1+(xP2-xP1)/2-28,14,'rgba(201,162,39,0.8)',11);
+})();
+
+// ──────────────────────────────────────────────
+// SLIDE 3 — accurate reflection diagram
+// ──────────────────────────────────────────────
+(function(){
+  const c=document.getElementById('reflectionDiagram');
+  if(!c) return;
+  const ctx=c.getContext('2d');
+  const W=c.width, H=c.height;
+  ctx.fillStyle='rgba(10,0,21,0.85)'; ctx.fillRect(0,0,W,H);
+
+  // Mirror: horizontal surface at y=220, from x=80 to x=360
+  const my=220, mx1=80, mx2=360, mxMid=(mx1+mx2)/2;
+
+  // Mirror body
+  ctx.fillStyle='rgba(0,180,200,0.15)';
+  ctx.fillRect(mx1,my,mx2-mx1,12);
+  ctx.beginPath(); ctx.moveTo(mx1,my); ctx.lineTo(mx2,my);
+  ctx.strokeStyle='rgba(0,229,255,0.9)'; ctx.lineWidth=3; ctx.stroke();
+  // Hatching below mirror
+  for(let x=mx1;x<mx2;x+=18){
+    ctx.beginPath(); ctx.moveTo(x,my); ctx.lineTo(x+14,my+12);
+    ctx.strokeStyle='rgba(0,229,255,0.3)'; ctx.lineWidth=1; ctx.stroke();
+  }
+  label(ctx,'Mirror surface',mxMid-40,my+28,'rgba(0,229,255,0.7)',12,'left');
+
+  // Normal (vertical dashed line up from mxMid)
+  dashedLine(ctx,mxMid,30,mxMid,my,'rgba(248,244,255,0.3)');
+  label(ctx,'Normal',mxMid+5,26,'rgba(248,244,255,0.45)',11);
+
+  // Angle of incidence = 40° from normal
+  const theta=40*PI/180;
+  // Incident ray: from upper-left down to (mxMid, my)
+  const ilen=170;
+  const ix=mxMid-ilen*Math.sin(theta);
+  const iy=my-ilen*Math.cos(theta);
+  drawArrow(ctx,ix,iy,mxMid,my,'#00e5ff',8,14);
+  label(ctx,'Incident ray',ix-5,iy-10,'#00e5ff',13,'right');
+
+  // Reflected ray: from (mxMid, my) up-right at same angle
+  const rx=mxMid+ilen*Math.sin(theta);
+  const ry=my-ilen*Math.cos(theta);
+  drawArrow(ctx,mxMid,my,rx,ry,'#C9A227',8,14);
+  label(ctx,'Reflected ray',rx+6,ry-10,'#C9A227',13);
+
+  // Arc for θᵢ (angle between normal and incident ray, at the point)
+  const arcR=44;
+  ctx.beginPath();
+  // Incident ray direction from mirror point: angle from vertical (normal)
+  // Normal points UP (angle -PI/2 from x-axis), incident comes from top-left
+  // Incident direction (pointing toward mirror): angle = PI/2+theta (below normal, left side)
+  ctx.arc(mxMid,my,arcR,PI+PI/2-theta,PI+PI/2,false); // from incident direction to normal
+  ctx.strokeStyle='#00e5ff'; ctx.lineWidth=1.5; ctx.stroke();
+  const tiMidAngle=PI+PI/2-theta/2;
+  label(ctx,'θᵢ',mxMid+arcR*0.7*Math.cos(tiMidAngle)-8,my+arcR*0.7*Math.sin(tiMidAngle)+4,'#00e5ff',14);
+
+  // Arc for θᵣ
+  ctx.beginPath();
+  ctx.arc(mxMid,my,arcR,PI+PI/2,PI+PI/2+theta,false);
+  ctx.strokeStyle='#C9A227'; ctx.lineWidth=1.5; ctx.stroke();
+  const trMidAngle=PI+PI/2+theta/2;
+  label(ctx,'θᵣ',mxMid+arcR*0.7*Math.cos(trMidAngle)+2,my+arcR*0.7*Math.sin(trMidAngle)+4,'#C9A227',14);
+
+  // Label θᵢ = θᵣ = 40°
+  label(ctx,'θᵢ = θᵣ = 40°',mxMid-42,my-ilen-14,'rgba(248,244,255,0.55)',12);
+})();
+
+// ──────────────────────────────────────────────
+// SLIDE 4 — accurate refraction diagram
+// ──────────────────────────────────────────────
+(function(){
+  const c=document.getElementById('refractionDiagram');
+  if(!c) return;
+  const ctx=c.getContext('2d');
+  const W=c.width, H=c.height;
+  // Background split
+  ctx.fillStyle='rgba(0,20,35,0.75)'; ctx.fillRect(0,0,W,H/2);        // air
+  ctx.fillStyle='rgba(0,50,100,0.45)'; ctx.fillRect(0,H/2,W,H/2);     // water
+
+  // Interface line
+  ctx.beginPath(); ctx.moveTo(20,H/2); ctx.lineTo(W-20,H/2);
+  ctx.strokeStyle='rgba(248,244,255,0.55)'; ctx.lineWidth=2; ctx.stroke();
+
+  // Medium labels
+  label(ctx,'Medium 1 — Air (n₁ = 1.00) — faster',26,24,'rgba(0,229,255,0.8)',13);
+  label(ctx,'Medium 2 — Water (n₂ = 1.33) — slower',26,H/2+22,'rgba(201,162,39,0.8)',13);
+
+  // Normal: vertical dashed through interface centre
+  const xc=W/2;
+  dashedLine(ctx,xc,15,xc,H-15,'rgba(248,244,255,0.3)');
+  label(ctx,'Normal',xc+5,18,'rgba(248,244,255,0.4)',11);
+
+  // θ₁ = 45°, n1 sinθ1 = n2 sinθ2 → sinθ2 = sin45/1.33 ≈ 0.532 → θ2 ≈ 32.1°
+  const t1=45*PI/180, n1=1.00, n2=1.33;
+  const sinT2=n1*Math.sin(t1)/n2;
+  const t2=Math.asin(sinT2);
+
+  // Incident ray in air (comes from upper-left toward centre of interface)
+  const ilen=150;
+  const ix=xc-ilen*Math.sin(t1), iy=H/2-ilen*Math.cos(t1);
+  drawArrow(ctx,ix,iy,xc,H/2,'#00e5ff',8,14);
+  label(ctx,'Incident ray',ix-6,iy-8,'#00e5ff',13,'right');
+
+  // Refracted ray in water (bends toward normal, smaller angle)
+  const rlen=140;
+  const rx=xc+rlen*Math.sin(t2), ry=H/2+rlen*Math.cos(t2);
+  drawArrow(ctx,xc,H/2,rx,ry,'#C9A227',8,14);
+  label(ctx,'Refracted ray',rx+6,ry-8,'#C9A227',13);
+
+  // θ₁ arc
+  const ar=46;
+  ctx.beginPath();
+  ctx.arc(xc,H/2,ar,PI+PI/2-t1,PI+PI/2,false);
+  ctx.strokeStyle='#00e5ff'; ctx.lineWidth=1.5; ctx.stroke();
+  const am1=PI+PI/2-t1/2;
+  label(ctx,'θ₁=45°',xc+ar*Math.cos(am1)-36,H/2+ar*Math.sin(am1)-6,'#00e5ff',12);
+
+  // θ₂ arc
+  ctx.beginPath();
+  ctx.arc(xc,H/2,ar,PI/2,PI/2+t2,false);
+  ctx.strokeStyle='#C9A227'; ctx.lineWidth=1.5; ctx.stroke();
+  const am2=PI/2+t2/2;
+  label(ctx,'θ₂≈32°',xc+ar*Math.cos(am2)+4,H/2+ar*Math.sin(am2)+6,'#C9A227',12);
+
+  // Wavefronts in air (wider spacing = faster = larger λ)
+  // Perpendicular to incident ray direction
+  const wfAngle=t1; // angle from vertical, so wavefronts tilt
+  const wfSpacing=38;
+  for(let k=1;k<=3;k++){
+    const cx_=ix+(k/(3+1))*(xc-ix);
+    const cy_=iy+(k/(3+1))*(H/2-iy);
+    const dx=30*Math.cos(wfAngle), dy=-30*Math.sin(wfAngle);
+    ctx.beginPath();
+    ctx.moveTo(cx_-dx,cy_-dy); ctx.lineTo(cx_+dx,cy_+dy);
+    ctx.strokeStyle='rgba(0,229,255,0.4)'; ctx.lineWidth=1.2; ctx.stroke();
+  }
+  // Wavefronts in water (narrower spacing = slower = smaller λ)
+  for(let k=1;k<=3;k++){
+    const cx_=xc+(k/(3+1))*(rx-xc);
+    const cy_=H/2+(k/(3+1))*(ry-H/2);
+    const dx2=22*Math.cos(t2), dy2=-22*Math.sin(t2);
+    ctx.beginPath();
+    ctx.moveTo(cx_-dx2,cy_-dy2); ctx.lineTo(cx_+dx2,cy_+dy2);
+    ctx.strokeStyle='rgba(201,162,39,0.4)'; ctx.lineWidth=1.2; ctx.stroke();
+  }
+})();
+
+// ──────────────────────────────────────────────
+// SLIDE 5 — accurate diffraction diagram
+// ──────────────────────────────────────────────
+(function(){
+  const c=document.getElementById('diffractionDiagram');
+  if(!c) return;
+  const ctx=c.getContext('2d');
+  const W=c.width, H=c.height;
+  ctx.fillStyle='rgba(7,0,16,0.9)'; ctx.fillRect(0,0,W,H);
+
+  const barrierX=150;
+  const slitTop=H/2-30, slitBot=H/2+30;
+
+  // Incoming plane waves (left of barrier)
+  const waveSpacing=32;
+  for(let y=-100;y<H+100;y+=waveSpacing){
+    // only draw in open region (not in barrier shadow)
+    ctx.beginPath(); ctx.moveTo(10,y); ctx.lineTo(barrierX,y);
+    ctx.strokeStyle='rgba(0,229,255,0.55)'; ctx.lineWidth=1.5; ctx.stroke();
+  }
+  // Arrow on plane waves
+  drawArrow(ctx,60,H/2,110,H/2,'rgba(0,229,255,0.8)',7,12);
+
+  // Barrier (top and bottom blocks, gap in middle)
+  ctx.fillStyle='rgba(122,15,200,0.85)';
+  ctx.fillRect(barrierX,0,16,slitTop);
+  ctx.fillRect(barrierX,slitBot,16,H-slitBot);
+  ctx.strokeStyle='rgba(180,80,255,0.9)'; ctx.lineWidth=1.5;
+  ctx.strokeRect(barrierX,0,16,slitTop);
+  ctx.strokeRect(barrierX,slitBot,16,H-slitBot);
+  label(ctx,'Barrier',barrierX-38,H/2-2,'rgba(180,80,255,0.7)',11,'left');
+  label(ctx,'Slit',barrierX+20,H/2+4,'rgba(248,244,255,0.55)',11);
+
+  // Huygens circular wavefronts from slit centre
+  // Clip to right of barrier+slit using save/restore + clipping rect
+  const slitCY=H/2;
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(barrierX+16,0,W-(barrierX+16),H);
+  ctx.clip();
+
+  const maxR=Math.max(W,H);
+  const numWaves=7;
+  for(let k=1;k<=numWaves;k++){
+    const r=k*(W-barrierX-20)/(numWaves+1);
+    const alpha=0.9-k*0.1;
+    ctx.beginPath();
+    ctx.arc(barrierX+16,slitCY,r,0,TAU);
+    ctx.strokeStyle=`rgba(201,162,39,${Math.max(0.1,alpha)})`;
+    ctx.lineWidth=1.4; ctx.stroke();
+  }
+  ctx.restore();
+
+  // Labels
+  label(ctx,'Plane waves →',12,22,'rgba(0,229,255,0.7)',12);
+  label(ctx,'Circular (Huygens) wavefronts',barrierX+22,18,'rgba(201,162,39,0.7)',12);
+  label(ctx,'spreading in all directions',barrierX+22,34,'rgba(201,162,39,0.55)',11);
+
+  // Slit width annotation
+  ctx.beginPath();
+  ctx.moveTo(barrierX-12,slitTop); ctx.lineTo(barrierX-12,slitBot);
+  ctx.strokeStyle='rgba(248,244,255,0.4)'; ctx.lineWidth=1; ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(barrierX-18,slitTop); ctx.lineTo(barrierX-6,slitTop); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(barrierX-18,slitBot); ctx.lineTo(barrierX-6,slitBot); ctx.stroke();
+  label(ctx,'d',barrierX-44,H/2+5,'rgba(248,244,255,0.55)',13);
+})();
+
+// ──────────────────────────────────────────────
+// SLIDE 6 — constructive & destructive interference
+// ──────────────────────────────────────────────
+function drawInterference(canvasId, type){
+  const c=document.getElementById(canvasId);
+  if(!c) return;
+  const ctx=c.getContext('2d');
+  const W=c.width, H=c.height;
+  ctx.fillStyle='rgba(10,0,21,0.01)'; ctx.fillRect(0,0,W,H);
+  const A=16, lam=80, nCyc=3.5, pad=10;
+  const cy1=H*0.22, cy2=H*0.52, cy3=H*0.82;
+
+  let phase2 = type==='constructive' ? 0 : PI; // in phase vs anti-phase
+  const col1='#00e5ff', col2='#C9A227', col3='rgba(248,244,255,0.95)';
+
+  // Wave 1
+  drawPolyline(ctx, sinePoints(pad,cy1,A,lam,nCyc), col1, 1.5);
+  label(ctx,'y₁',pad,cy1-A-5,col1,10);
+
+  // Wave 2
+  drawPolyline(ctx, sinePoints(pad,cy2,A,lam,nCyc,phase2), col2, 1.5);
+  label(ctx,'y₂',pad,cy2-A-5,col2,10);
+
+  // Resultant
+  const A_res = type==='constructive' ? 2*A : 0;
+  const pts3=[];
+  for(let i=0;i<=300;i++){
+    const t=i/300;
+    const x=pad+t*(nCyc*lam);
+    const y=cy3 - (A*Math.sin(TAU*nCyc*t) + A*Math.sin(TAU*nCyc*t+phase2));
+    pts3.push([x,y]);
+  }
+  drawPolyline(ctx, pts3, col3, 2.2);
+  label(ctx,'y₁+y₂',pad,cy3-A_res-7,col3,10);
+
+  // Equilibrium lines
+  [cy1,cy2,cy3].forEach(cy=>{
+    dashedLine(ctx,pad,cy,W-pad,cy,'rgba(248,244,255,0.12)',[4,4]);
+  });
+}
+drawInterference('constructiveDiagram','constructive');
+drawInterference('destructiveDiagram','destructive');
+
+// ──────────────────────────────────────────────
+// SLIDE 7 — accurate beat diagram
+// ──────────────────────────────────────────────
+(function(){
+  const c=document.getElementById('beatsDiagram');
+  if(!c) return;
+  const ctx=c.getContext('2d');
+  const W=c.width, H=c.height;
+  ctx.fillStyle='rgba(10,0,5,0.8)'; ctx.fillRect(0,0,W,H);
+
+  const pad=20, npts=600;
+  // f1=8 cycles, f2=9 cycles across canvas → beat every full canvas (f_beat=1)
+  const f1=8, f2=9, A=22;
+
+  // Row centres
+  const cy1=H*0.18, cy2=H*0.45, cy3=H*0.78;
+
+  function waveY(cy,f,ph=0){ 
+    return Array.from({length:npts+1},(_,i)=>{
+      const t=i/npts;
+      return [pad+t*(W-2*pad), cy-A*Math.sin(TAU*f*t+ph)];
+    });
+  }
+
+  // Beat wave = sum of two
+  function beatY(cy){
+    return Array.from({length:npts+1},(_,i)=>{
+      const t=i/npts;
+      const y=cy - A*Math.sin(TAU*f1*t) - A*Math.sin(TAU*f2*t);
+      return [pad+t*(W-2*pad),y];
+    });
+  }
+
+  // Envelope of beat: ±2A*cos(π*(f2-f1)*t)
+  function envelopeY(cy,sign=1){
+    return Array.from({length:npts+1},(_,i)=>{
+      const t=i/npts;
+      const env=sign*2*A*Math.cos(PI*(f2-f1)*t);
+      return [pad+t*(W-2*pad),cy+env];
+    });
+  }
+
+  // Equilibrium
+  [cy1,cy2,cy3].forEach(cy=>dashedLine(ctx,pad,cy,W-pad,cy,'rgba(248,244,255,0.12)',[5,4]));
+
+  // Wave 1
+  drawPolyline(ctx,waveY(cy1,f1),'rgba(0,229,255,0.75)',1.4);
+  label(ctx,'f₁ = 440 Hz',pad+2,cy1-A-7,'#00e5ff',11);
+
+  // Wave 2
+  drawPolyline(ctx,waveY(cy2,f2),'rgba(160,80,240,0.75)',1.4);
+  label(ctx,'f₂ = 441 Hz',pad+2,cy2-A-7,'#b070ff',11);
+
+  // Beat wave
+  drawPolyline(ctx,beatY(cy3),'rgba(248,244,255,0.9)',2);
+  // Envelope
+  drawPolyline(ctx,envelopeY(cy3,1),'rgba(201,162,39,0.55)',1.5);
+  drawPolyline(ctx,envelopeY(cy3,-1),'rgba(201,162,39,0.55)',1.5);
+  label(ctx,'Resultant — beat pattern',pad+2,cy3-2*A-8,'rgba(248,244,255,0.8)',11);
+  label(ctx,'Envelope',W-80,cy3-2*A-8,'rgba(201,162,39,0.7)',11);
+})();
+
+// ──────────────────────────────────────────────
+// SLIDE 7 — standing wave diagram
+// ──────────────────────────────────────────────
+(function(){
+  const c=document.getElementById('standingWaveDiagram');
+  if(!c) return;
+  const ctx=c.getContext('2d');
+  const W=c.width, H=c.height;
+  const cy=H/2, A=30, pad=14;
+
+  // Two travelling waves in opposite directions → standing wave
+  // y = 2A sin(kx) cos(ωt) — snapshot at t=0
+  const n=2; // 2 loops
+  const k=n*PI/(W-2*pad);
+  const npts=300;
+  const pts1=[],pts2=[];
+  for(let i=0;i<=npts;i++){
+    const x=pad+i/npts*(W-2*pad);
+    const y1=cy - 2*A*Math.sin(k*(x-pad));
+    const y2=cy + 2*A*Math.sin(k*(x-pad)); // other half (180° later)
+    pts1.push([x,y1]); pts2.push([x,y2]);
+  }
+  drawPolyline(ctx,pts1,'#C9A227',2.2);
+  drawPolyline(ctx,pts2,'rgba(201,162,39,0.3)',1.4);
+  dashedLine(ctx,pad,cy,W-pad,cy,'rgba(248,244,255,0.18)',[5,4]);
+
+  // Mark nodes (where sin=0: x = pad + m*π/k = pad + m*(W-2*pad)/n)
+  for(let m=0;m<=n;m++){
+    const xN=pad+m*(W-2*pad)/n;
+    ctx.beginPath(); ctx.arc(xN,cy,5,0,TAU);
+    ctx.fillStyle='#00e5ff'; ctx.fill();
+    label(ctx,'N',xN-4,cy+18,'#00e5ff',11);
+  }
+  // Antinodes (midpoints)
+  for(let m=0;m<n;m++){
+    const xAN=pad+(m+0.5)*(W-2*pad)/n;
+    ctx.beginPath(); ctx.arc(xAN,cy-2*A,4,0,TAU);
+    ctx.fillStyle='#C9A227'; ctx.fill();
+    label(ctx,'AN',xAN-9,cy-2*A-8,'#C9A227',11);
+  }
+})();
+
+// ──────────────────────────────────────────────
+// SLIDE 8 — accurate Doppler diagram
+// ──────────────────────────────────────────────
+(function(){
+  const c=document.getElementById('dopplerDiagram');
+  if(!c) return;
+  const ctx=c.getContext('2d');
+  const W=c.width, H=c.height;
+  ctx.fillStyle='rgba(0,5,15,0.88)'; ctx.fillRect(0,0,W,H);
+
+  // Road
+  dashedLine(ctx,20,H/2,W-20,H/2,'rgba(248,244,255,0.12)',[16,10]);
+
+  // Doppler wavefronts:
+  // Source moves right. At each past time step, it emitted a spherical wavefront.
+  // Model: v_wave=80px/step, v_source=55px/step. Now source is at xNow.
+  // 4 steps back: source was at xNow-4*55=xNow-220, radius=4*80=320
+  // 3 steps: xNow-165, r=240; 2 steps: xNow-110, r=160; 1 step: xNow-55, r=80
+  const xNow=270, cy=H/2;
+  const vs=55, vw=80, nEmissions=4;
+  const circles=[];
+  for(let k=nEmissions;k>=1;k--){
+    circles.push({cx:xNow-k*vs, cy:cy, r:k*vw});
+  }
+  // Clip to canvas
+  ctx.save();
+  ctx.rect(0,0,W,H); ctx.clip();
+  circles.forEach((circ,i)=>{
+    const alpha=0.15+(i+1)*0.17;
+    // Fill thin
+    ctx.beginPath();
+    ctx.arc(circ.cx,circ.cy,circ.r,0,TAU);
+    ctx.strokeStyle=`rgba(0,229,255,${alpha+0.2})`;
+    ctx.lineWidth=1.8; ctx.stroke();
+  });
+  ctx.restore();
+
+  // Source (ambulance emoji)
+  ctx.font='22px serif';
+  ctx.fillText('🚑',xNow-12,cy+8);
+  // Velocity arrow
+  drawArrow(ctx,xNow+18,cy-12,xNow+65,cy-12,'#C9A227',7,12);
+  label(ctx,'vₛ',xNow+32,cy-18,'#C9A227',12);
+
+  // Observer AHEAD (right side)
+  ctx.beginPath(); ctx.arc(W-36,cy,14,0,TAU);
+  ctx.fillStyle='rgba(201,162,39,0.85)'; ctx.fill();
+  label(ctx,'A',W-42,cy+5,'#0a0015',13);
+  label(ctx,'Higher f',W-70,cy+32,'#C9A227',12);
+  label(ctx,'(λ compressed)',W-90,cy+46,'rgba(201,162,39,0.7)',11);
+
+  // Observer BEHIND (left side)
+  ctx.beginPath(); ctx.arc(28,cy,14,0,TAU);
+  ctx.fillStyle='rgba(0,229,255,0.8)'; ctx.fill();
+  label(ctx,'B',22,cy+5,'#0a0015',13);
+  label(ctx,'Lower f',14,cy+32,'#00e5ff',12);
+  label(ctx,'(λ stretched)',10,cy+46,'rgba(0,229,255,0.7)',11);
+
+  // Label wavefronts
+  label(ctx,'Wavefronts emitted at',W/2-60,20,'rgba(248,244,255,0.45)',11,'center');
+  label(ctx,'each past source position',W/2-60,34,'rgba(248,244,255,0.45)',11,'center');
+
+  // Show compression ahead & stretching behind with bracket arrows
+  const topY=cy-circles[circles.length-1].r-8;
+  // compressed spacing near A
+  for(let k=0;k<nEmissions;k++){
+    const cx_=circles[k].cx, r_=circles[k].r;
+    const xRight=cx_+r_;
+    if(xRight>xNow+10 && xRight<W-50){
+      ctx.beginPath(); ctx.moveTo(xRight,cy-10); ctx.lineTo(xRight,cy+10);
+      ctx.strokeStyle='rgba(201,162,39,0.5)'; ctx.lineWidth=1; ctx.stroke();
+    }
+  }
+})();
+
+// ──────────────────────────────────────────────
+// Navigation logic
+// ──────────────────────────────────────────────
+const track=document.getElementById('slides-track');
+const slides=document.querySelectorAll('.slide');
+const counter=document.getElementById('slide-counter');
+const navbar=document.getElementById('navbar');
+const total=slides.length;
+let current=0;
+
+slides.forEach((_,i)=>{
+  const dot=document.createElement('div');
+  dot.className='nav-dot'+(i===0?' active':'');
+  dot.addEventListener('click',()=>goTo(i));
+  navbar.appendChild(dot);
+});
+
+function goTo(idx){
+  idx=Math.max(0,Math.min(total-1,idx));
+  current=idx;
+  track.scrollTo({left:idx*window.innerWidth,behavior:'smooth'});
+  updateUI();
+}
+
+function updateUI(){
+  document.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('active',i===current));
+  counter.textContent=String(current+1).padStart(2,'0')+' / '+String(total).padStart(2,'0');
+}
+
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const idx=[...slides].indexOf(e.target);
+      if(idx!==-1&&idx!==current){current=idx;updateUI();}
+    }
+  });
+},{root:track,threshold:0.5});
+slides.forEach(s=>observer.observe(s));
+
+document.getElementById('prev-btn').addEventListener('click',()=>goTo(current-1));
+document.getElementById('next-btn').addEventListener('click',()=>goTo(current+1));
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown') goTo(current+1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')   goTo(current-1);
+});
+let tx=0;
+track.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+track.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx;
+  if(Math.abs(dx)>50) goTo(current+(dx<0?1:-1));
+},{passive:true});
+
+updateUI();
+
+// Run MathJax after DOM + canvases are ready
+window.addEventListener('load',()=>{
+  if(window.MathJax){
+    MathJax.startup.promise.then(()=>{
+      MathJax.typesetPromise().then(()=>{
+        // Force gold colour on all MathJax output
+        document.querySelectorAll('mjx-container').forEach(el=>{
+          el.style.color='#f0c84a';
+        });
+      });
+    });
+  }
+});
+</script>
+</body>
+</html>
