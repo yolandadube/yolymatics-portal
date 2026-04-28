@@ -1,5 +1,16 @@
 [
   {
+    "id": "pg_1777369370943_oj3",
+    "platform": "is",
+    "subject": "Mathematics",
+    "topic": "Statistics",
+    "title": "Box Plots Data & Statistics",
+    "desc": "Notes on box plots",
+    "accent": "#2dd4bf",
+    "date": "2026-04-28",
+    "filename": "boxplots_lesson.html"
+  },
+  {
     "id": "pg_1777369205572_mn4",
     "platform": "is",
     "subject": "Physics",
