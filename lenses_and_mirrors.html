@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Lenses & Mirrors</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html,body { width:100%; height:100%; overflow:hidden; background:#0B1A2E; color:#fff; font-family:'Nunito',sans-serif; }
+
+:root {
+  --navy:#0B1A2E;
+  --cyan:#00E5FF;
+  --gold:#FFD166;
+  --coral:#FF6B6B;
+  --mint:#06D6A0;
+  --purple:#9B5DE5;
+  --muted:rgba(255,255,255,0.55);
+  --card:rgba(255,255,255,0.05);
+  --border:rgba(255,255,255,0.09);
+}
+
+/* ── PROGRESS ── */
+#progress { position:fixed; top:0; left:0; height:3px; background:linear-gradient(90deg,var(--cyan),var(--gold),var(--coral)); z-index:200; transition:width .4s ease; }
+
+/* ── PARTICLES ── */
+#pcv { position:fixed; inset:0; z-index:0; pointer-events:none; }
+
+/* ── DECK ── */
+#deck { position:relative; z-index:10; width:100%; height:100vh; }
+
+.slide {
+  position:absolute; inset:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:55px 65px 80px;
+  opacity:0; pointer-events:none;
+  transition:opacity .42s ease, transform .42s ease;
+  transform:translateX(55px);
+}
+.slide.active { opacity:1; pointer-events:all; transform:translateX(0); }
+.slide.out    { opacity:0; transform:translateX(-55px); }
+
+.scroll-slide { justify-content:flex-start; padding-top:68px; overflow-y:auto; }
+.scroll-slide::-webkit-scrollbar { width:3px; }
+.scroll-slide::-webkit-scrollbar-thumb { background:var(--cyan); border-radius:2px; }
+
+/* ── NAV ── */
+#nav {
+  position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+  display:flex; align-items:center; gap:12px; z-index:200;
+}
+.nbtn {
+  background:rgba(255,255,255,.07); border:1px solid var(--border);
+  color:#fff; padding:9px 22px; border-radius:30px; cursor:pointer;
+  font-family:'Nunito',sans-serif; font-weight:700; font-size:.88rem; transition:all .2s;
+}
+.nbtn:hover { background:var(--cyan); color:var(--navy); }
+#ctr { font-family:'Fredoka One',cursive; color:var(--cyan); font-size:.95rem; min-width:60px; text-align:center; }
+
+/* ── TYPOGRAPHY ── */
+.title-kicker { font-family:'Fredoka One',cursive; font-size:.72rem; letter-spacing:5px; text-transform:uppercase; color:var(--mint); margin-bottom:16px; opacity:.8; }
+.title-main   { font-family:'Fredoka One',cursive; font-size:clamp(2.6rem,6vw,4.6rem); text-align:center; line-height:1.1; background:linear-gradient(140deg,var(--cyan) 0%,var(--gold) 55%,var(--coral) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:12px; }
+.title-sub    { font-size:1rem; color:var(--muted); text-align:center; margin-bottom:34px; }
+.title-credit { position:fixed; bottom:62px; right:44px; font-size:.74rem; color:rgba(255,255,255,.28); font-style:italic; z-index:200; }
+
+.slide-title  { font-family:'Fredoka One',cursive; font-size:clamp(1.5rem,3vw,2.2rem); text-align:center; margin-bottom:20px; }
+
+.sec-num      { font-family:'Fredoka One',cursive; font-size:.7rem; letter-spacing:5px; text-transform:uppercase; margin-bottom:12px; }
+.sec-heading  { font-family:'Fredoka One',cursive; font-size:clamp(2.1rem,5vw,3.7rem); text-align:center; line-height:1.1; margin-bottom:8px; }
+.sec-bar      { height:3px; width:60px; border-radius:2px; margin:16px auto; }
+.sec-desc     { font-size:1rem; color:var(--muted); text-align:center; max-width:520px; line-height:1.6; }
+
+/* ── LAYOUT ── */
+.two-col  { display:grid; grid-template-columns:1fr 1fr; gap:16px; width:100%; max-width:820px; }
+.three-col{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; width:100%; max-width:820px; }
+
+/* ── CARDS ── */
+.card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:18px 24px; width:100%; max-width:760px; margin-bottom:12px; }
+.card h3  { font-family:'Fredoka One',cursive; font-size:1.05rem; margin-bottom:8px; }
+.card p, .card li { font-size:.93rem; line-height:1.72; color:rgba(255,255,255,.82); }
+.card ul  { padding-left:18px; }
+.card.c-b { border-color:var(--cyan); }
+.card.g-b { border-color:var(--gold); }
+.card.r-b { border-color:var(--coral); }
+.card.m-b { border-color:var(--mint); }
+.card.p-b { border-color:var(--purple); }
+
+/* ── DEF BOX ── */
+.def { max-width:760px; width:100%; border-left:4px solid var(--cyan); border-radius:0 14px 14px 0; background:rgba(0,229,255,.07); padding:16px 22px; font-size:.97rem; line-height:1.8; color:rgba(255,255,255,.9); margin-bottom:16px; }
+.def.gold   { border-color:var(--gold);   background:rgba(255,209,102,.07); }
+.def.coral  { border-color:var(--coral);  background:rgba(255,107,107,.07); }
+.def.mint   { border-color:var(--mint);   background:rgba(6,214,160,.07); }
+.def.purple { border-color:var(--purple); background:rgba(155,93,229,.07); }
+
+/* ── CHIPS ── */
+.chip { display:inline-block; border-radius:20px; padding:4px 15px; font-size:.8rem; font-weight:700; border:1px solid; margin:3px; }
+.chip.c { border-color:var(--cyan);   color:var(--cyan);   background:rgba(0,229,255,.1); }
+.chip.g { border-color:var(--gold);   color:var(--gold);   background:rgba(255,209,102,.1); }
+.chip.r { border-color:var(--coral);  color:var(--coral);  background:rgba(255,107,107,.1); }
+.chip.m { border-color:var(--mint);   color:var(--mint);   background:rgba(6,214,160,.1); }
+
+/* ── EQUATION DISPLAY ── */
+.eq-wrap { display:flex; justify-content:center; align-items:center; gap:12px; margin:14px 0; }
+.eq-box  { background:rgba(0,0,0,.35); border:1px solid var(--border); border-radius:14px; padding:16px 30px; display:flex; align-items:center; justify-content:center; }
+.frac    { display:inline-flex; flex-direction:column; align-items:center; font-family:'Fredoka One',cursive; }
+.frac-n  { font-size:1.1rem; padding-bottom:4px; border-bottom:2px solid rgba(255,255,255,.7); }
+.frac-d  { font-size:1.1rem; padding-top:4px; }
+.eq-op   { font-family:'Fredoka One',cursive; font-size:1.5rem; color:rgba(255,255,255,.7); }
+.eq-eq   { font-family:'Fredoka One',cursive; font-size:1.5rem; color:var(--cyan); }
+
+/* ── STEP BOXES ── */
+.step-list { max-width:700px; width:100%; display:flex; flex-direction:column; gap:10px; }
+.step { display:flex; gap:14px; align-items:flex-start; background:var(--card); border:1px solid var(--border); border-radius:14px; padding:14px 18px; }
+.step-num { font-family:'Fredoka One',cursive; font-size:1.2rem; color:var(--gold); min-width:28px; }
+.step p   { font-size:.93rem; line-height:1.65; color:rgba(255,255,255,.85); }
+
+/* ── RAY DIAGRAM WRAP ── */
+.diag-wrap { display:flex; justify-content:center; width:100%; max-width:700px; }
+
+/* ── QUIZ ── */
+.quiz-q    { font-family:'Fredoka One',cursive; font-size:1.15rem; color:var(--gold); text-align:center; margin-bottom:24px; max-width:680px; line-height:1.5; }
+.quiz-opts { display:flex; flex-direction:column; gap:10px; max-width:620px; width:100%; }
+.qbtn { background:rgba(255,255,255,.05); border:1px solid var(--border); border-radius:12px; padding:12px 20px; font-family:'Nunito',sans-serif; font-weight:700; font-size:.93rem; color:#fff; cursor:pointer; text-align:left; transition:all .2s; }
+.qbtn:hover:not(:disabled) { border-color:var(--cyan); color:var(--cyan); }
+.qbtn.correct { border-color:var(--mint);  background:rgba(6,214,160,.12); color:var(--mint); }
+.qbtn.wrong   { border-color:var(--coral); background:rgba(255,107,107,.1); color:var(--coral); }
+.qfb { margin-top:14px; font-weight:700; font-size:.95rem; text-align:center; min-height:24px; }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px);} to{opacity:1;transform:translateY(0);} }
+.fu  { opacity:0; animation:fadeUp .5s ease forwards; }
+.d1  { animation-delay:.08s; } .d2 { animation-delay:.18s; }
+.d3  { animation-delay:.29s; } .d4 { animation-delay:.41s; }
+.d5  { animation-delay:.54s; }
+
+@keyframes drawLine { from{stroke-dashoffset:800;} to{stroke-dashoffset:0;} }
+.ray1 { stroke-dasharray:800; stroke-dashoffset:800; animation:drawLine 1s ease .4s forwards; }
+.ray2 { stroke-dasharray:800; stroke-dashoffset:800; animation:drawLine 1s ease .9s forwards; }
+.ray3 { stroke-dasharray:800; stroke-dashoffset:800; animation:drawLine 1s ease 1.4s forwards; }
+
+@keyframes popIn { from{opacity:0;transform:scale(0.5);} to{opacity:1;transform:scale(1);} }
+.pop-in { animation:popIn .4s ease 2s both; }
+</style>
+</head>
+<body>
+
+<canvas id="pcv"></canvas>
+<div id="progress" style="width:0%"></div>
+
+<div id="deck">
+
+<!-- ═══════════════════════════════════════
+     SLIDE 0  TITLE
+═══════════════════════════════════════ -->
+<div class="slide active">
+  <div class="title-kicker fu">Physical Sciences · Optics</div>
+  <div class="title-main fu d1">Lenses<br/>&amp; Mirrors</div>
+  <div class="title-sub fu d2">How light bends, reflects, and forms images</div>
+  <div class="fu d3" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+    <span class="chip c">Vocabulary</span>
+    <span class="chip g">Ray Tracing</span>
+    <span class="chip r">Lenses</span>
+    <span class="chip m">Mirrors</span>
+    <span class="chip c">Images</span>
+    <span class="chip g">Equations</span>
+  </div>
+  <div class="title-credit">Prepared by: Yolanda Dube &copy; 2026</div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     SLIDE 1  SECTION: VOCABULARY
+═══════════════════════════════════════ -->
+<div class="slide">
+  <div style="text-align:center;">
+    <div class="sec-num fu" style="color:var(--cyan);">Part One</div>
+    <div class="sec-heading fu d1" style="color:var(--cyan);">Common<br/>Vocabulary</div>
+    <div class="sec-bar fu d2" style="background:linear-gradient(90deg,var(--cyan),var(--mint));"></div>
+    <div class="sec-desc fu d3">Before we draw a single ray, let's make sure we all understand the same language. Lenses and mirrors share the same set of terms.</div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     SLIDE 2  KEY TERMS — visual labeled diagram
+═══════════════════════════════════════ -->
+<div class="slide scroll-slide">
+  <div class="slide-title fu" style="color:var(--cyan);">Key Terms</div>
+
+  <!-- Labeled diagram SVG -->
+  <div class="diag-wrap fu d1" style="max-width:680px; margin-bottom:18px;">
+    <svg viewBox="0 0 640 230" style="width:100%;overflow:visible;" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="ah-c" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#00E5FF"/></marker>
+        <marker id="ah-g" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#FFD166"/></marker>
+        <marker id="ah-r" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#FF6B6B"/></marker>
+        <marker id="ah-m" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#06D6A0"/></marker>
+        <marker id="ah-w" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="rgba(255,255,255,0.5)"/></marker>
+        <filter id="gl"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+
+      <!-- Principal axis -->
+      <line x1="30" y1="115" x2="610" y2="115" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#ah-w)"/>
+      <text x="615" y="119" fill="rgba(255,255,255,0.4)" font-family="Nunito" font-size="11">axis</text>
+
+      <!-- Principal plane (vertical through lens center x=310) -->
+      <line x1="310" y1="20" x2="310" y2="210" stroke="rgba(255,209,102,0.35)" stroke-width="1.5" stroke-dasharray="5,4"/>
+
+      <!-- Biconvex lens shape -->
+      <path d="M 310,30 Q 270,115 310,200 Q 350,115 310,30 Z" fill="rgba(0,229,255,0.12)" stroke="var(--cyan)" stroke-width="2.5"/>
+
+      <!-- Object arrow (left side) -->
+      <line x1="140" y1="115" x2="140" y2="58" stroke="var(--coral)" stroke-width="2.5" marker-end="url(#ah-r)"/>
+      <line x1="135" y1="115" x2="145" y2="115" stroke="var(--coral)" stroke-width="2"/>
+
+      <!-- Focal point right (F) -->
+      <circle cx="440" cy="115" r="5" fill="var(--gold)" filter="url(#gl)"/>
+      <text x="440" y="106" text-anchor="middle" fill="var(--gold)" font-family="Fredoka One" font-size="14">F</text>
+
+      <!-- Focal point left -->
+      <circle cx="180" cy="115" r="5" fill="var(--gold)" filter="url(#gl)"/>
+      <text x="180" y="106" text-anchor="middle" fill="var(--gold)" font-family="Fredoka One" font-size="14">F</text>
+
+      <!-- ── LABELS with leader lines ── -->
+
+      <!-- Principal axis label -->
+      <line x1="220" y1="115" x2="220" y2="175" stroke="rgba(255,255,255,0.4)" stroke-width="1" stroke-dasharray="3,3"/>
+      <text x="224" y="188" fill="rgba(255,255,255,0.75)" font-family="Nunito" font-size="11" font-weight="700">Principal Axis</text>
+      <text x="224" y="200" fill="rgba(255,255,255,0.45)" font-family="Nunito" font-size="9.5">horizontal reference line</text>
+
+      <!-- Principal plane label -->
+      <line x1="310" y1="22" x2="370" y2="10" stroke="rgba(255,209,102,0.6)" stroke-width="1" stroke-dasharray="3,3"/>
+      <text x="372" y="10" fill="var(--gold)" font-family="Nunito" font-size="11" font-weight="700">Principal Plane</text>
+      <text x="372" y="21" fill="rgba(255,209,102,0.6)" font-family="Nunito" font-size="9.5">vertical through centre</text>
+
+      <!-- Focal point label -->
+      <line x1="440" y1="120" x2="490" y2="150" stroke="rgba(255,209,102,0.6)" stroke-width="1" stroke-dasharray="3,3"/>
+      <text x="492" y="150" fill="var(--gold)" font-family="Nunito" font-size="11" font-weight="700">Focal Point (F)</text>
+      <text x="492" y="162" fill="rgba(255,209,102,0.6)" font-family="Nunito" font-size="9.5">where parallel rays converge</text>
+
+      <!-- Object label -->
+      <line x1="140" y1="58" x2="80" y2="38" stroke="rgba(255,107,107,0.7)" stroke-width="1" stroke-dasharray="3,3"/>
+      <text x="10" y="30" fill="var(--coral)" font-family="Nunito" font-size="11" font-weight="700">Object</text>
+      <text x="10" y="41" fill="rgba(255,107,107,0.6)" font-family="Nunito" font-size="9.5">drawn as vertical arrow</text>
+
+      <!-- Focal length f -->
+      <line x1="310" y1="130" x2="440" y2="130" stroke="rgba(255,209,102,0.5)" stroke-width="1.2" marker-end="url(#ah-g)"/>
+      <line x1="440" y1="130" x2="310" y2="130" stroke="rgba(255,209,102,0.5)" stroke-width="1.2" marker-end="url(#ah-g)"/>
+      <rect x="355" y="133" width="20" height="14" fill="#0B1A2E"/>
+      <text x="365" y="143" text-anchor="middle" fill="var(--gold)" font-family="Fredoka One" font-size="12">f</text>
+    </svg>
+  </div>
+
+  <div class="two-col fu d2" style="max-width:760px;">
+    <div class="card c-b">
+      <h3 style="color:var(--cyan);">Principal Axis</h3>
+      <p>The horizontal reference line that passes through the centre of the lens or mirror. All measurements are made relative to this line.</p>
+    </div>
+    <div class="card g-b">
+      <h3 style="color:var(--gold);">Principal Plane</h3>
+      <p>A vertical reference line passing through the exact centre of the lens — or perpendicular to the axis at the centre of a mirror.</p>
+    </div>
+    <div class="card g-b">
+      <h3 style="color:var(--gold);">Focal Point (F)</h3>
+      <p>The point on the principal axis where parallel rays of light converge (or appear to diverge from) after passing through the lens or reflecting off the mirror.</p>
+    </div>
+    <div class="card r-b">
+      <h3 style="color:var(--coral);">Object</h3>
+      <p>The item we are examining. In ray diagrams it is always drawn as a vertical upright arrow on the principal axis, on the left side of the lens or mirror.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     SLIDE 3  SECTION: TYPES
+═══════════════════════════════════════ -->
+<div class="slide">
+  <div style="text-align:center;">
+    <div class="sec-num fu" style="color:var(--gold);">Part Two</div>
+    <div class="sec-heading fu d1" style="color:var(--gold);">Types of Lenses<br/>&amp; Mirrors</div>
+    <div class="sec-bar fu d2" style="background:linear-gradient(90deg,var(--gold),var(--coral));"></div>
+    <div class="sec-desc fu d3">There are two types of each. What makes them different? The shape — and how they handle light.</div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     SLIDE 4  LENS TYPES — visual SVG comparison
+═══════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-title fu" style="color:var(--gold);">Types of Lenses</div>
+
+  <div class="two-col fu d1" style="max-width:760px; margin-bottom:18px; align-items:start;">
+
+    <!-- CONVEX lens card -->
+    <div class="card g-b" style="text-align:center;">
+      <div style="margin-bottom:12px;">
+        <svg viewBox="0 0 200 140" width="200" height="140" xmlns="http://www.w3.org/2000/svg">
+          <defs><filter id="glc"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+          <!-- Axis -->
+          <line x1="10" y1="70" x2="190" y2="70" stroke="rgba(255,255,255,0.25)" stroke-width="1.2" stroke-dasharray="5,4"/>
+          <!-- Biconvex lens -->
+          <path d="M 100,15 Q 60,70 100,125 Q 140,70 100,15 Z" fill="rgba(255,209,102,0.15)" stroke="#FFD166" stroke-width="2.5" filter="url(#glc)"/>
+          <!-- Parallel rays in -->
+          <line x1="20" y1="35" x2="86" y2="35" stroke="#00E5FF" stroke-width="1.8" marker-end="url(#ah-c)"/>
+          <line x1="20" y1="70" x2="82" y2="70" stroke="#00E5FF" stroke-width="1.8" marker-end="url(#ah-c)"/>
+          <line x1="20" y1="105" x2="86" y2="105" stroke="#00E5FF" stroke-width="1.8" marker-end="url(#ah-c)"/>
+          <!-- Converging rays out (toward focal point at x=165) -->
+          <line x1="114" y1="35" x2="165" y2="70" stroke="#06D6A0" stroke-width="1.8"/>
+          <line x1="118" y1="70" x2="165" y2="70" stroke="#06D6A0" stroke-width="1.8"/>
+          <line x1="114" y1="105" x2="165" y2="70" stroke="#06D6A0" stroke-width="1.8"/>
+          <!-- F dot -->
+          <circle cx="165" cy="70" r="5" fill="#FFD166" filter="url(#glc)"/>
+          <text x="165" y="62" text-anchor="middle" fill="#FFD166" font-family="Fredoka One" font-size="13">F</text>
+        </svg>
+      </div>
+      <h3 style="color:var(--gold); font-family:'Fredoka One',cursive; font-size:1.1rem; margin-bottom:8px;">Convex Lens</h3>
+      <p style="font-size:.88rem; line-height:1.65;">(Converging Lens)<br/>Thickest in the <strong>middle</strong>. Bends parallel rays <strong>inward</strong> so they converge at the focal point.</p>
+    </div>
+
+    <!-- CONCAVE lens card -->
+    <div class="card r-b" style="text-align:center;">
+      <div style="margin-bottom:12px;">
+        <svg viewBox="0 0 200 140" width="200" height="140" xmlns="http://www.w3.org/2000/svg">
+          <defs><filter id="glcc"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+          <!-- Axis -->
+          <line x1="10" y1="70" x2="190" y2="70" stroke="rgba(255,255,255,0.25)" stroke-width="1.2" stroke-dasharray="5,4"/>
+          <!-- Biconcave lens (thinnest in middle) -->
+          <path d="M 85,15 L 115,15 Q 100,70 115,125 L 85,125 Q 100,70 85,15 Z" fill="rgba(255,107,107,0.12)" stroke="#FF6B6B" stroke-width="2.5" filter="url(#glcc)"/>
+          <!-- Parallel rays in -->
+          <line x1="20" y1="35" x2="82" y2="35" stroke="#00E5FF" stroke-width="1.8" marker-end="url(#ah-c)"/>
+          <line x1="20" y1="70" x2="82" y2="70" stroke="#00E5FF" stroke-width="1.8" marker-end="url(#ah-c)"/>
+          <line x1="20" y1="105" x2="82" y2="105" stroke="#00E5FF" stroke-width="1.8" marker-end="url(#ah-c)"/>
+          <!-- Diverging rays out -->
+          <line x1="118" y1="35" x2="180" y2="20" stroke="#FF6B6B" stroke-width="1.8"/>
+          <line x1="118" y1="70" x2="180" y2="70" stroke="#FF6B6B" stroke-width="1.8"/>
+          <line x1="118" y1="105" x2="180" y2="120" stroke="#FF6B6B" stroke-width="1.8"/>
+          <!-- Virtual F dot (left side, dashed back-trace) -->
+          <line x1="118" y1="35" x2="44" y2="70" stroke="rgba(255,107,107,0.35)" stroke-width="1.2" stroke-dasharray="4,3"/>
+          <line x1="118" y1="105" x2="44" y2="70" stroke="rgba(255,107,107,0.35)" stroke-width="1.2" stroke-dasharray="4,3"/>
+          <circle cx="44" cy="70" r="5" fill="rgba(255,107,107,0.6)" filter="url(#glcc)"/>
+          <text x="44" y="62" text-anchor="middle" fill="#FF6B6B" font-family="Fredoka One" font-size="13">F</text>
+          <text x="44" y="84" text-anchor="middle" fill="rgba(255,107,107,0.6)" font-family="Nunito" font-size="8.5">(virtual)</text>
+        </svg>
+      </div>
+      <h3 style="color:var(--coral); font-family:'Fredoka One',cursive; font-size:1.1rem; margin-bottom:8px;">Concave Lens</h3>
+      <p style="font-size:.88rem; line-height:1.65;">(Diverging Lens)<br/>Thinnest in the <strong>middle</strong>. Spreads parallel rays <strong>outward</strong>. Light appears to come from a virtual focal point.</p>
+    </div>
+  </div>
+
+  <div class="def fu d2" style="max-width:760px; font-size:.9rem; padding:12px 20px;">
+    <strong style="color:var(--gold);">Remember:</strong> Ray diagrams in this course are for <strong>converging (convex) lenses only</strong>. The concave lens is for understanding only.
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     SLIDE 5  MIRROR TYPES — visual SVG comparison
+═══════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-title fu" style="color:var(--mint);">Types of Mirrors</div>
+
+  <div class="two-col fu d1" style="max-width:760px; margin-bottom:18px; align-items:start;">
+
+    <!-- CONCAVE mirror -->
+    <div class="card m-b" style="text-align:center;">
+      <div style="margin-bottom:12px;">
+        <svg viewBox="0 0 220 150" width="220" height="150" xmlns="http://www.w3.org/2000/svg">
+          <defs><filter id="glm"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+          <!-- Axis -->
+          <line x1="10" y1="75" x2="200" y2="75" stroke="rgba(255,255,255,0.25)" stroke-width="1.2" stroke-dasharray="5,4"/>
+          <!-- Concave mirror arc (curves inward - reflective side faces left) -->
+          <!-- Arc: vertex at x=170, center of curvature at x=90 (f=40, r=80) -->
+          <path d="M 152,20 A 80,80 0 0,0 152,130" fill="none" stroke="#06D6A0" stroke-width="3" stroke-linecap="round" filter="url(#glm)"/>
+          <!-- Hatch marks on back (right side) -->
+          <line x1="155" y1="25" x2="168" y2="18" stroke="rgba(6,214,160,0.4)" stroke-width="1.5"/>
+          <line x1="158" y1="42" x2="171" y2="35" stroke="rgba(6,214,160,0.4)" stroke-width="1.5"/>
+          <line x1="160" y1="59" x2="173" y2="52" stroke="rgba(6,214,160,0.4)" stroke-width="1.5"/>
+          <line x1="162" y1="76" x2="175" y2="69" stroke="rgba(6,214,160,0.4)" stroke-width="1.5"/>
+          <line x1="160" y1="93" x2="173" y2="86" stroke="rgba(6,214,160,0.4)" stroke-width="1.5"/>
+          <line x1="158" y1="110" x2="171" y2="103" stroke="rgba(6,214,160,0.4)" stroke-width="1.5"/>
+          <line x1="155" y1="127" x2="168" y2="120" stroke="rgba(6,214,160,0.4)" stroke-width="1.5"/>
+          <!-- F at x=130 -->
+          <circle cx="130" cy="75" r="5" fill="#FFD166" filter="url(#glm)"/>
+          <text x="130" y="67" text-anchor="middle" fill="#FFD166" font-family="Fredoka One" font-size="13">F</text>
+          <!-- C at x=90 -->
+          <circle cx="90" cy="75" r="4" fill="rgba(255,255,255,0.5)"/>
+          <text x="90" y="67" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-family="Fredoka One" font-size="11">C</text>
+          <!-- Parallel rays reflecting through F -->
+          <line x1="20" y1="40" x2="150" y2="40" stroke="#00E5FF" stroke-width="1.8"/>
+          <line x1="150" y1="40" x2="130" y2="75" stroke="#06D6A0" stroke-width="1.8"/>
+          <line x1="20" y1="75" x2="160" y2="75" stroke="#00E5FF" stroke-width="1.8"/>
+          <line x1="160" y1="75" x2="130" y2="75" stroke="#06D6A0" stroke-width="1.8"/>
+          <line x1="20" y1="112" x2="150" y2="112" stroke="#00E5FF" stroke-width="1.8"/>
+          <line x1="150" y1="112" x2="130" y2="75" stroke="#06D6A0" stroke-width="1.8"/>
+        </svg>
+      </div>
+      <h3 style="color:var(--mint); font-family:'Fredoka One',cursive; font-size:1.1rem; margin-bottom:8px;">Concave Mirror</h3>
+      <p style="font-size:.88rem; line-height:1.65;">(Converging Mirror)<br/>Curves <strong>inward</strong> — like the inside of a bowl. Parallel rays reflect and converge at the focal point.</p>
+    </div>
+
+    <!-- CONVEX mirror -->
+    <div class="card p-b" style="text-align:center;">
+      <div style="margin-bottom:12px;">
+        <svg viewBox="0 0 220 150" width="220" height="150" xmlns="http://www.w3.org/2000/svg">
+          <defs><filter id="glmv"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+          <!-- Axis -->
+          <line x1="10" y1="75" x2="200" y2="75" stroke="rgba(255,255,255,0.25)" stroke-width="1.2" stroke-dasharray="5,4"/>
+          <!-- Convex mirror arc (bulges outward toward object) -->
+          <path d="M 58,20 A 80,80 0 0,1 58,130" fill="none" stroke="#9B5DE5" stroke-width="3" stroke-linecap="round" filter="url(#glmv)"/>
+          <!-- Hatch marks on back (left side) -->
+          <line x1="55" y1="25" x2="42" y2="18" stroke="rgba(155,93,229,0.4)" stroke-width="1.5"/>
+          <line x1="52" y1="42" x2="39" y2="35" stroke="rgba(155,93,229,0.4)" stroke-width="1.5"/>
+          <line x1="50" y1="59" x2="37" y2="52" stroke="rgba(155,93,229,0.4)" stroke-width="1.5"/>
+          <line x1="48" y1="76" x2="35" y2="69" stroke="rgba(155,93,229,0.4)" stroke-width="1.5"/>
+          <line x1="50" y1="93" x2="37" y2="86" stroke="rgba(155,93,229,0.4)" stroke-width="1.5"/>
+          <line x1="52" y1="110" x2="39" y2="103" stroke="rgba(155,93,229,0.4)" stroke-width="1.5"/>
+          <line x1="55" y1="127" x2="42" y2="120" stroke="rgba(155,93,229,0.4)" stroke-width="1.5"/>
+          <!-- Virtual F behind mirror (right side) -->
+          <circle cx="120" cy="75" r="5" fill="rgba(155,93,229,0.6)" filter="url(#glmv)"/>
+          <text x="120" y="67" text-anchor="middle" fill="#9B5DE5" font-family="Fredoka One" font-size="13">F</text>
+          <text x="120" y="87" text-anchor="middle" fill="rgba(155,93,229,0.6)" font-family="Nunito" font-size="8.5">(virtual)</text>
+          <!-- Parallel rays diverging on reflection -->
+          <line x1="200" y1="40" x2="65" y2="40" stroke="#00E5FF" stroke-width="1.8"/>
+          <line x1="65" y1="40" x2="200" y2="30" stroke="#9B5DE5" stroke-width="1.8"/>
+          <line x1="200" y1="75" x2="60" y2="75" stroke="#00E5FF" stroke-width="1.8"/>
+          <line x1="60" y1="75" x2="200" y2="60" stroke="#9B5DE5" stroke-width="1.8"/>
+          <line x1="200" y1="112" x2="65" y2="112" stroke="#00E5FF" stroke-width="1.8"/>
+          <line x1="65" y1="112" x2="200" y2="93" stroke="#9B5DE5" stroke-width="1.8"/>
+          <!-- Dashed back-traces to virtual F -->
+          <line x1="65" y1="40" x2="120" y2="75" stroke="rgba(155,93,229,0.35)" stroke-width="1.2" stroke-dasharray="4,3"/>
+          <line x1="65" y1="112" x2="120" y2="75" stroke="rgba(155,93,229,0.35)" stroke-width="1.2" stroke-dasharray="4,3"/>
+        </svg>
+      </div>
+      <h3 style="color:var(--purple); font-family:'Fredoka One',cursive; font-size:1.1rem; margin-bottom:8px;">Convex Mirror</h3>
+      <p style="font-size:.88rem; line-height:1.65;">(Diverging Mirror)<br/>Curves <strong>outward</strong> — like the outside of a ball. Parallel rays reflect and spread out. Virtual focal point behind mirror.</p>
+    </div>
+  </div>
+
+  <div class="def fu d2" style="max-width:760px; font-size:.9rem; padding:12px 20px; border-color:var(--mint); background:rgba(6,214,160,.07);">
+    <strong style="color:var(--mint);">Remember:</strong> Ray diagrams in this course are for <strong>concave (converging) mirrors only</strong>. Notice: a converging lens is <em>convex</em>, but a converging mirror is <em>concave</em> — both bend light to a focal point.
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     SLIDE 6  SECTION: RAY TRACING
+═══════════════════════════════════════ -->
+<div class="slide">
+  <div style="text-align:center;">
+    <div class="sec-num fu" style="color:var(--coral);">Part Three</div>
+    <div class="sec-heading fu d1" style="color:var(--coral);">Ray Tracing</div>
+    <div class="sec-bar fu d2" style="background:linear-gradient(90deg,var(--coral),var(--gold));"></div>
+    <div class="sec-desc fu d3">There are infinitely many light rays from any object. We use just <strong>three</strong> special rays to find where the image forms. Each ray starts from the tip of the object.</div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     SLIDE 7  THREE RAY RULES
+═══════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-title fu" style="color:var(--coral);">The Three Rays</div>
+
+  <div class="def coral fu d1" style="max-width:760px;">
+    These same three rules apply to both <strong>converging lenses</strong> and <strong>concave mirrors</strong>. Always draw from the <strong>tip</strong> of the object. Where the three rays cross — that is your <strong>image</strong>.
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:12px; max-width:760px; width:100%;">
+    <div class="step fu d2">
+      <div class="step-num">① </div>
+      <p><strong style="color:var(--cyan);">Parallel Ray:</strong> Draw a ray from the object tip, parallel to the principal axis. When it hits the lens/mirror, it bends (refracts or reflects) and passes <strong>through the far focal point F</strong>.</p>
+    </div>
+    <div class="step fu d3">
+      <div class="step-num">② </div>
+      <p><strong style="color:var(--gold);">Centre Ray:</strong> Draw a ray from the object tip, through the <strong>centre</strong> of the lens (or toward the centre of curvature C for mirrors). This ray passes straight through without changing direction.</p>
+    </div>
+    <div class="step fu d4">
+      <div class="step-num">③ </div>
+      <p><strong style="color:var(--mint);">Focal Ray:</strong> Draw a ray from the object tip, through the <strong>near focal point F</strong>. After passing through the lens/reflecting off the mirror, it exits <strong>parallel</strong> to the principal axis.</p>
+    </div>
+  </div>
+
+  <div class="card fu d5" style="max-width:760px; border-color:var(--gold); margin-top:4px;">
+    <p style="color:rgba(255,255,255,.8);">The point where all three rays <strong>intersect</strong> is where the image forms. The characteristics of that image (real or virtual, upright or inverted, larger or smaller) depend on <em>where</em> they intersect relative to the principal axis.</p>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     SLIDE 8  CONVERGING LENS RAY DIAGRAM
+═══════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-title fu" style="color:var(--coral);">Converging Lens — Ray Diagram</div>
+  <div style="font-size:.82rem; color:var(--muted); margin-bottom:12px; font-style:italic;" class="fu d1">Object placed beyond the focal point</div>
+
+  <div class="diag-wrap fu d1" style="max-width:680px; margin-bottom:16px;">
+    <svg viewBox="0 0 640 260" style="width:100%;overflow:visible;" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arh" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="rgba(255,255,255,0.3)"/></marker>
+        <marker id="arc" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#00E5FF"/></marker>
+        <marker id="arg" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#FFD166"/></marker>
+        <marker id="arm" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#06D6A0"/></marker>
+        <filter id="gl2"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <linearGradient id="lgr1" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#00E5FF"/><stop offset="100%" stop-color="#06D6A0"/></linearGradient>
+      </defs>
+
+      <!-- Layout: axis y=140, lens x=320, F-left x=200, F-right x=440, object x=80 tip y=75, image x=554 tip y=205 -->
+      <!-- computed: do=240,f=120, di=240, hi/ho = -1 (same size, inverted) -->
+
+      <!-- Principal axis -->
+      <line x1="20" y1="140" x2="620" y2="140" stroke="rgba(255,255,255,0.2)" stroke-width="1.2" stroke-dasharray="6,5" marker-end="url(#arh)"/>
+
+      <!-- Lens shape (biconvex) -->
+      <path d="M 320,25 Q 282,140 320,255 Q 358,140 320,25 Z" fill="rgba(0,229,255,0.1)" stroke="#00E5FF" stroke-width="2.5" filter="url(#gl2)"/>
+      <!-- Lens arrows top/bottom -->
+      <polygon points="320,18 314,32 326,32" fill="#00E5FF"/>
+      <polygon points="320,262 314,248 326,248" fill="#00E5FF"/>
+
+      <!-- Focal points -->
+      <circle cx="200" cy="140" r="5" fill="#FFD166" filter="url(#gl2)"/>
+      <text x="200" y="130" text-anchor="middle" fill="#FFD166" font-family="Fredoka One" font-size="13">F</text>
+      <circle cx="440" cy="140" r="5" fill="#FFD166" filter="url(#gl2)"/>
+      <text x="440" y="130" text-anchor="middle" fill="#FFD166" font-family="Fredoka One" font-size="13">F</text>
+
+      <!-- Focal length label -->
+      <line x1="320" y1="155" x2="440" y2="155" stroke="rgba(255,209,102,0.45)" stroke-width="1"/>
+      <text x="380" y="167" text-anchor="middle" fill="rgba(255,209,102,0.6)" font-family="Fredoka One" font-size="11">f</text>
+
+      <!-- Object: upright arrow at x=80, from y=140 up to y=75 -->
+      <line x1="80" y1="140" x2="80" y2="78" stroke="#FF6B6B" stroke-width="2.5"/>
+      <polygon points="80,72 74,84 86,84" fill="#FF6B6B"/>
+      <text x="80" y="155" text-anchor="middle" fill="#FF6B6B" font-family="Nunito" font-size="11" font-weight="700">Object</text>
+
+      <!-- Image: inverted arrow at x=554, from y=140 down to y=205 -->
+      <line x1="554" y1="140" x2="554" y2="202" stroke="rgba(255,107,107,0.5)" stroke-width="2" stroke-dasharray="4,3"/>
+      <polygon points="554,208 548,196 560,196" fill="rgba(255,107,107,0.6)"/>
+      <text x="554" y="225" text-anchor="middle" fill="rgba(255,107,107,0.65)" font-family="Nunito" font-size="11" font-weight="700">Image</text>
+      <text x="554" y="237" text-anchor="middle" fill="rgba(255,107,107,0.45)" font-family="Nunito" font-size="9.5">(real, inverted)</text>
+
+      <!-- ── RAY 1 (parallel → far F): CYAN ── -->
+      <!-- Object tip (80,75) → horizontal → lens (320,75) → through far F(440,140) → image(554,205) -->
+      <polyline points="80,75 320,75" fill="none" stroke="#00E5FF" stroke-width="2" class="ray1" marker-end="url(#arc)"/>
+      <polyline points="320,75 554,207" fill="none" stroke="#00E5FF" stroke-width="2" class="ray1"/>
+      <!-- small dot at kink -->
+      <circle cx="320" cy="75" r="3" fill="#00E5FF" class="ray1" style="animation-delay:1s"/>
+      <text x="340" y="68" fill="#00E5FF" font-family="Nunito" font-size="9.5" class="ray1" style="animation-delay:1s">① parallel → through F</text>
+
+      <!-- ── RAY 2 (through centre): GOLD ── -->
+      <!-- Straight line from (80,75) through lens centre (320,140) to (554,207) -->
+      <line x1="80" y1="75" x2="554" y2="207" stroke="#FFD166" stroke-width="2" class="ray2"/>
+      <text x="200" y="100" fill="#FFD166" font-family="Nunito" font-size="9.5" class="ray2" style="animation-delay:1.5s">② through centre</text>
+
+      <!-- ── RAY 3 (through near F → parallel): MINT ── -->
+      <!-- From (80,75) through near F(200,140) → hits lens at (320,207) → horizontal to image (554,207) -->
+      <polyline points="80,75 320,207" fill="none" stroke="#06D6A0" stroke-width="2" class="ray3"/>
+      <polyline points="320,207 554,207" fill="none" stroke="#06D6A0" stroke-width="2" class="ray3"/>
+      <text x="380" y="220" fill="#06D6A0" font-family="Nunito" font-size="9.5" class="ray3" style="animation-delay:2s">③ through F → parallel</text>
+
+      <!-- Convergence dot (image point) -->
+      <circle cx="554" cy="207" r="6" fill="white" class="pop-in" filter="url(#gl2)"/>
+
+      <!-- do and di labels -->
+      <line x1="80" y1="240" x2="320" y2="240" stroke="rgba(255,107,107,0.5)" stroke-width="1"/>
+      <text x="200" y="252" text-anchor="middle" fill="rgba(255,107,107,0.7)" font-family="Fredoka One" font-size="11">dₒ</text>
+      <line x1="320" y1="240" x2="554" y2="240" stroke="rgba(6,214,160,0.5)" stroke-width="1"/>
+      <text x="437" y="252" text-anchor="middle" fill="rgba(6,214,160,0.7)" font-family="Fredoka One" font-size="11">dᵢ</text>
+    </svg>
+  </div>
+
+  <div class="two-col fu d2" style="max-width:700px;">
+    <div class="card c-b" style="padding:12px 18px;">
+      <h3 style="color:var(--cyan); font-size:.95rem;">① Parallel Ray <span style="color:var(--cyan);">→</span> through far F</h3>
+      <p style="font-size:.85rem;">Travels horizontal, bends at lens, exits through the far focal point</p>
+    </div>
+    <div class="card g-b" style="padding:12px 18px;">
+      <h3 style="color:var(--gold); font-size:.95rem;">② Centre Ray <span style="color:var(--gold);">→</span> straight through</h3>
+      <p style="font-size:.85rem;">Passes through the centre of the lens — direction unchanged</p>
+    </div>
+    <div class="card m-b" style="padding:12px 18px;">
+      <h3 style="color:var(--mint); font-size:.95rem;">③ Focal Ray <span style="color:var(--mint);">→</span> exits parallel</h3>
+      <p style="font-size:.85rem;">Aims through near focal point, exits parallel to principal axis</p>
+    </div>
+    <div class="card r-b" style="padding:12px 18px;">
+      <h3 style="color:var(--coral); font-size:.95rem;">📍 Image formed</h3>
+      <p style="font-size:.85rem;">Real, inverted, same size (object at 2F). On opposite side of lens.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     SLIDE 9  CONCAVE MIRROR RAY DIAGRAM
+═══════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-title fu" style="color:var(--mint);">Concave Mirror — Ray Diagram</div>
+  <div style="font-size:.82rem; color:var(--muted); margin-bottom:12px; font-style:italic;" class="fu d1">Object placed beyond the focal point</div>
+
+  <div class="diag-wrap fu d1" style="max-width:680px; margin-bottom:14px;">
+    <svg viewBox="0 0 640 270" style="width:100%;overflow:visible;" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="amh" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="rgba(255,255,255,0.3)"/></marker>
+        <marker id="amc" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#00E5FF"/></marker>
+        <marker id="amg" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#FFD166"/></marker>
+        <marker id="amm" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#06D6A0"/></marker>
+        <filter id="gl3"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+
+      <!-- Layout:
+           axis y=135, mirror vertex x=555 (right side)
+           f=150px → F at x=405, C at x=255
+           Object x=80, tip y=95 (ho=40), do=475
+           Using do=300, f=150 → di=300, hi=-40 (same size, inverted)
+           Adjusting: object at x=80, do=300, mirror at x=380 (vertex)
+                      F at x=230, C at x=80
+           Mirror arc centred at C=(80,135), r=300
+           vertex: x=80+300=380, y=135 → (380,135)
+           arc from (370,36) through (380,135) to (370,234) approx
+           Object at x=30, tip y=95
+           Wait, C=object position conflict. Let me use:
+           Mirror at x=570, C at x=270 (r=300, f=150→F at x=420)
+           Object at x=90, do=480, di=300*(480)/(480-150) = not right.
+           Let me use simple: do=2f=300, di=2f=300 (object at 2F: image same size at 2F)
+           Mirror vertex at x=570, F at x=420, C at x=270
+           Object at x=270 (at C), tip y=95, do=300
+           But object at C means object overlaps C label...
+           Let me use: mirror x=560, F=410, C=260
+           Object at x=80, do=480, 1/di=1/150-1/480=(480-150)/(150*480)=330/72000, di=218
+           Image at x=560-218=342, hi=-40*(218/480)=-18, tip y=135+18=153
+           Ray 1: (80,95)→horizontal→mirror surface→reflects through F(410,135)→image(342,153)
+           Need mirror surface x at y=95. Mirror circle: (x-260)²+(y-135)²=300²
+           At y=95: (x-260)²+(95-135)²=90000→(x-260)²=90000-1600=88400→x=260+297.3=557.3
+           Ray 1: (80,95)→(557,95)→through F(410,135)→image
+           slope from (557,95) to (410,135): (135-95)/(410-557)=40/(-147)=-0.272
+           at x=342: y=95+(-0.272)*(342-557)=95+(-0.272)*(-215)=95+58.5=153.5 ✓
+
+           Ray 2: from (80,95) toward F(410,135) → hits mirror → reflects parallel
+           slope=(135-95)/(410-80)=40/330=4/33
+           At mirror x=560: y=95+(4/33)*(560-80)=95+4/33*480=95+58.2=153.2
+           Reflects parallel: from (560,153) leftward at y=153→(342,153) ✓
+
+           Ray 3: from (80,95) toward C(260,135) → reflects back through C → image
+           slope=(135-95)/(260-80)=40/180=2/9
+           At mirror: need circle intersection.
+           Line: y=95+(2/9)*(x-80)=95+2x/9-160/9=95+2x/9-17.78=77.22+2x/9
+           (x-260)²+(77.22+2x/9-135)²=90000
+           (x-260)²+(2x/9-57.78)²=90000
+           At x=260: (0)²+(520/9-57.78)²=(57.78-57.78)²=0 ✓ (C is on circle)
+           Other intersection: parametrise from C(260,135) in direction (9,2):
+           x=260+9t, y=135+2t
+           (9t)²+(2t)²=90000 → 81t²+4t²=90000 → 85t²=90000 → t²=1058.8 → t=32.54
+           x=260+9*32.54=260+292.9=552.9, y=135+2*32.54=135+65.1=200.1
+           Mirror hit at (553,200). This is quite low (y=200 vs axis at 135).
+           Reflected ray goes back through C(260,135) and continues:
+           At x=342: y=135+(2/9)*(342-260)=135+2*82/9=135+18.2=153.2 ✓
+
+           So all 3 rays meet at (342,153). 
+           Mirror arc: centered at C=(260,135), r=300.
+           Points on arc:
+           At y=95: x=557 (computed above)
+           At y=135: x=560 (vertex) 
+           At y=200: x=553
+           Arc SVG: from (550,36) through (560,135) to (550,234)
+           At y=36: (x-260)²+(36-135)²=90000→(x-260)²=80199→x=260+283.2=543.2
+           At y=234: same by symmetry = (543,234)
+           Arc: M 543,36 A 300,300 0 0,0 543,234 → this should work
+      -->
+
+      <!-- Principal axis -->
+      <line x1="20" y1="135" x2="590" y2="135" stroke="rgba(255,255,255,0.2)" stroke-width="1.2" stroke-dasharray="6,5" marker-end="url(#amh)"/>
+
+      <!-- Concave mirror arc: centre at (260,135), r=300, vertex at (560,135) -->
+      <path d="M 543,36 A 300,300 0 0,0 543,234" fill="none" stroke="#06D6A0" stroke-width="3.5" stroke-linecap="round" filter="url(#gl3)"/>
+      <!-- Hatch lines behind mirror -->
+      <line x1="545" y1="44" x2="562" y2="37" stroke="rgba(6,214,160,0.4)" stroke-width="1.4"/>
+      <line x1="549" y1="67" x2="566" y2="60" stroke="rgba(6,214,160,0.4)" stroke-width="1.4"/>
+      <line x1="552" y1="90" x2="569" y2="83" stroke="rgba(6,214,160,0.4)" stroke-width="1.4"/>
+      <line x1="554" y1="113" x2="571" y2="106" stroke="rgba(6,214,160,0.4)" stroke-width="1.4"/>
+      <line x1="555" y1="136" x2="572" y2="129" stroke="rgba(6,214,160,0.4)" stroke-width="1.4"/>
+      <line x1="554" y1="159" x2="571" y2="152" stroke="rgba(6,214,160,0.4)" stroke-width="1.4"/>
+      <line x1="552" y1="182" x2="569" y2="175" stroke="rgba(6,214,160,0.4)" stroke-width="1.4"/>
+      <line x1="549" y1="205" x2="566" y2="198" stroke="rgba(6,214,160,0.4)" stroke-width="1.4"/>
+      <line x1="545" y1="227" x2="562" y2="220" stroke="rgba(6,214,160,0.4)" stroke-width="1.4"/>
+
+      <!-- C and F markers -->
+      <circle cx="260" cy="135" r="5" fill="rgba(255,255,255,0.5)" filter="url(#gl3)"/>
+      <text x="260" y="125" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-family="Fredoka One" font-size="13">C</text>
+      <circle cx="410" cy="135" r="5" fill="#FFD166" filter="url(#gl3)"/>
+      <text x="410" y="125" text-anchor="middle" fill="#FFD166" font-family="Fredoka One" font-size="13">F</text>
+
+      <!-- f label -->
+      <line x1="410" y1="150" x2="560" y2="150" stroke="rgba(255,209,102,0.4)" stroke-width="1"/>
+      <text x="485" y="162" text-anchor="middle" fill="rgba(255,209,102,0.55)" font-family="Fredoka One" font-size="11">f</text>
+
+      <!-- Object at x=80, from y=135 to y=95 -->
+      <line x1="80" y1="135" x2="80" y2="98" stroke="#FF6B6B" stroke-width="2.5"/>
+      <polygon points="80,92 74,104 86,104" fill="#FF6B6B"/>
+      <text x="80" y="150" text-anchor="middle" fill="#FF6B6B" font-family="Nunito" font-size="11" font-weight="700">Object</text>
+
+      <!-- Image at x=342, from y=135 to y=153 (inverted, small) -->
+      <line x1="342" y1="135" x2="342" y2="151" stroke="rgba(255,107,107,0.5)" stroke-width="2" stroke-dasharray="3,2"/>
+      <polygon points="342,157 336,145 348,145" fill="rgba(255,107,107,0.65)"/>
+      <text x="342" y="173" text-anchor="middle" fill="rgba(255,107,107,0.6)" font-family="Nunito" font-size="10" font-weight="700">Image</text>
+      <text x="342" y="183" text-anchor="middle" fill="rgba(255,107,107,0.45)" font-family="Nunito" font-size="9">(real, inverted)</text>
+
+      <!-- RAY 1 CYAN: (80,95)→(557,95) horizontal, then reflects through F →image(342,153) -->
+      <polyline points="80,95 557,95" fill="none" stroke="#00E5FF" stroke-width="2" class="ray1"/>
+      <polyline points="557,95 342,153" fill="none" stroke="#00E5FF" stroke-width="2" class="ray1"/>
+      <text x="100" y="87" fill="#00E5FF" font-family="Nunito" font-size="9.5" class="ray1" style="animation-delay:1s;">① parallel → reflects through F</text>
+
+      <!-- RAY 2 GOLD: (80,95)→(557,153)→parallel back→(342,153) -->
+      <polyline points="80,95 557,153" fill="none" stroke="#FFD166" stroke-width="2" class="ray2"/>
+      <polyline points="557,153 342,153" fill="none" stroke="#FFD166" stroke-width="2" class="ray2"/>
+      <text x="280" y="110" fill="#FFD166" font-family="Nunito" font-size="9.5" class="ray2" style="animation-delay:1.5s;">② through F → exits parallel</text>
+
+      <!-- RAY 3 MINT: (80,95)→(553,200)→back through C→(342,153) -->
+      <polyline points="80,95 553,200" fill="none" stroke="#06D6A0" stroke-width="2" class="ray3"/>
+      <polyline points="553,200 342,153" fill="none" stroke="#06D6A0" stroke-width="2" class="ray3"/>
+      <text x="120" y="182" fill="#06D6A0" font-family="Nunito" font-size="9.5" class="ray3" style="animation-delay:2s;">③ through C → reflects back through C</text>
+
+      <!-- Convergence dot -->
+      <circle cx="342" cy="153" r="6" fill="white" class="pop-in" filter="url(#gl3)"/>
+
+      <!-- do and di -->
+      <line x1="80" y1="250" x2="560" y2="250" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+      <line x1="80" y1="247" x2="80" y2="253" stroke="rgba(255,107,107,0.5)" stroke-width="1.5"/>
+      <line x1="560" y1="247" x2="560" y2="253" stroke="rgba(255,107,107,0.5)" stroke-width="1.5"/>
+      <text x="320" y="262" text-anchor="middle" fill="rgba(255,107,107,0.6)" font-family="Fredoka One" font-size="11">dₒ</text>
+      <line x1="342" y1="244" x2="560" y2="244" stroke="rgba(6,214,160,0.3)" stroke-width="1"/>
+      <text x="451" y="255" text-anchor="middle" fill="rgba(6,214,160,0.55)" font-family="Fredoka One" font-size="11">dᵢ</text>
+    </svg>
+  </div>
+
+  <div class="two-col fu d2" style="max-width:700px;">
+    <div class="card c-b" style="padding:12px 18px;">
+      <h3 style="color:var(--cyan); font-size:.95rem;">① Parallel → reflects through F</h3>
+      <p style="font-size:.85rem;">Travels parallel, reflects off mirror, passes through focal point F</p>
+    </div>
+    <div class="card g-b" style="padding:12px 18px;">
+      <h3 style="color:var(--gold); font-size:.95rem;">② Through F → reflects parallel</h3>
+      <p style="font-size:.85rem;">Aimed through F, reflects off mirror, exits parallel to axis</p>
+    </div>
+    <div class="card m-b" style="padding:12px 18px;">
+      <h3 style="color:var(--mint); font-size:.95rem;">③ Through C → reflects back</h3>
+      <p style="font-size:.85rem;">Aimed through C, hits mirror perpendicularly, reflects straight back through C</p>
+    </div>
+    <div class="card r-b" style="padding:12px 18px;">
+      <h3 style="color:var(--coral); font-size:.95rem;">📍 Image formed</h3>
+      <p style="font-size:.85rem;">Real, inverted, smaller. On <em>same side</em> as object (between F and C).</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     SLIDE 10  SECTION: IMAGE CHARACTERISTICS
+═══════════════════════════════════════ -->
+<div class="slide">
+  <div style="text-align:center;">
+    <div class="sec-num fu" style="color:var(--purple);">Part Four</div>
+    <div class="sec-heading fu d1" style="color:var(--purple);">Image<br/>Characteristics</div>
+    <div class="sec-bar fu d2" style="background:linear-gradient(90deg,var(--purple),var(--cyan));"></div>
+    <div class="sec-desc fu d3">Once you have drawn your ray diagram, you need to describe the image. Every image has three characteristics to identify.</div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     SLIDE 11  REAL vs VIRTUAL + ORIENTATION + SIZE
+═══════════════════════════════════════ -->
+<div class="slide scroll-slide">
+  <div class="slide-title fu" style="color:var(--purple);">Describing the Image</div>
+
+  <!-- REAL vs VIRTUAL -->
+  <div style="font-family:'Fredoka One',cursive; color:var(--cyan); font-size:.75rem; letter-spacing:3px; text-transform:uppercase; margin-bottom:10px;" class="fu d1">1 · Real or Virtual?</div>
+  <div class="two-col fu d1" style="max-width:760px; margin-bottom:18px;">
+    <div class="card c-b">
+      <h3 style="color:var(--cyan);">Real Image</h3>
+      <ul>
+        <li>Formed where rays <strong>actually cross</strong></li>
+        <li>Can be projected onto a screen</li>
+        <li>Lens: on the <strong>opposite side</strong> from the object</li>
+        <li>Mirror: on the <strong>same side</strong> as the object</li>
+      </ul>
+    </div>
+    <div class="card p-b">
+      <h3 style="color:var(--purple);">Virtual Image</h3>
+      <ul>
+        <li>Rays do <strong>not actually cross</strong> — our eyes trace them back</li>
+        <li>Cannot be projected onto a screen</li>
+        <li>Lens: on the <strong>same side</strong> as the object</li>
+        <li>Mirror: on the <strong>opposite side</strong> from the object</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ORIENTATION -->
+  <div style="font-family:'Fredoka One',cursive; color:var(--gold); font-size:.75rem; letter-spacing:3px; text-transform:uppercase; margin-bottom:10px;" class="fu d2">2 · Upright or Inverted?</div>
+  <div class="two-col fu d2" style="max-width:760px; margin-bottom:18px;">
+    <div class="card g-b" style="text-align:center;">
+      <div style="font-size:2rem; margin-bottom:6px;">↑</div>
+      <h3 style="color:var(--gold);">Upright</h3>
+      <p>Rays intersect <strong>above</strong> the principal axis. Image points the same way as the object.</p>
+    </div>
+    <div class="card r-b" style="text-align:center;">
+      <div style="font-size:2rem; margin-bottom:6px;">↓</div>
+      <h3 style="color:var(--coral);">Inverted</h3>
+      <p>Rays intersect <strong>below</strong> the principal axis. Image is flipped upside-down compared to the object.</p>
+    </div>
+  </div>
+
+  <!-- SIZE -->
+  <div style="font-family:'Fredoka One',cursive; color:var(--mint); font-size:.75rem; letter-spacing:3px; text-transform:uppercase; margin-bottom:10px;" class="fu d3">3 · Image Size</div>
+  <div class="three-col fu d3" style="max-width:760px; margin-bottom:16px;">
+    <div class="card m-b" style="text-align:center; padding:14px;">
+      <div style="font-size:1.6rem; margin-bottom:4px;">🔍</div>
+      <h3 style="color:var(--mint); font-size:.95rem;">Larger</h3>
+      <p style="font-size:.85rem;">Image is bigger than the object — magnified</p>
+    </div>
+    <div class="card m-b" style="text-align:center; padding:14px;">
+      <div style="font-size:1.6rem; margin-bottom:4px;">⬜</div>
+      <h3 style="color:var(--mint); font-size:.95rem;">Same Size</h3>
+      <p style="font-size:.85rem;">Image is equal in size to the object</p>
+    </div>
+    <div class="card m-b" style="text-align:center; padding:14px;">
+      <div style="font-size:1.6rem; margin-bottom:4px;">🔎</div>
+      <h3 style="color:var(--mint); font-size:.95rem;">Smaller</h3>
+      <p style="font-size:.85rem;">Image is smaller than the object — diminished</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     SLIDE 12  VIRTUAL IMAGES — understanding
+═══════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-title fu" style="color:var(--purple);">Understanding Virtual Images</div>
+
+  <div class="def purple fu d1">
+    A common misconception is that virtual images look blurry or altered. That is <strong>not true</strong>. The key difference between a real and virtual image is simply whether the image <strong>can be projected on a screen</strong>. Virtual images look perfectly normal to the eye.
+  </div>
+
+  <div class="two-col fu d2" style="max-width:760px; margin-bottom:14px;">
+    <div class="card p-b" style="text-align:center;">
+      <div style="font-size:2.5rem; margin-bottom:10px;">🔬</div>
+      <h3 style="color:var(--purple);">Magnifying Glass</h3>
+      <p style="font-size:.88rem; line-height:1.65;">A convex lens used as a magnifying glass forms a <strong>virtual image</strong>. The image is larger, upright, and visible through the lens — but only because you are looking back through it. It cannot be projected onto a wall.</p>
+    </div>
+    <div class="card p-b" style="text-align:center;">
+      <div style="font-size:2.5rem; margin-bottom:10px;">🪞</div>
+      <h3 style="color:var(--purple);">Flat (Plane) Mirror</h3>
+      <p style="font-size:.88rem; line-height:1.65;">A flat mirror always forms a <strong>virtual image</strong>. The image appears to be <em>behind</em> the mirror — same size as the object, upright, and perfectly clear. But if you put a screen behind the mirror, nothing would appear on it.</p>
+    </div>
+  </div>
+
+  <div class="card fu d3" style="max-width:760px; border-color:var(--gold);">
+    <h3 style="color:var(--gold);">The Rule to Remember</h3>
+    <p>A <strong>real image</strong> is formed by rays that <em>actually cross</em>. You can project it on a screen — like a movie projector. A <strong>virtual image</strong> is formed by rays that <em>appear to cross</em> only because your brain traces the diverging rays backward. You can see it, but you cannot project it.</p>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     SLIDE 13  SECTION: EQUATION
+═══════════════════════════════════════ -->
+<div class="slide">
+  <div style="text-align:center;">
+    <div class="sec-num fu" style="color:var(--gold);">Part Five</div>
+    <div class="sec-heading fu d1" style="color:var(--gold);">The Lens &amp;<br/>Mirror Equation</div>
+    <div class="sec-bar fu d2" style="background:linear-gradient(90deg,var(--gold),var(--mint));"></div>
+    <div class="sec-desc fu d3">Ray diagrams show us the <em>qualitative</em> picture. The equation gives us <em>exact numbers</em> — position, size, and focal length.</div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     SLIDE 14  VARIABLES + EQUATION
+═══════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-title fu" style="color:var(--gold);">The Equation &amp; Variables</div>
+
+  <!-- THE EQUATION — large display -->
+  <div class="eq-wrap fu d1">
+    <div class="eq-box">
+      <div class="frac"><div class="frac-n" style="color:var(--mint);">1</div><div class="frac-d" style="color:var(--mint);">f</div></div>
+      <div class="eq-eq" style="margin:0 10px;">=</div>
+      <div class="frac"><div class="frac-n" style="color:var(--coral);">1</div><div class="frac-d" style="color:var(--coral);">dₒ</div></div>
+      <div class="eq-op" style="margin:0 10px;">+</div>
+      <div class="frac"><div class="frac-n" style="color:var(--cyan);">1</div><div class="frac-d" style="color:var(--cyan);">dᵢ</div></div>
+    </div>
+  </div>
+
+  <div class="three-col fu d2" style="max-width:760px; margin-top:8px; margin-bottom:14px;">
+    <div class="card m-b" style="text-align:center; padding:16px;">
+      <div style="font-family:'Fredoka One',cursive; font-size:1.8rem; color:var(--mint); margin-bottom:6px;">f</div>
+      <h3 style="color:var(--mint); font-size:.95rem; margin-bottom:6px;">Focal Length</h3>
+      <p style="font-size:.82rem; line-height:1.6;">Distance from the <strong>centre of the lens</strong> (or mirror surface) to the focal point F.<br/>Units: cm or m</p>
+    </div>
+    <div class="card r-b" style="text-align:center; padding:16px;">
+      <div style="font-family:'Fredoka One',cursive; font-size:1.8rem; color:var(--coral); margin-bottom:6px;">dₒ</div>
+      <h3 style="color:var(--coral); font-size:.95rem; margin-bottom:6px;">Object Distance</h3>
+      <p style="font-size:.82rem; line-height:1.6;">Distance from the <strong>object</strong> to the centre of the lens or surface of the mirror.<br/>Units: cm or m</p>
+    </div>
+    <div class="card c-b" style="text-align:center; padding:16px;">
+      <div style="font-family:'Fredoka One',cursive; font-size:1.8rem; color:var(--cyan); margin-bottom:6px;">dᵢ</div>
+      <h3 style="color:var(--cyan); font-size:.95rem; margin-bottom:6px;">Image Distance</h3>
+      <p style="font-size:.82rem; line-height:1.6;">Distance from the <strong>image</strong> to the centre of the lens or surface of the mirror.<br/>Units: cm or m</p>
+    </div>
+  </div>
+
+  <div class="card fu d3" style="max-width:760px; border-color:var(--gold);">
+    <h3 style="color:var(--gold);">How to Use It</h3>
+    <p>You will always be given <strong>two</strong> of the three variables and asked to find the <strong>third</strong>. Rearrange the equation and solve. The last step is always to take the <strong>reciprocal</strong> of your answer to find the unknown distance.</p>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     SLIDE 15  EXAMPLE PROBLEM
+═══════════════════════════════════════ -->
+<div class="slide scroll-slide">
+  <div class="slide-title fu" style="color:var(--gold);">Example Problem — Lens</div>
+
+  <div class="def gold fu d1" style="max-width:700px;">
+    <strong>Question:</strong> A candle flame is placed <strong>25.0 cm</strong> from a double convex lens. The focal length of the lens is <strong>18.4 cm</strong>. Where is the image of the candle flame?
+  </div>
+
+  <!-- Given box -->
+  <div class="two-col fu d2" style="max-width:700px; margin-bottom:14px;">
+    <div class="card g-b" style="padding:14px;">
+      <h3 style="color:var(--gold); margin-bottom:8px;">Given</h3>
+      <p>dₒ = 25.0 cm<br/>f = 18.4 cm<br/>dᵢ = ?</p>
+    </div>
+    <div class="card g-b" style="padding:14px;">
+      <h3 style="color:var(--gold); margin-bottom:8px;">Equation</h3>
+      <div class="eq-wrap" style="margin:4px 0; justify-content:flex-start;">
+        <div class="frac" style="font-family:'Fredoka One',cursive;font-size:.95rem;"><div class="frac-n">1</div><div class="frac-d">f</div></div>
+        <span style="margin:0 6px; color:var(--cyan); font-family:'Fredoka One',cursive;">=</span>
+        <div class="frac" style="font-family:'Fredoka One',cursive;font-size:.95rem;"><div class="frac-n">1</div><div class="frac-d">dₒ</div></div>
+        <span style="margin:0 6px; opacity:.6; font-family:'Fredoka One',cursive;">+</span>
+        <div class="frac" style="font-family:'Fredoka One',cursive;font-size:.95rem;"><div class="frac-n">1</div><div class="frac-d">dᵢ</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step-by-step -->
+  <div class="step-list fu d3" style="max-width:700px;">
+    <div class="step">
+      <div class="step-num">①</div>
+      <p>Rearrange for <strong style="color:var(--cyan);">1/dᵢ</strong>:&ensp; 
+        <span style="font-family:'Fredoka One',cursive; color:var(--cyan);">1/dᵢ = 1/f − 1/dₒ</span>
+      </p>
+    </div>
+    <div class="step">
+      <div class="step-num">②</div>
+      <p>Substitute values:&ensp;
+        <span style="font-family:'Fredoka One',cursive; color:var(--gold);">1/dᵢ = 1/18.4 − 1/25.0</span>
+      </p>
+    </div>
+    <div class="step">
+      <div class="step-num">③</div>
+      <p>Calculate each fraction:&ensp;
+        <span style="font-family:'Fredoka One',cursive; color:var(--gold);">= 0.05435 − 0.04000 = 0.01435 cm⁻¹</span>
+      </p>
+    </div>
+    <div class="step">
+      <div class="step-num">④</div>
+      <p>Take the <strong>reciprocal</strong> to get dᵢ:&ensp;
+        <span style="font-family:'Fredoka One',cursive; color:var(--mint);">dᵢ = 1 ÷ 0.01435 = <strong>69.7 cm</strong></span>
+      </p>
+    </div>
+  </div>
+
+  <div class="card fu d4" style="max-width:700px; border-color:var(--mint); margin-top:12px;">
+    <h3 style="color:var(--mint);">Interpreting the Answer</h3>
+    <p>dᵢ = +69.7 cm. The positive value tells us the image is on the <strong>opposite side</strong> of the lens from the object — a <strong>real image</strong>. It is further from the lens than the object, so it is also <strong>larger</strong> than the candle flame.</p>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     SLIDE 16  SUMMARY
+═══════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-title fu" style="color:var(--cyan);">Summary</div>
+
+  <div class="two-col fu d1" style="max-width:820px; margin-bottom:14px;">
+    <div class="card c-b">
+      <h3 style="color:var(--cyan);">Vocabulary</h3>
+      <ul>
+        <li><strong>Principal axis</strong> — horizontal reference line</li>
+        <li><strong>Principal plane</strong> — vertical through centre</li>
+        <li><strong>Focal point F</strong> — where parallel rays meet</li>
+        <li><strong>Object</strong> — drawn as upright arrow on left</li>
+      </ul>
+    </div>
+    <div class="card g-b">
+      <h3 style="color:var(--gold);">Types</h3>
+      <ul>
+        <li>Convex lens → <strong>converging</strong></li>
+        <li>Concave lens → diverging</li>
+        <li>Concave mirror → <strong>converging</strong></li>
+        <li>Convex mirror → diverging</li>
+      </ul>
+    </div>
+    <div class="card r-b">
+      <h3 style="color:var(--coral);">Ray Tracing (3 rays)</h3>
+      <ul>
+        <li>① Parallel → through far F</li>
+        <li>② Through centre → straight</li>
+        <li>③ Through near F → parallel out</li>
+      </ul>
+    </div>
+    <div class="card m-b">
+      <h3 style="color:var(--mint);">Image Description</h3>
+      <ul>
+        <li>Real or Virtual</li>
+        <li>Upright or Inverted</li>
+        <li>Larger, Same, or Smaller</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="eq-wrap fu d2">
+    <div class="eq-box" style="padding:12px 24px;">
+      <div class="frac"><div class="frac-n" style="color:var(--mint);">1</div><div class="frac-d" style="color:var(--mint);">f</div></div>
+      <div class="eq-eq" style="margin:0 8px;">=</div>
+      <div class="frac"><div class="frac-n" style="color:var(--coral);">1</div><div class="frac-d" style="color:var(--coral);">dₒ</div></div>
+      <div class="eq-op" style="margin:0 8px;">+</div>
+      <div class="frac"><div class="frac-n" style="color:var(--cyan);">1</div><div class="frac-d" style="color:var(--cyan);">dᵢ</div></div>
+    </div>
+  </div>
+
+  <div class="title-credit">Prepared by: Yolanda Dube &copy; 2026</div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     SLIDE 17  QUIZ 1
+═══════════════════════════════════════ -->
+<div class="slide">
+  <div class="quiz-q fu">🎯 A ray of light enters a converging lens <strong>parallel to the principal axis</strong>. After passing through the lens, where does the ray go?</div>
+  <div class="quiz-opts fu d1" id="q1o">
+    <button class="qbtn" onclick="ans(this,'wrong','q1')">A) It continues straight through — the lens does not affect it</button>
+    <button class="qbtn" onclick="ans(this,'correct','q1')">B) It bends and passes through the focal point on the far side of the lens</button>
+    <button class="qbtn" onclick="ans(this,'wrong','q1')">C) It reflects back toward the object</button>
+    <button class="qbtn" onclick="ans(this,'wrong','q1')">D) It travels parallel on the other side but lower down</button>
+  </div>
+  <div class="qfb" id="q1f"></div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     SLIDE 18  QUIZ 2
+═══════════════════════════════════════ -->
+<div class="slide">
+  <div class="quiz-q fu">🎯 An object is placed <strong>30.0 cm</strong> from a convex lens with a focal length of <strong>10.0 cm</strong>. What is the image distance dᵢ?</div>
+  <div class="quiz-opts fu d1" id="q2o">
+    <button class="qbtn" onclick="ans(this,'wrong','q2')">A) dᵢ = 10.0 cm</button>
+    <button class="qbtn" onclick="ans(this,'wrong','q2')">B) dᵢ = 30.0 cm</button>
+    <button class="qbtn" onclick="ans(this,'correct','q2')">C) dᵢ = 15.0 cm</button>
+    <button class="qbtn" onclick="ans(this,'wrong','q2')">D) dᵢ = 20.0 cm</button>
+  </div>
+  <div class="qfb" id="q2f"></div>
+  <div style="margin-top:10px; font-size:.8rem; color:rgba(255,255,255,.35); text-align:center;" class="fu d2">
+    Hint: 1/dᵢ = 1/f − 1/dₒ = 1/10 − 1/30 = 3/30 − 1/30 = 2/30 → dᵢ = 15.0 cm
+  </div>
+</div>
+
+
+</div><!-- end deck -->
+
+<div id="nav">
+  <button class="nbtn" onclick="go(-1)">← Prev</button>
+  <span id="ctr">1 / 19</span>
+  <button class="nbtn" onclick="go(1)">Next →</button>
+</div>
+
+<script>
+/* ── PARTICLES ── */
+const cv=document.getElementById('pcv'),cx=cv.getContext('2d');
+function resize(){cv.width=innerWidth;cv.height=innerHeight;}
+resize();window.addEventListener('resize',resize);
+const cols=['#00E5FF','#FFD166','#FF6B6B','#06D6A0','#9B5DE5'];
+const pts=Array.from({length:28},(_,i)=>({
+  x:Math.random()*innerWidth,y:Math.random()*innerHeight,
+  r:1.2+Math.random()*2.2,vx:(Math.random()-.5)*.22,vy:-.14-Math.random()*.38,
+  col:cols[i%cols.length],a:.06+Math.random()*.11
+}));
+(function tick(){
+  cx.clearRect(0,0,cv.width,cv.height);
+  pts.forEach(p=>{cx.beginPath();cx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    cx.fillStyle=p.col;cx.globalAlpha=p.a;cx.fill();
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.y<-8){p.y=cv.height+8;p.x=Math.random()*cv.width;}});
+  cx.globalAlpha=1;requestAnimationFrame(tick);
+})();
+
+/* ── SLIDES ── */
+const slides=[...document.querySelectorAll('.slide')];
+const total=slides.length;
+let cur=0;
+
+function go(d){
+  slides[cur].classList.remove('active');
+  slides[cur].classList.add('out');
+  const prev=cur;
+  setTimeout(()=>slides[prev].classList.remove('out'),430);
+  cur=(cur+d+total)%total;
+  slides[cur].classList.add('active');
+
+  // Restart ray animations on diagram slides
+  slides[cur].querySelectorAll('.ray1,.ray2,.ray3,.pop-in').forEach(el=>{
+    el.style.animation='none';
+    void el.getBoundingClientRect();
+    el.style.animation='';
+  });
+  // Restart fadeUp on newly active slide
+  slides[cur].querySelectorAll('.fu').forEach(el=>{
+    el.style.animation='none';
+    void el.getBoundingClientRect();
+    el.style.animation='';
+  });
+
+  document.getElementById('ctr').textContent=(cur+1)+' / '+total;
+  document.getElementById('progress').style.width=((cur/(total-1))*100)+'%';
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')go(1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(-1);
+});
+
+document.getElementById('ctr').textContent='1 / '+total;
+
+/* ── QUIZ ── */
+function ans(btn,result,id){
+  document.querySelectorAll('#'+id+'o .qbtn').forEach(b=>b.disabled=true);
+  btn.classList.add(result);
+  const fb=document.getElementById(id+'f');
+  if(result==='correct'){
+    fb.style.color='#06D6A0';
+    fb.textContent='✅ Correct! Well done!';
+  } else {
+    fb.style.color='#FF6B6B';
+    fb.textContent='❌ Not quite — review the ray rules and try again.';
+  }
+}
+</script>
+</body>
+</html>
