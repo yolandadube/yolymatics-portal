@@ -1,0 +1,1878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Box Plots – Data & Statistics</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0B1A2E;
+    --navy2: #0f2040;
+    --cyan: #00E5FF;
+    --gold: #FFD166;
+    --coral: #FF6B6B;
+    --mint: #06D6A0;
+    --purple: #A855F7;
+    --lavender: #C084FC;
+    --pink: #F472B6;
+    --white: #F0F6FF;
+    --muted: #8BA3C7;
+    --card: rgba(255,255,255,0.05);
+    --border: rgba(0,229,255,0.18);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'Nunito', sans-serif;
+    font-size: 18px;
+    line-height: 1.6;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* ── PROGRESS BAR ── */
+  #progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--cyan), var(--purple), var(--gold));
+    transition: width 0.4s ease;
+    z-index: 9999;
+    border-radius: 0 3px 3px 0;
+    box-shadow: 0 0 12px var(--cyan);
+  }
+
+  /* ── SLIDE CONTAINER ── */
+  #slides-wrapper {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 28px 40px 80px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    overflow-y: auto;
+  }
+
+  .slide.active {
+    display: flex;
+    opacity: 1;
+  }
+
+  .scroll-slide {
+    justify-content: flex-start;
+  }
+
+  /* ── STARS / PARTICLES ── */
+  .stars {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .star {
+    position: absolute;
+    border-radius: 50%;
+    animation: twinkle var(--d, 4s) ease-in-out infinite;
+    opacity: 0.5;
+  }
+
+  @keyframes twinkle {
+    0%,100% { opacity: 0.15; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.5); }
+  }
+
+  /* ── SECTION LABEL ── */
+  .section-tag {
+    font-family: 'Fredoka One', cursive;
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    background: rgba(0,229,255,0.1);
+    border: 1px solid rgba(0,229,255,0.3);
+    padding: 4px 16px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ── HEADINGS ── */
+  h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(2.4rem, 5vw, 3.6rem);
+    line-height: 1.1;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  h2 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+    line-height: 1.2;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    margin-bottom: 10px;
+  }
+
+  h3 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+    position: relative;
+    z-index: 2;
+  }
+
+  p, li {
+    font-size: clamp(1rem, 1.8vw, 1.2rem);
+    position: relative;
+    z-index: 2;
+    line-height: 1.75;
+  }
+
+  /* ── COVER SLIDE ── */
+  .cover-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(0,229,255,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 30%, rgba(168,85,247,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse at 50% 80%, rgba(255,209,102,0.08) 0%, transparent 60%);
+    z-index: 0;
+  }
+
+  .cover-icon {
+    font-size: 5rem;
+    animation: float 4s ease-in-out infinite;
+    position: relative;
+    z-index: 2;
+  }
+
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-14px); }
+  }
+
+  .cover-subtitle {
+    font-size: clamp(1rem, 2vw, 1.3rem);
+    color: var(--muted);
+    text-align: center;
+    margin-top: 8px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .cover-prepared {
+    font-size: 0.95rem;
+    color: var(--gold);
+    margin-top: 24px;
+    position: relative;
+    z-index: 2;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, var(--cyan) 0%, var(--purple) 50%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 20px 26px;
+    position: relative;
+    z-index: 2;
+    backdrop-filter: blur(6px);
+    width: 100%;
+  }
+
+  .card-cyan { border-color: rgba(0,229,255,0.35); }
+  .card-gold { border-color: rgba(255,209,102,0.35); }
+  .card-coral { border-color: rgba(255,107,107,0.35); }
+  .card-mint { border-color: rgba(6,214,160,0.35); }
+  .card-purple { border-color: rgba(168,85,247,0.35); }
+  .card-pink { border-color: rgba(244,114,182,0.35); }
+
+  .cards-grid {
+    display: grid;
+    gap: 16px;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+  }
+
+  .cards-2 { grid-template-columns: 1fr 1fr; }
+  .cards-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  /* ── OBJECTIVES LIST ── */
+  .obj-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+  }
+
+  .obj-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 20px;
+  }
+
+  .obj-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* ── DEFINITION BOX ── */
+  .def-box {
+    background: linear-gradient(135deg, rgba(0,229,255,0.08), rgba(168,85,247,0.08));
+    border-left: 5px solid var(--cyan);
+    border-radius: 0 16px 16px 0;
+    padding: 18px 24px;
+    margin: 10px 0;
+    position: relative;
+    z-index: 2;
+    width: 100%;
+  }
+
+  .important-box {
+    background: linear-gradient(135deg, rgba(255,209,102,0.1), rgba(255,107,107,0.08));
+    border-left: 5px solid var(--gold);
+    border-radius: 0 16px 16px 0;
+    padding: 18px 24px;
+    margin: 10px 0;
+    position: relative;
+    z-index: 2;
+    width: 100%;
+  }
+
+  .important-box .label {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.1rem;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+
+  /* ── SVG BOX PLOTS ── */
+  svg {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ── FIVE NUMBER TABLE ── */
+  .five-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .five-table th {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1rem;
+    color: var(--cyan);
+    padding: 8px 16px;
+    text-align: left;
+    letter-spacing: 1px;
+  }
+
+  .five-table td {
+    padding: 12px 16px;
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+
+  .five-table tr td:first-child {
+    border-radius: 12px 0 0 12px;
+  }
+  .five-table tr td:last-child {
+    border-radius: 0 12px 12px 0;
+  }
+
+  .row-min td { background: rgba(0,229,255,0.1); }
+  .row-q1 td { background: rgba(6,214,160,0.1); }
+  .row-med td { background: rgba(255,209,102,0.15); }
+  .row-q3 td { background: rgba(168,85,247,0.12); }
+  .row-max td { background: rgba(255,107,107,0.1); }
+
+  /* ── STEPS ── */
+  .step-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+  }
+
+  .step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 20px;
+  }
+
+  .step-num {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.2rem;
+    font-weight: 900;
+    flex-shrink: 0;
+  }
+
+  /* ── QUIZ / CHECKPOINT ── */
+  .quiz-slide { background: radial-gradient(ellipse at center, rgba(168,85,247,0.12), transparent 70%); }
+
+  .quiz-q {
+    background: rgba(255,255,255,0.06);
+    border: 2px solid rgba(168,85,247,0.4);
+    border-radius: 18px;
+    padding: 22px 28px;
+    width: 100%;
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .quiz-q p.qtext {
+    font-size: clamp(1rem, 1.8vw, 1.15rem);
+    font-weight: 700;
+    margin-bottom: 14px;
+    color: var(--white);
+  }
+
+  .options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .opt-btn {
+    background: rgba(255,255,255,0.06);
+    border: 2px solid rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: var(--white);
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s;
+    text-align: left;
+  }
+
+  .opt-btn:hover { border-color: var(--purple); background: rgba(168,85,247,0.15); }
+  .opt-btn.correct { border-color: var(--mint) !important; background: rgba(6,214,160,0.2) !important; color: var(--mint) !important; }
+  .opt-btn.wrong { border-color: var(--coral) !important; background: rgba(255,107,107,0.15) !important; color: var(--coral) !important; }
+
+  .feedback {
+    font-size: 1rem;
+    font-weight: 800;
+    margin-top: 8px;
+    min-height: 24px;
+    transition: opacity 0.3s;
+  }
+  .feedback.ok { color: var(--mint); }
+  .feedback.no { color: var(--coral); }
+
+  /* ── NAV CONTROLS ── */
+  #nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 36px;
+    background: rgba(11,26,46,0.85);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255,255,255,0.07);
+    z-index: 9999;
+  }
+
+  .nav-btn {
+    background: transparent;
+    border: 2px solid var(--cyan);
+    color: var(--cyan);
+    font-family: 'Fredoka One', cursive;
+    font-size: 1rem;
+    padding: 10px 28px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.25s;
+    letter-spacing: 1px;
+  }
+
+  .nav-btn:hover { background: var(--cyan); color: var(--navy); }
+  .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  #slide-counter {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1rem;
+    color: var(--muted);
+    letter-spacing: 2px;
+  }
+
+  /* ── CHECKPOINT BADGE ── */
+  .checkpoint-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, rgba(168,85,247,0.2), rgba(244,114,182,0.15));
+    border: 2px solid rgba(168,85,247,0.5);
+    border-radius: 50px;
+    padding: 8px 22px;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .checkpoint-badge span {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.1rem;
+    color: var(--lavender);
+    letter-spacing: 1px;
+  }
+
+  /* ── ANIMATED DECORATIONS ── */
+  .deco-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid;
+    opacity: 0.12;
+    animation: spin var(--spd, 20s) linear infinite;
+    z-index: 0;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* ── FORMULA PILL ── */
+  .formula {
+    display: inline-block;
+    background: linear-gradient(135deg, rgba(255,209,102,0.15), rgba(255,107,107,0.1));
+    border: 1.5px solid rgba(255,209,102,0.4);
+    border-radius: 12px;
+    padding: 10px 22px;
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(1rem, 2vw, 1.3rem);
+    color: var(--gold);
+    margin: 8px auto;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ── PERCENT STRIP ── */
+  .pct-strip {
+    display: flex;
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    height: 54px;
+    position: relative;
+    z-index: 2;
+    margin: 10px 0;
+  }
+
+  .pct-block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1rem;
+    font-weight: 900;
+  }
+
+  /* ── SKEW EXAMPLES ── */
+  .skew-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+  }
+
+  .skew-card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 16px;
+    text-align: center;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* ── PILL TAG ── */
+  .pill {
+    display: inline-block;
+    padding: 3px 14px;
+    border-radius: 20px;
+    font-size: 0.88rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── DATA CHIPS ── */
+  .data-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+    margin: 8px 0;
+  }
+
+  .chip {
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid rgba(0,229,255,0.25);
+    border-radius: 10px;
+    padding: 8px 16px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.15rem;
+    color: var(--cyan);
+    transition: all 0.2s;
+  }
+
+  .chip.highlight {
+    background: rgba(255,209,102,0.18);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  /* Input quiz */
+  .input-quiz {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+  }
+
+  .input-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 20px;
+  }
+
+  .input-row label {
+    font-weight: 800;
+    min-width: 200px;
+    color: var(--white);
+    font-size: 1rem;
+  }
+
+  .input-row input {
+    background: rgba(255,255,255,0.06);
+    border: 2px solid rgba(0,229,255,0.3);
+    border-radius: 8px;
+    color: var(--white);
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    padding: 8px 14px;
+    width: 100px;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+
+  .input-row input:focus { border-color: var(--cyan); }
+  .input-row input.correct-input { border-color: var(--mint); background: rgba(6,214,160,0.1); }
+  .input-row input.wrong-input { border-color: var(--coral); background: rgba(255,107,107,0.1); }
+
+  .check-btn {
+    background: linear-gradient(135deg, var(--purple), var(--cyan));
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1rem;
+    padding: 12px 28px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    z-index: 2;
+    margin-top: 6px;
+    letter-spacing: 1px;
+  }
+
+  .check-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(168,85,247,0.4); }
+
+  /* scroll */
+  .slide::-webkit-scrollbar { width: 5px; }
+  .slide::-webkit-scrollbar-track { background: transparent; }
+  .slide::-webkit-scrollbar-thumb { background: rgba(0,229,255,0.3); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- Stars -->
+<div class="stars" id="stars"></div>
+
+<!-- Progress bar -->
+<div id="progress-bar"></div>
+
+<!-- Slides wrapper -->
+<div id="slides-wrapper">
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 0 · COVER
+  ══════════════════════════════════════════ -->
+  <div class="slide active" id="slide-0">
+    <div class="cover-bg"></div>
+    <div class="deco-ring" style="width:500px;height:500px;top:-100px;right:-150px;border-color:var(--cyan);--spd:30s;"></div>
+    <div class="deco-ring" style="width:300px;height:300px;bottom:60px;left:-80px;border-color:var(--purple);--spd:22s;"></div>
+
+    <div style="flex:1; display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;width:100%;">
+      <div class="cover-icon">📦</div>
+      <div class="section-tag">Data & Statistics</div>
+      <h1 class="gradient-text">Box Plots</h1>
+      <p class="cover-subtitle" style="max-width:600px;">Understanding the Five-Number Summary, Spread, Skewness & How to Create Box Plots</p>
+      <div style="width:80px;height:3px;border-radius:2px;background:linear-gradient(90deg,var(--cyan),var(--purple),var(--gold));margin:10px 0;"></div>
+      <p class="cover-prepared">Prepared by: Yolanda Dube &nbsp;©&nbsp;2026</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 1 · OBJECTIVES
+  ══════════════════════════════════════════ -->
+  <div class="slide scroll-slide" id="slide-1">
+    <div class="section-tag">🎯 Learning Objectives</div>
+    <h2>By the end of this lesson, you will…</h2>
+    <br>
+    <ul class="obj-list">
+      <li>
+        <span class="obj-icon">📊</span>
+        <span>Use a <strong>box plot</strong> to identify the minimum, maximum, median, and quartiles in a real-world context.</span>
+      </li>
+      <li>
+        <span class="obj-icon">📐</span>
+        <span>Describe the <strong>spread and distribution</strong> of data using the five-number summary from a box plot.</span>
+      </li>
+      <li>
+        <span class="obj-icon">✏️</span>
+        <span>Create box plots with appropriate <strong>titles, labels, scales and units</strong> for real-world positive rational number sets.</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 2 · WHAT IS A BOX PLOT?
+  ══════════════════════════════════════════ -->
+  <div class="slide scroll-slide" id="slide-2">
+    <div class="section-tag">📦 Introduction</div>
+    <h2>What Is a Box Plot?</h2>
+    <br>
+    <div class="def-box">
+      <p>A <strong style="color:var(--cyan)">box plot</strong> is a graph that displays the distribution of data grouped into <strong>four sections</strong>. It shows only the <em>median</em> as a measure of center, and allows easy comparison of data.</p>
+    </div>
+    <br>
+    <div class="cards-grid cards-2">
+      <div class="card card-cyan">
+        <h3 style="color:var(--cyan)">Why use it?</h3>
+        <ul style="margin-top:8px;padding-left:20px;">
+          <li>Shows the full <strong>range</strong> of data</li>
+          <li>Highlights <strong>middle 50%</strong> of data</li>
+          <li>Easy to <strong>spot skewness</strong></li>
+          <li>Great for <strong>comparing</strong> two datasets</li>
+        </ul>
+      </div>
+      <div class="card card-gold">
+        <h3 style="color:var(--gold)">Key vocabulary</h3>
+        <ul style="margin-top:8px;padding-left:20px;">
+          <li><strong>Quartile</strong> – divides data into 4 equal parts</li>
+          <li><strong>Median</strong> – middle value</li>
+          <li><strong>IQR</strong> – interquartile range</li>
+          <li><strong>Spread</strong> – how far data values vary</li>
+        </ul>
+      </div>
+    </div>
+    <br>
+    <!-- Annotated Box Plot SVG -->
+    <svg viewBox="0 0 720 160" width="100%" style="max-width:700px;">
+      <!-- number line -->
+      <line x1="60" y1="120" x2="680" y2="120" stroke="#8BA3C7" stroke-width="1.5"/>
+      <!-- ticks -->
+      <g stroke="#8BA3C7" stroke-width="1.5">
+        <line x1="100" y1="113" x2="100" y2="127"/>
+        <line x1="260" y1="113" x2="260" y2="127"/>
+        <line x1="380" y1="113" x2="380" y2="127"/>
+        <line x1="500" y1="113" x2="500" y2="127"/>
+        <line x1="640" y1="113" x2="640" y2="127"/>
+      </g>
+      <!-- box -->
+      <rect x="260" y="70" width="240" height="50" fill="rgba(0,229,255,0.15)" stroke="#00E5FF" stroke-width="2.5" rx="4"/>
+      <!-- median line -->
+      <line x1="380" y1="70" x2="380" y2="120" stroke="#FFD166" stroke-width="3.5"/>
+      <!-- whiskers -->
+      <line x1="100" y1="95" x2="260" y2="95" stroke="#00E5FF" stroke-width="2.5"/>
+      <line x1="500" y1="95" x2="640" y2="95" stroke="#00E5FF" stroke-width="2.5"/>
+      <line x1="100" y1="80" x2="100" y2="110" stroke="#FF6B6B" stroke-width="3"/>
+      <line x1="640" y1="80" x2="640" y2="110" stroke="#A855F7" stroke-width="3"/>
+      <!-- labels -->
+      <text x="100" y="48" fill="#FF6B6B" font-family="Fredoka One" font-size="14" text-anchor="middle">Min</text>
+      <text x="260" y="58" fill="#06D6A0" font-family="Fredoka One" font-size="14" text-anchor="middle">Q1</text>
+      <text x="380" y="58" fill="#FFD166" font-family="Fredoka One" font-size="15" text-anchor="middle">Median</text>
+      <text x="500" y="58" fill="#C084FC" font-family="Fredoka One" font-size="14" text-anchor="middle">Q3</text>
+      <text x="640" y="48" fill="#A855F7" font-family="Fredoka One" font-size="14" text-anchor="middle">Max</text>
+      <!-- arrows -->
+      <line x1="100" y1="52" x2="100" y2="75" stroke="#FF6B6B" stroke-width="1.5" marker-end="url(#arr)"/>
+      <line x1="260" y1="62" x2="260" y2="68" stroke="#06D6A0" stroke-width="1.5"/>
+      <line x1="380" y1="62" x2="380" y2="68" stroke="#FFD166" stroke-width="1.5"/>
+      <line x1="500" y1="62" x2="500" y2="68" stroke="#C084FC" stroke-width="1.5"/>
+      <line x1="640" y1="52" x2="640" y2="75" stroke="#A855F7" stroke-width="1.5"/>
+      <!-- IQR brace label -->
+      <text x="380" y="145" fill="#8BA3C7" font-family="Nunito" font-size="12" text-anchor="middle">⟵ IQR (box width) ⟶</text>
+    </svg>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 3 · FIVE-NUMBER SUMMARY
+  ══════════════════════════════════════════ -->
+  <div class="slide scroll-slide" id="slide-3">
+    <div class="section-tag">🔢 Five-Number Summary</div>
+    <h2>The Five-Number Summary</h2>
+    <br>
+    <table class="five-table">
+      <thead>
+        <tr>
+          <th>Value</th>
+          <th>Symbol</th>
+          <th>What it means</th>
+          <th>% of data below</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="row-min">
+          <td><strong style="color:var(--coral)">Minimum</strong></td>
+          <td style="color:var(--coral)">–</td>
+          <td>Smallest value in the dataset</td>
+          <td>0%</td>
+        </tr>
+        <tr class="row-q1">
+          <td><strong style="color:var(--mint)">Lower Quartile</strong></td>
+          <td style="color:var(--mint)">Q1</td>
+          <td>Middle of the <em>lower half</em></td>
+          <td style="color:var(--mint);font-weight:900;">25%</td>
+        </tr>
+        <tr class="row-med">
+          <td><strong style="color:var(--gold)">Median</strong></td>
+          <td style="color:var(--gold)">Q2</td>
+          <td>Middle of the whole dataset</td>
+          <td style="color:var(--gold);font-weight:900;">50%</td>
+        </tr>
+        <tr class="row-q3">
+          <td><strong style="color:var(--lavender)">Upper Quartile</strong></td>
+          <td style="color:var(--lavender)">Q3</td>
+          <td>Middle of the <em>upper half</em></td>
+          <td style="color:var(--lavender);font-weight:900;">75%</td>
+        </tr>
+        <tr class="row-max">
+          <td><strong style="color:var(--purple)">Maximum</strong></td>
+          <td style="color:var(--purple)">–</td>
+          <td>Largest value in the dataset</td>
+          <td>100%</td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <!-- Percentage strip -->
+    <div class="pct-strip">
+      <div class="pct-block" style="width:25%;background:rgba(255,107,107,0.25);color:var(--coral);">25%</div>
+      <div class="pct-block" style="width:25%;background:rgba(6,214,160,0.2);color:var(--mint);">25%</div>
+      <div class="pct-block" style="width:25%;background:rgba(255,209,102,0.2);color:var(--gold);">25%</div>
+      <div class="pct-block" style="width:25%;background:rgba(168,85,247,0.22);color:var(--lavender);">25%</div>
+    </div>
+    <p style="text-align:center;font-size:0.9rem;color:var(--muted);">Each section of a box plot contains exactly <strong>25%</strong> of the data.</p>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 4 · CHECK 1
+  ══════════════════════════════════════════ -->
+  <div class="slide scroll-slide quiz-slide" id="slide-4">
+    <div class="checkpoint-badge"><span>🧠 Quick Check 1 – Five-Number Summary</span></div>
+    <h2>Test Your Understanding!</h2>
+    <br>
+
+    <div class="quiz-q">
+      <p class="qtext">Q1. Which value represents the <em>middle of the lower half</em> of the data?</p>
+      <div class="options">
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-4','f1')">Minimum</button>
+        <button class="opt-btn" onclick="checkOpt(this,'correct','slide-4','f1')">Lower Quartile (Q1)</button>
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-4','f1')">Median (Q2)</button>
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-4','f1')">Maximum</button>
+      </div>
+      <p class="feedback" id="f1"></p>
+    </div>
+
+    <div class="quiz-q">
+      <p class="qtext">Q2. What percentage of the data is <em>above</em> the median?</p>
+      <div class="options">
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-4','f2')">25%</button>
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-4','f2')">75%</button>
+        <button class="opt-btn" onclick="checkOpt(this,'correct','slide-4','f2')">50%</button>
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-4','f2')">100%</button>
+      </div>
+      <p class="feedback" id="f2"></p>
+    </div>
+
+    <div class="quiz-q">
+      <p class="qtext">Q3. How many pieces of information make up the five-number summary?</p>
+      <div class="options">
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-4','f3')">3</button>
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-4','f3')">4</button>
+        <button class="opt-btn" onclick="checkOpt(this,'correct','slide-4','f3')">5</button>
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-4','f3')">6</button>
+      </div>
+      <p class="feedback" id="f3"></p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 5 · SPREAD / VARIABILITY
+  ══════════════════════════════════════════ -->
+  <div class="slide scroll-slide" id="slide-5">
+    <div class="section-tag">📏 Spread & Variability</div>
+    <h2>Distribution & Spread of Data</h2>
+    <br>
+    <div class="def-box">
+      <p>The <strong style="color:var(--cyan)">spread</strong> (variability) of a data set tells us how far apart the values are. We measure it with the <strong>Range</strong> and the <strong>Interquartile Range (IQR)</strong>.</p>
+    </div>
+    <br>
+    <div class="cards-grid cards-2">
+      <!-- High variability box plot -->
+      <div class="card card-coral" style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+        <h3 style="color:var(--coral)">🔴 High Variability</h3>
+        <svg viewBox="0 0 300 80" width="100%">
+          <line x1="10" y1="60" x2="290" y2="60" stroke="#8BA3C7" stroke-width="1"/>
+          <rect x="80" y="30" width="140" height="30" fill="rgba(255,107,107,0.2)" stroke="#FF6B6B" stroke-width="2" rx="3"/>
+          <line x1="170" y1="30" x2="170" y2="60" stroke="#FFD166" stroke-width="2.5"/>
+          <line x1="20" y1="45" x2="80" y2="45" stroke="#FF6B6B" stroke-width="2"/>
+          <line x1="220" y1="45" x2="270" y2="45" stroke="#FF6B6B" stroke-width="2"/>
+          <line x1="20" y1="36" x2="20" y2="54" stroke="#FF6B6B" stroke-width="2"/>
+          <line x1="270" y1="36" x2="270" y2="54" stroke="#FF6B6B" stroke-width="2"/>
+          <text x="10" y="76" fill="#8BA3C7" font-size="10" font-family="Nunito">10</text>
+          <text x="265" y="76" fill="#8BA3C7" font-size="10" font-family="Nunito">95</text>
+        </svg>
+        <p style="font-size:0.92rem;text-align:center;">Q1 and Q3 are <strong>far from the median</strong>. Large range. Data is spread out.</p>
+      </div>
+      <!-- Low variability box plot -->
+      <div class="card card-mint" style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+        <h3 style="color:var(--mint)">🟢 Low Variability</h3>
+        <svg viewBox="0 0 300 80" width="100%">
+          <line x1="10" y1="60" x2="290" y2="60" stroke="#8BA3C7" stroke-width="1"/>
+          <rect x="120" y="30" width="60" height="30" fill="rgba(6,214,160,0.2)" stroke="#06D6A0" stroke-width="2" rx="3"/>
+          <line x1="150" y1="30" x2="150" y2="60" stroke="#FFD166" stroke-width="2.5"/>
+          <line x1="100" y1="45" x2="120" y2="45" stroke="#06D6A0" stroke-width="2"/>
+          <line x1="180" y1="45" x2="200" y2="45" stroke="#06D6A0" stroke-width="2"/>
+          <line x1="100" y1="36" x2="100" y2="54" stroke="#06D6A0" stroke-width="2"/>
+          <line x1="200" y1="36" x2="200" y2="54" stroke="#06D6A0" stroke-width="2"/>
+          <text x="90" y="76" fill="#8BA3C7" font-size="10" font-family="Nunito">42</text>
+          <text x="192" y="76" fill="#8BA3C7" font-size="10" font-family="Nunito">58</text>
+        </svg>
+        <p style="font-size:0.92rem;text-align:center;">Q1 and Q3 are <strong>close to the median</strong>. Small range. Data is clustered together.</p>
+      </div>
+    </div>
+    <br>
+    <!-- Range and IQR formulas -->
+    <div class="cards-grid cards-2">
+      <div class="formula">Range = Maximum − Minimum</div>
+      <div class="formula">IQR = Q3 − Q1</div>
+    </div>
+    <br>
+    <div class="important-box">
+      <div class="label">💡 Remember</div>
+      <p>The <strong>IQR</strong> (the box itself) shows how the <strong>middle 50%</strong> of the data varies. A wider box → more variability in the middle.</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 6 · SKEWNESS
+  ══════════════════════════════════════════ -->
+  <div class="slide scroll-slide" id="slide-6">
+    <div class="section-tag">↔️ Shape</div>
+    <h2>Skewness of Data</h2>
+    <br>
+    <div class="def-box">
+      <p><strong style="color:var(--cyan)">Skewness</strong> occurs when one half of the data points are closer together and the other half are further apart — meaning the data is <strong>not symmetric</strong>.</p>
+    </div>
+    <br>
+    <div class="skew-grid">
+      <!-- Left skew -->
+      <div class="skew-card" style="border-color:rgba(255,107,107,0.4);">
+        <h3 style="color:var(--coral)">◀ Left Skew</h3>
+        <svg viewBox="0 0 220 80" width="100%">
+          <line x1="10" y1="60" x2="210" y2="60" stroke="#8BA3C7" stroke-width="1"/>
+          <rect x="100" y="30" width="80" height="30" fill="rgba(255,107,107,0.18)" stroke="#FF6B6B" stroke-width="2" rx="3"/>
+          <!-- median closer to Q3 -->
+          <line x1="163" y1="30" x2="163" y2="60" stroke="#FFD166" stroke-width="3"/>
+          <line x1="20" y1="45" x2="100" y2="45" stroke="#FF6B6B" stroke-width="2"/>
+          <line x1="180" y1="45" x2="200" y2="45" stroke="#FF6B6B" stroke-width="2"/>
+          <line x1="20" y1="36" x2="20" y2="54" stroke="#FF6B6B" stroke-width="2"/>
+          <line x1="200" y1="36" x2="200" y2="54" stroke="#FF6B6B" stroke-width="2"/>
+        </svg>
+        <p style="font-size:0.9rem;">Median is <strong>closer to Q3</strong>. Long left tail. Most data is high.</p>
+        <span class="pill" style="background:rgba(255,107,107,0.15);color:var(--coral);">Left-Skewed (Negative)</span>
+      </div>
+      <!-- Symmetric -->
+      <div class="skew-card" style="border-color:rgba(6,214,160,0.4);">
+        <h3 style="color:var(--mint)">↔ Symmetric</h3>
+        <svg viewBox="0 0 220 80" width="100%">
+          <line x1="10" y1="60" x2="210" y2="60" stroke="#8BA3C7" stroke-width="1"/>
+          <rect x="80" y="30" width="60" height="30" fill="rgba(6,214,160,0.18)" stroke="#06D6A0" stroke-width="2" rx="3"/>
+          <line x1="110" y1="30" x2="110" y2="60" stroke="#FFD166" stroke-width="3"/>
+          <line x1="20" y1="45" x2="80" y2="45" stroke="#06D6A0" stroke-width="2"/>
+          <line x1="140" y1="45" x2="200" y2="45" stroke="#06D6A0" stroke-width="2"/>
+          <line x1="20" y1="36" x2="20" y2="54" stroke="#06D6A0" stroke-width="2"/>
+          <line x1="200" y1="36" x2="200" y2="54" stroke="#06D6A0" stroke-width="2"/>
+        </svg>
+        <p style="font-size:0.9rem;">Median is <strong>in the center</strong> of the box. Tails are equal length.</p>
+        <span class="pill" style="background:rgba(6,214,160,0.15);color:var(--mint);">Symmetric (No Skew)</span>
+      </div>
+      <!-- Right skew -->
+      <div class="skew-card" style="border-color:rgba(168,85,247,0.4);">
+        <h3 style="color:var(--purple)">▶ Right Skew</h3>
+        <svg viewBox="0 0 220 80" width="100%">
+          <line x1="10" y1="60" x2="210" y2="60" stroke="#8BA3C7" stroke-width="1"/>
+          <rect x="40" y="30" width="80" height="30" fill="rgba(168,85,247,0.18)" stroke="#A855F7" stroke-width="2" rx="3"/>
+          <line x1="57" y1="30" x2="57" y2="60" stroke="#FFD166" stroke-width="3"/>
+          <line x1="20" y1="45" x2="40" y2="45" stroke="#A855F7" stroke-width="2"/>
+          <line x1="120" y1="45" x2="200" y2="45" stroke="#A855F7" stroke-width="2"/>
+          <line x1="20" y1="36" x2="20" y2="54" stroke="#A855F7" stroke-width="2"/>
+          <line x1="200" y1="36" x2="200" y2="54" stroke="#A855F7" stroke-width="2"/>
+        </svg>
+        <p style="font-size:0.9rem;">Median is <strong>closer to Q1</strong>. Long right tail. Most data is low.</p>
+        <span class="pill" style="background:rgba(168,85,247,0.15);color:var(--purple);">Right-Skewed (Positive)</span>
+      </div>
+    </div>
+    <br>
+    <div class="important-box">
+      <div class="label">🔑 Key Rule</div>
+      <p>When a box plot is skewed, one <strong>tail</strong> is longer and the <strong>median</strong> is closer to the shorter tail.</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 7 · CHECK 2
+  ══════════════════════════════════════════ -->
+  <div class="slide scroll-slide quiz-slide" id="slide-7">
+    <div class="checkpoint-badge"><span>🧠 Quick Check 2 – Spread & Skewness</span></div>
+    <h2>Can You Identify the Spread?</h2>
+    <br>
+
+    <div class="quiz-q">
+      <p class="qtext">Q1. The formula for IQR is:</p>
+      <div class="options">
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-7','f7a')">Max − Min</button>
+        <button class="opt-btn" onclick="checkOpt(this,'correct','slide-7','f7a')">Q3 − Q1</button>
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-7','f7a')">Q2 − Q1</button>
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-7','f7a')">Q3 + Q1</button>
+      </div>
+      <p class="feedback" id="f7a"></p>
+    </div>
+
+    <div class="quiz-q">
+      <p class="qtext">Q2. A box plot has a long tail to the <em>right</em> and the median is close to Q1. This data is:</p>
+      <div class="options">
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-7','f7b')">Left-skewed</button>
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-7','f7b')">Symmetric</button>
+        <button class="opt-btn" onclick="checkOpt(this,'correct','slide-7','f7b')">Right-skewed</button>
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-7','f7b')">Uniform</button>
+      </div>
+      <p class="feedback" id="f7b"></p>
+    </div>
+
+    <div class="quiz-q">
+      <p class="qtext">Q3. Data set: Min=5, Q1=15, Median=20, Q3=35, Max=60. What is the IQR?</p>
+      <div class="options">
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-7','f7c')">55</button>
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-7','f7c')">40</button>
+        <button class="opt-btn" onclick="checkOpt(this,'correct','slide-7','f7c')">20</button>
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-7','f7c')">15</button>
+      </div>
+      <p class="feedback" id="f7c"></p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 8 · PERCENTAGES FROM BOX PLOT
+  ══════════════════════════════════════════ -->
+  <div class="slide scroll-slide" id="slide-8">
+    <div class="section-tag">📊 Reading the Data</div>
+    <h2>Percentages from a Box Plot</h2>
+    <br>
+    <div class="def-box">
+      <p>Since each quarter of a box plot represents <strong>25%</strong> of the data, you can quickly determine what percentage lies above or below any quartile.</p>
+    </div>
+    <br>
+
+    <!-- Annotated percentage box plot -->
+    <svg viewBox="0 0 700 180" width="100%" style="max-width:680px;">
+      <!-- BG sections -->
+      <rect x="60" y="55" width="150" height="40" fill="rgba(255,107,107,0.12)" rx="4"/>
+      <rect x="210" y="55" width="150" height="40" fill="rgba(6,214,160,0.12)" rx="4"/>
+      <rect x="360" y="55" width="150" height="40" fill="rgba(255,209,102,0.12)" rx="4"/>
+      <rect x="510" y="55" width="150" height="40" fill="rgba(168,85,247,0.12)" rx="4"/>
+      <!-- box outline -->
+      <rect x="210" y="55" width="300" height="40" fill="none" stroke="#00E5FF" stroke-width="2.5" rx="4"/>
+      <!-- median -->
+      <line x1="360" y1="55" x2="360" y2="95" stroke="#FFD166" stroke-width="3"/>
+      <!-- whiskers -->
+      <line x1="60" y1="75" x2="210" y2="75" stroke="#FF6B6B" stroke-width="2.5"/>
+      <line x1="510" y1="75" x2="660" y2="75" stroke="#A855F7" stroke-width="2.5"/>
+      <line x1="60" y1="63" x2="60" y2="87" stroke="#FF6B6B" stroke-width="3"/>
+      <line x1="660" y1="63" x2="660" y2="87" stroke="#A855F7" stroke-width="3"/>
+      <!-- number line -->
+      <line x1="30" y1="105" x2="680" y2="105" stroke="#8BA3C7" stroke-width="1"/>
+      <!-- percentage labels -->
+      <text x="135" y="45" fill="#FF6B6B" font-family="Fredoka One" font-size="15" text-anchor="middle">25%</text>
+      <text x="285" y="45" fill="#06D6A0" font-family="Fredoka One" font-size="15" text-anchor="middle">25%</text>
+      <text x="435" y="45" fill="#FFD166" font-family="Fredoka One" font-size="15" text-anchor="middle">25%</text>
+      <text x="585" y="45" fill="#C084FC" font-family="Fredoka One" font-size="15" text-anchor="middle">25%</text>
+      <!-- divider lines -->
+      <line x1="210" y1="40" x2="210" y2="105" stroke="#06D6A0" stroke-width="1" stroke-dasharray="4,3"/>
+      <line x1="360" y1="40" x2="360" y2="105" stroke="#FFD166" stroke-width="1" stroke-dasharray="4,3"/>
+      <line x1="510" y1="40" x2="510" y2="105" stroke="#C084FC" stroke-width="1" stroke-dasharray="4,3"/>
+      <!-- Q labels -->
+      <text x="60" y="125" fill="#FF6B6B" font-family="Fredoka One" font-size="13" text-anchor="middle">Min</text>
+      <text x="210" y="125" fill="#06D6A0" font-family="Fredoka One" font-size="13" text-anchor="middle">Q1</text>
+      <text x="360" y="125" fill="#FFD166" font-family="Fredoka One" font-size="13" text-anchor="middle">Q2</text>
+      <text x="510" y="125" fill="#C084FC" font-family="Fredoka One" font-size="13" text-anchor="middle">Q3</text>
+      <text x="660" y="125" fill="#A855F7" font-family="Fredoka One" font-size="13" text-anchor="middle">Max</text>
+      <!-- cumulative labels -->
+      <text x="210" y="155" fill="#8BA3C7" font-family="Nunito" font-size="11" text-anchor="middle">25% below</text>
+      <text x="360" y="155" fill="#8BA3C7" font-family="Nunito" font-size="11" text-anchor="middle">50% below</text>
+      <text x="510" y="155" fill="#8BA3C7" font-family="Nunito" font-size="11" text-anchor="middle">75% below</text>
+    </svg>
+
+    <br>
+    <div class="cards-grid cards-3">
+      <div class="card card-mint" style="text-align:center;">
+        <h3 style="color:var(--mint)">Q1</h3>
+        <p style="margin-top:6px;"><strong style="color:var(--mint)">25%</strong> below · <strong style="color:var(--coral)">75%</strong> above</p>
+      </div>
+      <div class="card card-gold" style="text-align:center;">
+        <h3 style="color:var(--gold)">Median</h3>
+        <p style="margin-top:6px;"><strong style="color:var(--gold)">50%</strong> below · <strong style="color:var(--gold)">50%</strong> above</p>
+      </div>
+      <div class="card card-purple" style="text-align:center;">
+        <h3 style="color:var(--lavender)">Q3</h3>
+        <p style="margin-top:6px;"><strong style="color:var(--lavender)">75%</strong> below · <strong style="color:var(--coral)">25%</strong> above</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 9 · WORKED EXAMPLE
+  ══════════════════════════════════════════ -->
+  <div class="slide scroll-slide" id="slide-9">
+    <div class="section-tag">⌨️ Worked Example</div>
+    <h2>Keyboarding Speed Data</h2>
+    <br>
+
+    <!-- Box plot for keyboarding -->
+    <svg viewBox="0 0 680 120" width="100%" style="max-width:660px;">
+      <line x1="40" y1="85" x2="640" y2="85" stroke="#8BA3C7" stroke-width="1.5"/>
+      <!-- ticks every 5 from 20 to 80 -->
+      <g stroke="#8BA3C7" stroke-width="1" font-family="Nunito" font-size="11" fill="#8BA3C7">
+        <line x1="40" y1="79" x2="40" y2="91"/><text x="40" y="102" text-anchor="middle">20</text>
+        <line x1="140" y1="79" x2="140" y2="91"/><text x="140" y="102" text-anchor="middle">30</text>
+        <line x1="240" y1="79" x2="240" y2="91"/><text x="240" y="102" text-anchor="middle">40</text>
+        <line x1="340" y1="79" x2="340" y2="91"/><text x="340" y="102" text-anchor="middle">50</text>
+        <line x1="440" y1="79" x2="440" y2="91"/><text x="440" y="102" text-anchor="middle">60</text>
+        <line x1="540" y1="79" x2="540" y2="91"/><text x="540" y="102" text-anchor="middle">70</text>
+        <line x1="640" y1="79" x2="640" y2="91"/><text x="640" y="102" text-anchor="middle">80</text>
+      </g>
+      <!-- Min=25, Q1=35, Q2=50, Q3=63, Max=75 -->
+      <!-- whiskers -->
+      <line x1="90" y1="57" x2="190" y2="57" stroke="#00E5FF" stroke-width="2.5"/>
+      <line x1="490" y1="57" x2="590" y2="57" stroke="#00E5FF" stroke-width="2.5"/>
+      <line x1="90" y1="44" x2="90" y2="70" stroke="#FF6B6B" stroke-width="3"/>
+      <line x1="590" y1="44" x2="590" y2="70" stroke="#A855F7" stroke-width="3"/>
+      <!-- box Q1=35→190 Q3=63→490 -->
+      <rect x="190" y="40" width="300" height="45" fill="rgba(0,229,255,0.13)" stroke="#00E5FF" stroke-width="2.5" rx="4"/>
+      <!-- median Q2=50→340 -->
+      <line x1="340" y1="40" x2="340" y2="85" stroke="#FFD166" stroke-width="3.5"/>
+      <!-- labels -->
+      <text x="90" y="28" fill="#FF6B6B" font-family="Fredoka One" font-size="12" text-anchor="middle">Min=25</text>
+      <text x="190" y="28" fill="#06D6A0" font-family="Fredoka One" font-size="12" text-anchor="middle">Q1=35</text>
+      <text x="340" y="28" fill="#FFD166" font-family="Fredoka One" font-size="12" text-anchor="middle">Med=50</text>
+      <text x="490" y="28" fill="#C084FC" font-family="Fredoka One" font-size="12" text-anchor="middle">Q3=63</text>
+      <text x="590" y="28" fill="#A855F7" font-family="Fredoka One" font-size="12" text-anchor="middle">Max=75</text>
+      <text x="360" y="115" fill="#8BA3C7" font-family="Nunito" font-size="11" text-anchor="middle">Keyboarding Speed (words per minute)</text>
+    </svg>
+
+    <br>
+    <div class="cards-grid cards-2">
+      <div class="card card-cyan">
+        <h3 style="color:var(--cyan)">Part A – Five-Number Summary</h3>
+        <table class="five-table" style="margin-top:10px;">
+          <tr class="row-min"><td>Minimum</td><td style="color:var(--coral);font-weight:900;">25 wpm</td></tr>
+          <tr class="row-q1"><td>Q1</td><td style="color:var(--mint);font-weight:900;">35 wpm</td></tr>
+          <tr class="row-med"><td>Median</td><td style="color:var(--gold);font-weight:900;">50 wpm</td></tr>
+          <tr class="row-q3"><td>Q3</td><td style="color:var(--lavender);font-weight:900;">63 wpm</td></tr>
+          <tr class="row-max"><td>Maximum</td><td style="color:var(--purple);font-weight:900;">75 wpm</td></tr>
+        </table>
+        <p style="margin-top:10px;font-size:0.95rem;"><strong>IQR = 63 − 35 = <span style="color:var(--cyan)">28 wpm</span></strong></p>
+      </div>
+      <div class="card card-gold" style="display:flex;flex-direction:column;gap:10px;">
+        <h3 style="color:var(--gold)">Parts B–E – Analysis</h3>
+        <p style="font-size:0.95rem;"><strong style="color:var(--coral)">Part B:</strong> The data is <em>right-skewed</em> because the median (50) is closer to Q1 (35) than to Q3 (63). Most students type more slowly.</p>
+        <p style="font-size:0.95rem;"><strong style="color:var(--mint)">Part C:</strong> 25% of the data lies above 63 wpm (Q3).</p>
+        <p style="font-size:0.95rem;"><strong style="color:var(--lavender)">Part D:</strong> 50% of the data is below 50 wpm (median).</p>
+        <p style="font-size:0.95rem;"><strong style="color:var(--gold)">Part E:</strong> The middle 50% of the data lies between 35 and 63 wpm.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 10 · CHECK 3
+  ══════════════════════════════════════════ -->
+  <div class="slide scroll-slide quiz-slide" id="slide-10">
+    <div class="checkpoint-badge"><span>🧠 Quick Check 3 – Reading Box Plots</span></div>
+    <h2>Practice Reading Percentages!</h2>
+    <br>
+
+    <!-- Mini box plot reference -->
+    <svg viewBox="0 0 620 90" width="90%" style="max-width:580px;margin-bottom:12px;">
+      <line x1="20" y1="65" x2="600" y2="65" stroke="#8BA3C7" stroke-width="1.5"/>
+      <g stroke="#8BA3C7" stroke-width="1" font-family="Nunito" font-size="11" fill="#8BA3C7">
+        <line x1="60" y1="59" x2="60" y2="71"/><text x="60" y="82" text-anchor="middle">10</text>
+        <line x1="160" y1="59" x2="160" y2="71"/><text x="160" y="82" text-anchor="middle">20</text>
+        <line x1="260" y1="59" x2="260" y2="71"/><text x="260" y="82" text-anchor="middle">30</text>
+        <line x1="360" y1="59" x2="360" y2="71"/><text x="360" y="82" text-anchor="middle">40</text>
+        <line x1="460" y1="59" x2="460" y2="71"/><text x="460" y="82" text-anchor="middle">50</text>
+        <line x1="560" y1="59" x2="560" y2="71"/><text x="560" y="82" text-anchor="middle">60</text>
+      </g>
+      <!-- Min=10 Q1=18 Q2=28 Q3=40 Max=56 -->
+      <line x1="60" y1="42" x2="160" y2="42" stroke="#00E5FF" stroke-width="2"/>
+      <line x1="440" y1="42" x2="540" y2="42" stroke="#00E5FF" stroke-width="2"/>
+      <line x1="60" y1="32" x2="60" y2="52" stroke="#FF6B6B" stroke-width="3"/>
+      <line x1="540" y1="32" x2="540" y2="52" stroke="#A855F7" stroke-width="3"/>
+      <rect x="160" y="28" width="280" height="37" fill="rgba(0,229,255,0.13)" stroke="#00E5FF" stroke-width="2.5" rx="3"/>
+      <line x1="280" y1="28" x2="280" y2="65" stroke="#FFD166" stroke-width="3"/>
+      <text x="60" y="18" fill="#FF6B6B" font-family="Fredoka One" font-size="11" text-anchor="middle">Min=10</text>
+      <text x="160" y="18" fill="#06D6A0" font-family="Fredoka One" font-size="11" text-anchor="middle">Q1=18</text>
+      <text x="280" y="18" fill="#FFD166" font-family="Fredoka One" font-size="11" text-anchor="middle">Med=28</text>
+      <text x="440" y="18" fill="#C084FC" font-family="Fredoka One" font-size="11" text-anchor="middle">Q3=40</text>
+      <text x="540" y="18" fill="#A855F7" font-family="Fredoka One" font-size="11" text-anchor="middle">Max=56</text>
+    </svg>
+
+    <div class="quiz-q">
+      <p class="qtext">Q1. Using the box plot above, what is the Range?</p>
+      <div class="options">
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-10','f10a')">22</button>
+        <button class="opt-btn" onclick="checkOpt(this,'correct','slide-10','f10a')">46</button>
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-10','f10a')">28</button>
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-10','f10a')">18</button>
+      </div>
+      <p class="feedback" id="f10a"></p>
+    </div>
+
+    <div class="quiz-q">
+      <p class="qtext">Q2. What percentage of the data is <em>above</em> Q1 = 18?</p>
+      <div class="options">
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-10','f10b')">25%</button>
+        <button class="opt-btn" onclick="checkOpt(this,'correct','slide-10','f10b')">75%</button>
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-10','f10b')">50%</button>
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-10','f10b')">100%</button>
+      </div>
+      <p class="feedback" id="f10b"></p>
+    </div>
+
+    <div class="quiz-q">
+      <p class="qtext">Q3. Is this data set skewed? If so, which direction?</p>
+      <div class="options">
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-10','f10c')">Left-skewed</button>
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-10','f10c')">Symmetric</button>
+        <button class="opt-btn" onclick="checkOpt(this,'correct','slide-10','f10c')">Right-skewed</button>
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-10','f10c')">Cannot tell</button>
+      </div>
+      <p class="feedback" id="f10c"></p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 11 · CREATING BOX PLOTS (STEPS)
+  ══════════════════════════════════════════ -->
+  <div class="slide scroll-slide" id="slide-11">
+    <div class="section-tag">✏️ Creating Box Plots</div>
+    <h2>5 Steps to Build a Box Plot</h2>
+    <br>
+    <div class="step-list">
+      <div class="step-item">
+        <div class="step-num" style="background:rgba(0,229,255,0.2);color:var(--cyan);">1</div>
+        <div>
+          <strong>Draw a number line</strong> with a range that includes all five-number summary values. Make sure your scale is even and well-labelled.
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num" style="background:rgba(6,214,160,0.2);color:var(--mint);">2</div>
+        <div>
+          <strong>Draw a box</strong> above the number line, where the <em>left side is at Q1</em> and the <em>right side is at Q3</em>.
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num" style="background:rgba(255,209,102,0.2);color:var(--gold);">3</div>
+        <div>
+          <strong>Draw a vertical line</strong> inside the box at the <em>median (Q2)</em>.
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num" style="background:rgba(255,107,107,0.2);color:var(--coral);">4</div>
+        <div>
+          Draw small vertical lines at the <strong>minimum</strong> and <strong>maximum</strong>, and connect them to the box with horizontal <em>whiskers</em>.
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num" style="background:rgba(168,85,247,0.2);color:var(--purple);">5</div>
+        <div>
+          <strong>Label the number line</strong> with units and give the box plot a <strong>descriptive title</strong>.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 12 · CHEF EXAMPLE – DATA
+  ══════════════════════════════════════════ -->
+  <div class="slide scroll-slide" id="slide-12">
+    <div class="section-tag">👨‍🍳 Worked Example</div>
+    <h2>Chef's Recipe Data</h2>
+    <br>
+    <div class="def-box">
+      <p>A chef recorded the number of <strong>recipes created</strong> at a restaurant each day for 11 days. The data is shown below:</p>
+    </div>
+    <br>
+    <div class="data-chips">
+      <span class="chip">3</span>
+      <span class="chip">5</span>
+      <span class="chip">7</span>
+      <span class="chip">8</span>
+      <span class="chip">9</span>
+      <span class="chip highlight">10</span>
+      <span class="chip">11</span>
+      <span class="chip">13</span>
+      <span class="chip">14</span>
+      <span class="chip">15</span>
+      <span class="chip">18</span>
+    </div>
+    <p style="text-align:center;font-size:0.92rem;color:var(--muted);margin-top:4px;">Data already sorted from least to greatest.</p>
+    <br>
+    <table class="five-table">
+      <tr class="row-min"><td><strong style="color:var(--coral)">Minimum</strong></td><td>Smallest value →</td><td style="color:var(--coral);font-weight:900;font-size:1.3rem;">3</td></tr>
+      <tr class="row-max"><td><strong style="color:var(--purple)">Maximum</strong></td><td>Largest value →</td><td style="color:var(--purple);font-weight:900;font-size:1.3rem;">18</td></tr>
+      <tr class="row-med"><td><strong style="color:var(--gold)">Median (Q2)</strong></td><td>Middle value (6th of 11) →</td><td style="color:var(--gold);font-weight:900;font-size:1.3rem;">10</td></tr>
+      <tr class="row-q1"><td><strong style="color:var(--mint)">Q1</strong></td><td>Middle of lower half {3,5,7,8,9} →</td><td style="color:var(--mint);font-weight:900;font-size:1.3rem;">7</td></tr>
+      <tr class="row-q3"><td><strong style="color:var(--lavender)">Q3</strong></td><td>Middle of upper half {11,13,14,15,18} →</td><td style="color:var(--lavender);font-weight:900;font-size:1.3rem;">14</td></tr>
+    </table>
+    <br>
+    <div class="formula">IQR = Q3 − Q1 = 14 − 7 = <strong>7</strong></div>
+    <br>
+    <div class="important-box">
+      <div class="label">⚠️ Important</div>
+      <p>When finding Q1 and Q3, the <strong>median is NOT included</strong> in either half. Only use the values strictly below or above the median.</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 13 · CHEF EXAMPLE – COMPLETED BOX PLOT
+  ══════════════════════════════════════════ -->
+  <div class="slide scroll-slide" id="slide-13">
+    <div class="section-tag">👨‍🍳 Completed Box Plot</div>
+    <h2>Chef's Recipe Box Plot</h2>
+    <br>
+
+    <!-- Horizontal box plot -->
+    <svg viewBox="0 0 680 140" width="100%" style="max-width:660px;">
+      <text x="340" y="18" fill="#F0F6FF" font-family="Fredoka One" font-size="15" text-anchor="middle">Number of Recipes Created Per Day</text>
+      <!-- number line -->
+      <line x1="60" y1="100" x2="640" y2="100" stroke="#8BA3C7" stroke-width="1.5"/>
+      <!-- ticks 0–20 -->
+      <g stroke="#8BA3C7" stroke-width="1" font-family="Nunito" font-size="12" fill="#8BA3C7">
+        <line x1="60" y1="94" x2="60" y2="106"/><text x="60" y="120" text-anchor="middle">0</text>
+        <line x1="148" y1="94" x2="148" y2="106"/><text x="148" y="120" text-anchor="middle">4</text>
+        <line x1="236" y1="94" x2="236" y2="106"/><text x="236" y="120" text-anchor="middle">8</text>
+        <line x1="324" y1="94" x2="324" y2="106"/><text x="324" y="120" text-anchor="middle">12</text>
+        <line x1="412" y1="94" x2="412" y2="106"/><text x="412" y="120" text-anchor="middle">16</text>
+        <line x1="500" y1="94" x2="500" y2="106"/><text x="500" y="120" text-anchor="middle">20</text>
+      </g>
+      <!-- scale: 0→60 at x=60, 20→500 at x=500 → each unit = 22px -->
+      <!-- Min=3 → x=3*22+60=126, Q1=7→214, Q2=10→280, Q3=14→368, Max=18→456 -->
+      <!-- whiskers -->
+      <line x1="126" y1="70" x2="214" y2="70" stroke="#00E5FF" stroke-width="2.5"/>
+      <line x1="368" y1="70" x2="456" y2="70" stroke="#00E5FF" stroke-width="2.5"/>
+      <line x1="126" y1="57" x2="126" y2="83" stroke="#FF6B6B" stroke-width="3"/>
+      <line x1="456" y1="57" x2="456" y2="83" stroke="#A855F7" stroke-width="3"/>
+      <!-- box -->
+      <rect x="214" y="52" width="154" height="48" fill="rgba(0,229,255,0.14)" stroke="#00E5FF" stroke-width="2.5" rx="4"/>
+      <!-- median -->
+      <line x1="280" y1="52" x2="280" y2="100" stroke="#FFD166" stroke-width="3.5"/>
+      <!-- labels -->
+      <text x="126" y="40" fill="#FF6B6B" font-family="Fredoka One" font-size="12" text-anchor="middle">Min=3</text>
+      <text x="214" y="40" fill="#06D6A0" font-family="Fredoka One" font-size="12" text-anchor="middle">Q1=7</text>
+      <text x="280" y="40" fill="#FFD166" font-family="Fredoka One" font-size="12" text-anchor="middle">Q2=10</text>
+      <text x="368" y="40" fill="#C084FC" font-family="Fredoka One" font-size="12" text-anchor="middle">Q3=14</text>
+      <text x="456" y="40" fill="#A855F7" font-family="Fredoka One" font-size="12" text-anchor="middle">Max=18</text>
+      <text x="340" y="138" fill="#8BA3C7" font-family="Nunito" font-size="11" text-anchor="middle">Number of Recipes</text>
+    </svg>
+
+    <br>
+
+    <!-- Vertical box plot (bonus) -->
+    <div class="card card-cyan" style="max-width:280px;align-self:center;text-align:center;">
+      <h3 style="color:var(--cyan);margin-bottom:10px;">📊 Same Data — Vertical!</h3>
+      <svg viewBox="0 0 120 300" width="120" style="display:block;margin:0 auto;">
+        <!-- axis -->
+        <line x1="70" y1="20" x2="70" y2="280" stroke="#8BA3C7" stroke-width="1.5"/>
+        <!-- ticks scale: 0=280, 20=20 → each unit = 13px -->
+        <!-- Min=3→y=241 Q1=7→y=189 Q2=10→y=150 Q3=14→y=98 Max=18→y=46 -->
+        <g stroke="#8BA3C7" stroke-width="1" font-family="Nunito" font-size="10" fill="#8BA3C7">
+          <line x1="63" y1="280" x2="77" y2="280"/><text x="55" y="284" text-anchor="end">0</text>
+          <line x1="63" y1="150" x2="77" y2="150"/><text x="55" y="154" text-anchor="end">10</text>
+          <line x1="63" y1="20" x2="77" y2="20"/><text x="55" y="24" text-anchor="end">20</text>
+        </g>
+        <!-- whiskers -->
+        <line x1="70" y1="241" x2="70" y2="189" stroke="#00E5FF" stroke-width="2"/>
+        <line x1="70" y1="98" x2="70" y2="46" stroke="#00E5FF" stroke-width="2"/>
+        <line x1="57" y1="241" x2="83" y2="241" stroke="#FF6B6B" stroke-width="2.5"/>
+        <line x1="57" y1="46" x2="83" y2="46" stroke="#A855F7" stroke-width="2.5"/>
+        <!-- box -->
+        <rect x="50" y="98" width="40" height="91" fill="rgba(0,229,255,0.14)" stroke="#00E5FF" stroke-width="2.5" rx="3"/>
+        <!-- median -->
+        <line x1="50" y1="150" x2="90" y2="150" stroke="#FFD166" stroke-width="3.5"/>
+        <!-- labels -->
+        <text x="100" y="244" fill="#FF6B6B" font-family="Fredoka One" font-size="10">3</text>
+        <text x="100" y="192" fill="#06D6A0" font-family="Fredoka One" font-size="10">7</text>
+        <text x="100" y="153" fill="#FFD166" font-family="Fredoka One" font-size="10">10</text>
+        <text x="100" y="101" fill="#C084FC" font-family="Fredoka One" font-size="10">14</text>
+        <text x="100" y="49" fill="#A855F7" font-family="Fredoka One" font-size="10">18</text>
+      </svg>
+      <p style="font-size:0.85rem;margin-top:8px;color:var(--muted);">A vertical box plot uses the same method — just rotated!</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 14 · CHECK 4 – FILL IN THE BLANKS
+  ══════════════════════════════════════════ -->
+  <div class="slide scroll-slide quiz-slide" id="slide-14">
+    <div class="checkpoint-badge"><span>🧠 Quick Check 4 – Five-Number Summary</span></div>
+    <h2>Find the Five-Number Summary!</h2>
+    <p style="text-align:center;color:var(--muted);margin-bottom:12px;">Use the dataset below to fill in each value, then press <strong style="color:var(--purple)">Check Answers</strong>.</p>
+
+    <div class="data-chips" style="margin-bottom:16px;">
+      <span class="chip">4</span><span class="chip">7</span><span class="chip">9</span>
+      <span class="chip">12</span><span class="chip">15</span><span class="chip">18</span>
+      <span class="chip">21</span><span class="chip">24</span><span class="chip">28</span>
+    </div>
+
+    <div class="input-quiz" id="quiz14">
+      <div class="input-row">
+        <label>Minimum</label>
+        <input type="number" id="i14a" placeholder="?">
+        <span id="s14a" style="font-size:1.2rem;width:24px;"></span>
+      </div>
+      <div class="input-row">
+        <label>Q1 (Lower Quartile)</label>
+        <input type="number" id="i14b" placeholder="?">
+        <span id="s14b" style="font-size:1.2rem;width:24px;"></span>
+      </div>
+      <div class="input-row">
+        <label>Median</label>
+        <input type="number" id="i14c" placeholder="?">
+        <span id="s14c" style="font-size:1.2rem;width:24px;"></span>
+      </div>
+      <div class="input-row">
+        <label>Q3 (Upper Quartile)</label>
+        <input type="number" id="i14d" placeholder="?">
+        <span id="s14d" style="font-size:1.2rem;width:24px;"></span>
+      </div>
+      <div class="input-row">
+        <label>Maximum</label>
+        <input type="number" id="i14e" placeholder="?">
+        <span id="s14e" style="font-size:1.2rem;width:24px;"></span>
+      </div>
+    </div>
+    <button class="check-btn" onclick="checkFive14()">✅ Check Answers</button>
+    <p class="feedback" id="f14" style="text-align:center;font-size:1.1rem;margin-top:10px;"></p>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 15 · VICTORIA PIANO EXAMPLE
+  ══════════════════════════════════════════ -->
+  <div class="slide scroll-slide" id="slide-15">
+    <div class="section-tag">🎹 Another Example</div>
+    <h2>Victoria's Piano Practice</h2>
+    <br>
+    <div class="def-box">
+      <p>Victoria practiced the piano for <strong>9 days</strong> and recorded minutes per day:</p>
+    </div>
+    <br>
+    <div class="data-chips">
+      <span class="chip">20</span><span class="chip">25</span><span class="chip">30</span>
+      <span class="chip">30</span><span class="chip highlight">35</span>
+      <span class="chip">40</span><span class="chip">45</span>
+      <span class="chip">50</span><span class="chip">60</span>
+    </div>
+    <br>
+
+    <!-- Vertical box plot for Victoria -->
+    <div style="display:flex;align-items:flex-start;gap:30px;justify-content:center;width:100%;flex-wrap:wrap;">
+      <svg viewBox="0 0 140 340" width="130" style="flex-shrink:0;">
+        <text x="70" y="16" fill="#F0F6FF" font-family="Fredoka One" font-size="12" text-anchor="middle">Practice (min)</text>
+        <!-- axis -->
+        <line x1="80" y1="30" x2="80" y2="310" stroke="#8BA3C7" stroke-width="1.5"/>
+        <!-- scale: 20=300, 60=30 → each unit = 6.75px -->
+        <!-- Min=20→300 Q1=27.5→226 Q2=35→183 Q3=47.5→116 Max=60→30 -->
+        <g stroke="#8BA3C7" stroke-width="1" font-family="Nunito" font-size="10" fill="#8BA3C7">
+          <line x1="73" y1="300" x2="87" y2="300"/><text x="68" y="304" text-anchor="end">20</text>
+          <line x1="73" y1="233" x2="87" y2="233"/><text x="68" y="237" text-anchor="end">30</text>
+          <line x1="73" y1="165" x2="87" y2="165"/><text x="68" y="169" text-anchor="end">40</text>
+          <line x1="73" y1="98" x2="87" y2="98"/><text x="68" y="102" text-anchor="end">50</text>
+          <line x1="73" y1="30" x2="87" y2="30"/><text x="68" y="34" text-anchor="end">60</text>
+        </g>
+        <!-- whiskers: Min=20→300 Q1=25→233 -->
+        <line x1="80" y1="300" x2="80" y2="233" stroke="#00E5FF" stroke-width="2"/>
+        <!-- Q3=47.5→116 Max=60→30 -->
+        <line x1="80" y1="116" x2="80" y2="30" stroke="#00E5FF" stroke-width="2"/>
+        <!-- caps -->
+        <line x1="67" y1="300" x2="93" y2="300" stroke="#FF6B6B" stroke-width="3"/>
+        <line x1="67" y1="30" x2="93" y2="30" stroke="#A855F7" stroke-width="3"/>
+        <!-- box Q1=25→233, Q3=47.5→116 -->
+        <rect x="60" y="116" width="40" height="117" fill="rgba(0,229,255,0.14)" stroke="#00E5FF" stroke-width="2.5" rx="3"/>
+        <!-- median Q2=35→165 -->
+        <line x1="60" y1="165" x2="100" y2="165" stroke="#FFD166" stroke-width="3.5"/>
+        <!-- value labels -->
+        <text x="108" y="304" fill="#FF6B6B" font-family="Fredoka One" font-size="10">20</text>
+        <text x="108" y="237" fill="#06D6A0" font-family="Fredoka One" font-size="10">Q1=25</text>
+        <text x="108" y="169" fill="#FFD166" font-family="Fredoka One" font-size="10">Q2=35</text>
+        <text x="108" y="120" fill="#C084FC" font-family="Fredoka One" font-size="10">Q3=47.5</text>
+        <text x="108" y="34" fill="#A855F7" font-family="Fredoka One" font-size="10">60</text>
+      </svg>
+
+      <div style="flex:1;min-width:220px;display:flex;flex-direction:column;gap:12px;">
+        <div class="card card-cyan">
+          <h3 style="color:var(--cyan);">Five-Number Summary</h3>
+          <table class="five-table" style="margin-top:8px;">
+            <tr class="row-min"><td>Minimum</td><td style="color:var(--coral);font-weight:900;">20 min</td></tr>
+            <tr class="row-q1"><td>Q1</td><td style="color:var(--mint);font-weight:900;">25 min</td></tr>
+            <tr class="row-med"><td>Median</td><td style="color:var(--gold);font-weight:900;">35 min</td></tr>
+            <tr class="row-q3"><td>Q3</td><td style="color:var(--lavender);font-weight:900;">47.5 min</td></tr>
+            <tr class="row-max"><td>Maximum</td><td style="color:var(--purple);font-weight:900;">60 min</td></tr>
+          </table>
+        </div>
+        <div class="card card-gold">
+          <h3 style="color:var(--gold);">Analysis</h3>
+          <p style="margin-top:8px;font-size:0.95rem;"><strong>Range</strong> = 60 − 20 = <span style="color:var(--coral);">40 min</span></p>
+          <p style="font-size:0.95rem;"><strong>IQR</strong> = 47.5 − 25 = <span style="color:var(--cyan);">22.5 min</span></p>
+          <p style="font-size:0.95rem;"><strong>Skew:</strong> The median (35) is slightly closer to Q1 (25) → mild <span style="color:var(--purple);">right skew</span>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 16 · PRACTICE (MIXED)
+  ══════════════════════════════════════════ -->
+  <div class="slide scroll-slide quiz-slide" id="slide-16">
+    <div class="checkpoint-badge"><span>📝 Practice Problems 1–4</span></div>
+    <h2>Use This Box Plot to Answer Q1–Q4</h2>
+
+    <!-- Reference box plot: Min=12 Q1=18 Q2=25 Q3=33 Max=42 -->
+    <svg viewBox="0 0 640 100" width="100%" style="max-width:620px;margin:10px auto;">
+      <line x1="30" y1="72" x2="610" y2="72" stroke="#8BA3C7" stroke-width="1.5"/>
+      <g stroke="#8BA3C7" stroke-width="1" font-family="Nunito" font-size="11" fill="#8BA3C7">
+        <line x1="30" y1="66" x2="30" y2="78"/><text x="30" y="90" text-anchor="middle">10</text>
+        <line x1="148" y1="66" x2="148" y2="78"/><text x="148" y="90" text-anchor="middle">16</text>
+        <line x1="266" y1="66" x2="266" y2="78"/><text x="266" y="90" text-anchor="middle">22</text>
+        <line x1="384" y1="66" x2="384" y2="78"/><text x="384" y="90" text-anchor="middle">28</text>
+        <line x1="502" y1="66" x2="502" y2="78"/><text x="502" y="90" text-anchor="middle">34</text>
+        <line x1="610" y1="66" x2="610" y2="78"/><text x="610" y="90" text-anchor="middle">40</text>
+      </g>
+      <!-- scale: 10=30, 40=610 → unit = 19.33px -->
+      <!-- Min=12→68.7 Q1=18→184.7 Q2=25→319.3 Q3=33→474 Max=40→610 -->
+      <line x1="69" y1="46" x2="185" y2="46" stroke="#00E5FF" stroke-width="2.5"/>
+      <line x1="474" y1="46" x2="590" y2="46" stroke="#00E5FF" stroke-width="2.5"/>
+      <line x1="69" y1="34" x2="69" y2="58" stroke="#FF6B6B" stroke-width="3"/>
+      <line x1="590" y1="34" x2="590" y2="58" stroke="#A855F7" stroke-width="3"/>
+      <rect x="185" y="30" width="289" height="42" fill="rgba(0,229,255,0.13)" stroke="#00E5FF" stroke-width="2.5" rx="4"/>
+      <line x1="319" y1="30" x2="319" y2="72" stroke="#FFD166" stroke-width="3.5"/>
+      <text x="69" y="20" fill="#FF6B6B" font-family="Fredoka One" font-size="11" text-anchor="middle">Min=12</text>
+      <text x="185" y="20" fill="#06D6A0" font-family="Fredoka One" font-size="11" text-anchor="middle">Q1=18</text>
+      <text x="319" y="20" fill="#FFD166" font-family="Fredoka One" font-size="11" text-anchor="middle">Q2=25</text>
+      <text x="474" y="20" fill="#C084FC" font-family="Fredoka One" font-size="11" text-anchor="middle">Q3=33</text>
+      <text x="590" y="20" fill="#A855F7" font-family="Fredoka One" font-size="11" text-anchor="middle">Max=40</text>
+    </svg>
+
+    <div class="quiz-q">
+      <p class="qtext">Q1. What is the range of the data?</p>
+      <div class="options">
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-16','f16a')">13</button>
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-16','f16a')">25</button>
+        <button class="opt-btn" onclick="checkOpt(this,'correct','slide-16','f16a')">28</button>
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-16','f16a')">15</button>
+      </div>
+      <p class="feedback" id="f16a"></p>
+    </div>
+
+    <div class="quiz-q">
+      <p class="qtext">Q2. What is the IQR? What does it tell us?</p>
+      <div class="options">
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-16','f16b')">7</button>
+        <button class="opt-btn" onclick="checkOpt(this,'correct','slide-16','f16b')">15 — middle 50% spans 15 units</button>
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-16','f16b')">25</button>
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-16','f16b')">28</button>
+      </div>
+      <p class="feedback" id="f16b"></p>
+    </div>
+
+    <div class="quiz-q">
+      <p class="qtext">Q3. What value has 75% of the data above it?</p>
+      <div class="options">
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-16','f16c')">25</button>
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-16','f16c')">33</button>
+        <button class="opt-btn" onclick="checkOpt(this,'correct','slide-16','f16c')">18 (Q1)</button>
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-16','f16c')">40</button>
+      </div>
+      <p class="feedback" id="f16c"></p>
+    </div>
+
+    <div class="quiz-q">
+      <p class="qtext">Q4. Between which values does the middle 50% of data lie?</p>
+      <div class="options">
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-16','f16d')">12 and 40</button>
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-16','f16d')">12 and 25</button>
+        <button class="opt-btn" onclick="checkOpt(this,'correct','slide-16','f16d')">18 and 33</button>
+        <button class="opt-btn" onclick="checkOpt(this,'wrong','slide-16','f16d')">25 and 40</button>
+      </div>
+      <p class="feedback" id="f16d"></p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 17 · PRACTICE Q5 (GYMNASTICS)
+  ══════════════════════════════════════════ -->
+  <div class="slide scroll-slide quiz-slide" id="slide-17">
+    <div class="checkpoint-badge"><span>🤸 Practice Problem 5</span></div>
+    <h2>Gymnastics Students – Choose the Box Plot!</h2>
+    <br>
+    <div class="def-box">
+      <p>A gymnastics teacher recorded the <strong>ages</strong> of her students:</p>
+    </div>
+    <div class="data-chips" style="margin:14px 0;">
+      <span class="chip">6</span><span class="chip">7</span><span class="chip">8</span>
+      <span class="chip">9</span><span class="chip">9</span><span class="chip highlight">10</span>
+      <span class="chip">11</span><span class="chip">12</span><span class="chip">13</span>
+      <span class="chip">14</span><span class="chip">15</span>
+    </div>
+    <p style="text-align:center;color:var(--muted);font-size:0.92rem;">Min=6, Q1=8, Median=10, Q3=13, Max=15</p>
+    <br>
+    <p style="text-align:center;font-weight:800;margin-bottom:10px;position:relative;z-index:2;">Which box plot correctly represents this data? Click your answer!</p>
+
+    <!-- Three box plot options -->
+    <div class="cards-grid cards-3" style="gap:14px;">
+
+      <!-- Option A: CORRECT Min=6 Q1=8 Q2=10 Q3=13 Max=15 -->
+      <div id="gymA" onclick="checkGym('A')" style="cursor:pointer;border-radius:14px;padding:14px;background:var(--card);border:2px solid var(--border);text-align:center;transition:all 0.25s;position:relative;z-index:2;">
+        <h3 style="font-size:1rem;color:var(--cyan);margin-bottom:8px;">Option A</h3>
+        <svg viewBox="0 0 200 80" width="100%">
+          <line x1="10" y1="60" x2="190" y2="60" stroke="#8BA3C7" stroke-width="1"/>
+          <!-- scale: 0=10 15=190 → unit=12 -->
+          <!-- Min=6→82 Q1=8→106 Q2=10→130 Q3=13→166 Max=15→190 -->
+          <line x1="82" y1="38" x2="106" y2="38" stroke="#00E5FF" stroke-width="2"/>
+          <line x1="166" y1="38" x2="190" y2="38" stroke="#00E5FF" stroke-width="2"/>
+          <line x1="82" y1="28" x2="82" y2="48" stroke="#FF6B6B" stroke-width="2.5"/>
+          <line x1="190" y1="28" x2="190" y2="48" stroke="#A855F7" stroke-width="2.5"/>
+          <rect x="106" y="25" width="60" height="35" fill="rgba(0,229,255,0.15)" stroke="#00E5FF" stroke-width="2" rx="3"/>
+          <line x1="130" y1="25" x2="130" y2="60" stroke="#FFD166" stroke-width="3"/>
+          <g font-family="Nunito" font-size="9" fill="#8BA3C7" text-anchor="middle">
+            <text x="82" y="72">6</text><text x="106" y="72">8</text>
+            <text x="130" y="72">10</text><text x="166" y="72">13</text><text x="190" y="72">15</text>
+          </g>
+        </svg>
+        <p id="gymAfb" style="font-size:0.88rem;min-height:20px;margin-top:6px;font-weight:800;"></p>
+      </div>
+
+      <!-- Option B: WRONG Q1=7 Q3=12 -->
+      <div id="gymB" onclick="checkGym('B')" style="cursor:pointer;border-radius:14px;padding:14px;background:var(--card);border:2px solid var(--border);text-align:center;transition:all 0.25s;position:relative;z-index:2;">
+        <h3 style="font-size:1rem;color:var(--cyan);margin-bottom:8px;">Option B</h3>
+        <svg viewBox="0 0 200 80" width="100%">
+          <line x1="10" y1="60" x2="190" y2="60" stroke="#8BA3C7" stroke-width="1"/>
+          <!-- Q1=7→94 Q2=10→130 Q3=12→154 -->
+          <line x1="82" y1="38" x2="94" y2="38" stroke="#00E5FF" stroke-width="2"/>
+          <line x1="154" y1="38" x2="190" y2="38" stroke="#00E5FF" stroke-width="2"/>
+          <line x1="82" y1="28" x2="82" y2="48" stroke="#FF6B6B" stroke-width="2.5"/>
+          <line x1="190" y1="28" x2="190" y2="48" stroke="#A855F7" stroke-width="2.5"/>
+          <rect x="94" y="25" width="60" height="35" fill="rgba(255,107,107,0.12)" stroke="#00E5FF" stroke-width="2" rx="3"/>
+          <line x1="130" y1="25" x2="130" y2="60" stroke="#FFD166" stroke-width="3"/>
+          <g font-family="Nunito" font-size="9" fill="#8BA3C7" text-anchor="middle">
+            <text x="82" y="72">6</text><text x="94" y="72">7</text>
+            <text x="130" y="72">10</text><text x="154" y="72">12</text><text x="190" y="72">15</text>
+          </g>
+        </svg>
+        <p id="gymBfb" style="font-size:0.88rem;min-height:20px;margin-top:6px;font-weight:800;"></p>
+      </div>
+
+      <!-- Option C: WRONG median=11 -->
+      <div id="gymC" onclick="checkGym('C')" style="cursor:pointer;border-radius:14px;padding:14px;background:var(--card);border:2px solid var(--border);text-align:center;transition:all 0.25s;position:relative;z-index:2;">
+        <h3 style="font-size:1rem;color:var(--cyan);margin-bottom:8px;">Option C</h3>
+        <svg viewBox="0 0 200 80" width="100%">
+          <line x1="10" y1="60" x2="190" y2="60" stroke="#8BA3C7" stroke-width="1"/>
+          <!-- Q1=8→106 Q2=11→142 Q3=13→166 -->
+          <line x1="82" y1="38" x2="106" y2="38" stroke="#00E5FF" stroke-width="2"/>
+          <line x1="166" y1="38" x2="190" y2="38" stroke="#00E5FF" stroke-width="2"/>
+          <line x1="82" y1="28" x2="82" y2="48" stroke="#FF6B6B" stroke-width="2.5"/>
+          <line x1="190" y1="28" x2="190" y2="48" stroke="#A855F7" stroke-width="2.5"/>
+          <rect x="106" y="25" width="60" height="35" fill="rgba(168,85,247,0.12)" stroke="#00E5FF" stroke-width="2" rx="3"/>
+          <line x1="142" y1="25" x2="142" y2="60" stroke="#FFD166" stroke-width="3"/>
+          <g font-family="Nunito" font-size="9" fill="#8BA3C7" text-anchor="middle">
+            <text x="82" y="72">6</text><text x="106" y="72">8</text>
+            <text x="142" y="72">11</text><text x="166" y="72">13</text><text x="190" y="72">15</text>
+          </g>
+        </svg>
+        <p id="gymCfb" style="font-size:0.88rem;min-height:20px;margin-top:6px;font-weight:800;"></p>
+      </div>
+    </div>
+
+    <br>
+    <div class="important-box" style="text-align:center;">
+      <div class="label">💡 Hint</div>
+      <p>First calculate Q1 and Q3 from the sorted data, then match!</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 18 · SUMMARY
+  ══════════════════════════════════════════ -->
+  <div class="slide scroll-slide" id="slide-18">
+    <div class="section-tag">🎓 Lesson Summary</div>
+    <h2>What Did We Learn Today?</h2>
+    <br>
+    <div class="cards-grid cards-2">
+      <div class="card card-cyan">
+        <h3 style="color:var(--cyan);">📦 Box Plot Basics</h3>
+        <ul style="margin-top:8px;padding-left:18px;font-size:0.95rem;">
+          <li>Displays data in <strong>4 equal sections</strong></li>
+          <li>Shows the <strong>median</strong> as center</li>
+          <li>Built from the <strong>Five-Number Summary</strong></li>
+        </ul>
+      </div>
+      <div class="card card-gold">
+        <h3 style="color:var(--gold);">🔢 Five-Number Summary</h3>
+        <ul style="margin-top:8px;padding-left:18px;font-size:0.95rem;">
+          <li><strong>Min, Q1, Median, Q3, Max</strong></li>
+          <li>Each section = <strong>25%</strong> of data</li>
+          <li>IQR = Q3 − Q1 (middle 50%)</li>
+        </ul>
+      </div>
+      <div class="card card-coral">
+        <h3 style="color:var(--coral);">📏 Spread</h3>
+        <ul style="margin-top:8px;padding-left:18px;font-size:0.95rem;">
+          <li><strong>Range</strong> = Max − Min</li>
+          <li><strong>IQR</strong> = Q3 − Q1</li>
+          <li>Wide box → high variability</li>
+        </ul>
+      </div>
+      <div class="card card-purple">
+        <h3 style="color:var(--lavender);">↔️ Skewness</h3>
+        <ul style="margin-top:8px;padding-left:18px;font-size:0.95rem;">
+          <li><strong>Left skew</strong>: median near Q3</li>
+          <li><strong>Right skew</strong>: median near Q1</li>
+          <li><strong>Symmetric</strong>: median in center</li>
+        </ul>
+      </div>
+    </div>
+    <br>
+    <div style="text-align:center;position:relative;z-index:2;">
+      <div style="font-size:3rem;">🌟</div>
+      <p style="font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--gold);margin-top:8px;">Excellent work!</p>
+      <p style="color:var(--muted);font-size:1rem;margin-top:4px;">You can now read, interpret, and create box plots like a data scientist!</p>
+      <p style="color:var(--muted);font-size:0.9rem;margin-top:14px;">Prepared by: Yolanda Dube &nbsp;©&nbsp;2026</p>
+    </div>
+  </div>
+
+</div><!-- /slides-wrapper -->
+
+<!-- Navigation -->
+<div id="nav">
+  <button class="nav-btn" id="btn-prev" onclick="changeSlide(-1)" disabled>◀ PREV</button>
+  <span id="slide-counter">1 / 19</span>
+  <button class="nav-btn" id="btn-next" onclick="changeSlide(1)">NEXT ▶</button>
+</div>
+
+<script>
+  // ── STARS
+  (function(){
+    const c = document.getElementById('stars');
+    const cols = ['rgba(0,229,255,0.5)','rgba(168,85,247,0.5)','rgba(255,209,102,0.5)','rgba(6,214,160,0.5)','rgba(255,255,255,0.4)'];
+    for(let i=0;i<80;i++){
+      const s = document.createElement('div');
+      s.className='star';
+      const sz = Math.random()*3+1;
+      s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};--d:${(Math.random()*5+2).toFixed(1)}s;animation-delay:${(Math.random()*5).toFixed(1)}s;`;
+      c.appendChild(s);
+    }
+  })();
+
+  // ── SLIDES
+  const totalSlides = 19;
+  let current = 0;
+
+  function changeSlide(dir){
+    const slides = document.querySelectorAll('.slide');
+    slides[current].classList.remove('active');
+    current = Math.max(0, Math.min(current + dir, totalSlides - 1));
+    slides[current].classList.add('active');
+    slides[current].scrollTop = 0;
+    updateUI();
+  }
+
+  function updateUI(){
+    document.getElementById('btn-prev').disabled = current === 0;
+    document.getElementById('btn-next').disabled = current === totalSlides - 1;
+    document.getElementById('slide-counter').textContent = `${current+1} / ${totalSlides}`;
+    const pct = ((current)/(totalSlides-1)*100);
+    document.getElementById('progress-bar').style.width = pct + '%';
+  }
+
+  updateUI();
+
+  // Keyboard nav
+  document.addEventListener('keydown', e => {
+    if(e.key === 'ArrowRight' || e.key === 'ArrowDown') changeSlide(1);
+    if(e.key === 'ArrowLeft' || e.key === 'ArrowUp') changeSlide(-1);
+  });
+
+  // ── QUIZ LOGIC
+  function checkOpt(btn, result, slideId, feedbackId){
+    const allBtns = btn.closest('.options').querySelectorAll('.opt-btn');
+    allBtns.forEach(b => b.disabled = true);
+    const fb = document.getElementById(feedbackId);
+    if(result === 'correct'){
+      btn.classList.add('correct');
+      fb.textContent = '✅ Correct! Well done!';
+      fb.className = 'feedback ok';
+    } else {
+      btn.classList.add('wrong');
+      fb.textContent = '❌ Not quite — review the slide and try to find the correct option!';
+      fb.className = 'feedback no';
+      // highlight correct
+      allBtns.forEach(b => {
+        if(b.onclick.toString().includes("'correct'")) b.classList.add('correct');
+      });
+    }
+  }
+
+  // ── FILL IN THE BLANKS (Slide 14)
+  // Data: 4 7 9 12 15 18 21 24 28 (9 values)
+  // Min=4, Q1=9(median of 4,7,9,12,15→9... actually lower half 4,7,9,12 → middle of 4 values = avg 7+9=8
+  // n=9: lower half = {4,7,9,12} → Q1 = (7+9)/2 = 8
+  // median = 15 (5th value)
+  // upper half = {18,21,24,28} → Q3 = (21+24)/2 = 22.5
+  const answers14 = {i14a:4, i14b:8, i14c:15, i14d:22.5, i14e:28};
+
+  function checkFive14(){
+    let allCorrect = true;
+    for(const [id, ans] of Object.entries(answers14)){
+      const input = document.getElementById(id);
+      const sym = document.getElementById('s'+id.slice(1));
+      const val = parseFloat(input.value);
+      if(val === ans){
+        input.classList.remove('wrong-input'); input.classList.add('correct-input');
+        sym.textContent = '✅';
+      } else {
+        input.classList.remove('correct-input'); input.classList.add('wrong-input');
+        sym.textContent = '❌';
+        allCorrect = false;
+      }
+    }
+    const fb = document.getElementById('f14');
+    if(allCorrect){
+      fb.textContent = '🌟 Perfect! All five values are correct!';
+      fb.className = 'feedback ok';
+    } else {
+      fb.textContent = '❌ Some values are off. Hint: Q1 = avg of 2 middle values in lower half. Q3 = avg of 2 middle values in upper half.';
+      fb.className = 'feedback no';
+    }
+  }
+
+  // ── GYMNASTICS Q5
+  function checkGym(opt){
+    const correct = 'A';
+    const messages = {
+      A: {fb:'✅ Correct! Min=6, Q1=8, Median=10, Q3=13, Max=15', cls:'color:var(--mint)'},
+      B: {fb:'❌ Q1 should be 8, not 7. Q3 should be 13, not 12.', cls:'color:var(--coral)'},
+      C: {fb:'❌ The median should be 10 (the 6th of 11 values), not 11.', cls:'color:var(--coral)'}
+    };
+    ['A','B','C'].forEach(o => {
+      const el = document.getElementById('gym'+o);
+      const fb = document.getElementById('gym'+o+'fb');
+      el.style.pointerEvents = 'none';
+      if(o === opt){
+        el.style.borderColor = o === correct ? 'var(--mint)' : 'var(--coral)';
+        el.style.background = o === correct ? 'rgba(6,214,160,0.1)' : 'rgba(255,107,107,0.1)';
+        fb.innerHTML = `<span style="${messages[o].cls}">${messages[o].fb}</span>`;
+      }
+      if(o === correct && opt !== correct){
+        el.style.borderColor = 'var(--mint)';
+        el.style.background = 'rgba(6,214,160,0.08)';
+        fb.innerHTML = `<span style="color:var(--mint)">✅ This was correct!</span>`;
+      }
+    });
+  }
+</script>
+</body>
+</html>
