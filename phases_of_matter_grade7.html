@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Phases of Matter – Grade 7 Comprehensive Science</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --navy: #0B1A2E;
+    --deep: #0F2744;
+    --cyan: #00E5FF;
+    --gold: #FFD600;
+    --coral: #FF5C5C;
+    --mint: #00E676;
+    --purple: #CE93D8;
+    --card: rgba(255,255,255,0.07);
+    --border: rgba(255,255,255,0.12);
+    --radius: 20px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: var(--navy); font-family: 'Nunito', sans-serif; color: #fff; }
+
+  /* ─── SLIDES ─── */
+  .deck { width: 100vw; height: 100vh; position: relative; }
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 48px 64px;
+    opacity: 0; pointer-events: none; transition: opacity .45s ease;
+    overflow: hidden;
+  }
+  .slide.active { opacity: 1; pointer-events: all; }
+
+  /* ─── PROGRESS BAR ─── */
+  #progress-bar {
+    position: fixed; top: 0; left: 0; height: 5px;
+    background: linear-gradient(90deg, var(--cyan), var(--gold));
+    transition: width .4s ease; z-index: 999;
+  }
+  #slide-counter {
+    position: fixed; bottom: 18px; right: 28px;
+    font-size: 15px; font-weight: 700; color: rgba(255,255,255,.45);
+    z-index: 999; letter-spacing: 1px;
+  }
+
+  /* ─── NAV ARROWS ─── */
+  .nav-btn {
+    position: fixed; top: 50%; transform: translateY(-50%);
+    background: rgba(255,255,255,.1); border: none; color: #fff;
+    width: 52px; height: 52px; border-radius: 50%; font-size: 22px;
+    cursor: pointer; z-index: 999; transition: background .2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .nav-btn:hover { background: rgba(255,255,255,.22); }
+  #prev-btn { left: 14px; }
+  #next-btn { right: 14px; }
+
+  /* ─── TYPOGRAPHY ─── */
+  .slide-title {
+    font-family: 'Fredoka One', sans-serif;
+    font-size: clamp(2rem, 4.5vw, 3.4rem);
+    letter-spacing: .5px; line-height: 1.15;
+    text-align: center; margin-bottom: 22px;
+  }
+  .slide-body { font-size: clamp(1.1rem, 2vw, 1.4rem); line-height: 1.7; text-align: center; }
+  .accent-cyan   { color: var(--cyan); }
+  .accent-gold   { color: var(--gold); }
+  .accent-coral  { color: var(--coral); }
+  .accent-mint   { color: var(--mint); }
+  .accent-purple { color: var(--purple); }
+
+  /* ─── CARDS ─── */
+  .card-row { display: flex; gap: 20px; width: 100%; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 26px 22px;
+    flex: 1 1 190px; max-width: 330px; text-align: center;
+  }
+  .card .icon { font-size: 2.8rem; margin-bottom: 10px; }
+  .card h3 { font-family: 'Fredoka One', sans-serif; font-size: 1.45rem; margin-bottom: 8px; }
+  .card p  { font-size: 1.02rem; line-height: 1.6; opacity: .88; }
+
+  /* ─── TABLE ─── */
+  table { border-collapse: collapse; width: 100%; margin-top: 14px; font-size: 1.02rem; }
+  th { background: rgba(0,229,255,.18); padding: 13px 16px; font-family:'Fredoka One',sans-serif; font-size:1.1rem; border: 1px solid var(--border); }
+  td { padding: 11px 16px; border: 1px solid var(--border); text-align: center; }
+  tr:nth-child(even) td { background: rgba(255,255,255,.04); }
+
+  /* ─── QUIZ ─── */
+  .quiz-container { width: 100%; max-width: 820px; }
+  .quiz-q { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 28px; margin-bottom: 18px; text-align: left; }
+  .quiz-q p  { font-size: 1.15rem; font-weight: 700; margin-bottom: 13px; }
+  .quiz-opts { display: flex; flex-direction: column; gap: 9px; }
+  .quiz-opt {
+    background: rgba(255,255,255,.09); border: 1px solid var(--border);
+    border-radius: 12px; padding: 10px 18px; font-size: 1.02rem;
+    cursor: pointer; transition: background .2s, border-color .2s; text-align: left;
+    font-family: 'Nunito', sans-serif; color: #fff;
+  }
+  .quiz-opt:hover { background: rgba(0,229,255,.18); border-color: var(--cyan); }
+  .quiz-opt.correct { background: rgba(0,230,118,.25); border-color: var(--mint); }
+  .quiz-opt.wrong   { background: rgba(255,92,92,.22);  border-color: var(--coral); }
+  .quiz-feedback { font-size: 1rem; font-weight: 700; margin-top: 8px; min-height: 20px; }
+  .quiz-score { font-family:'Fredoka One',sans-serif; font-size:1.55rem; text-align:center; margin-top:16px; color:var(--gold); }
+
+  /* ─── COVER ─── */
+  #cover { background: radial-gradient(ellipse at 30% 40%, #0A2A4D 0%, #0B1A2E 60%); }
+  #cover canvas { position: absolute; inset: 0; pointer-events: none; }
+  #cover .cover-content { position: relative; z-index: 2; text-align: center; }
+  .cover-badge {
+    display: inline-block; background: rgba(0,229,255,.12);
+    border: 1px solid rgba(0,229,255,.35); border-radius: 50px;
+    padding: 8px 28px; font-size: 1rem; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--cyan); margin-bottom: 24px;
+  }
+  .cover-title {
+    font-family: 'Fredoka One', sans-serif;
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    line-height: 1.1; margin-bottom: 14px;
+    background: linear-gradient(135deg, #fff 30%, var(--cyan) 70%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .cover-sub { font-size: clamp(1.1rem, 2.2vw, 1.5rem); opacity: .75; margin-bottom: 36px; font-weight: 600; }
+  .cover-divider { width: 120px; height: 3px; background: linear-gradient(90deg, var(--cyan), var(--gold)); border-radius: 3px; margin: 0 auto 28px; }
+  .cover-meta { font-size: 1.1rem; opacity: .75; line-height: 2; }
+  .cover-meta span { color: var(--gold); font-weight: 800; }
+
+  /* ─── CHECKPOINT BANNER ─── */
+  .checkpoint-banner {
+    background: linear-gradient(135deg, rgba(0,229,255,.15), rgba(255,214,0,.1));
+    border: 2px solid var(--cyan); border-radius: 18px;
+    padding: 14px 40px; margin-bottom: 22px; width:100%; max-width:820px;
+    font-family:'Fredoka One',sans-serif; font-size: 1.6rem; text-align:center;
+    display:flex; align-items:center; gap:14px; justify-content:center;
+  }
+
+  /* ─── SECTION LABEL ─── */
+  .section-label {
+    display:inline-block; background:rgba(0,229,255,.14); border:1px solid rgba(0,229,255,.3);
+    border-radius:50px; padding:5px 22px; font-size:0.9rem; letter-spacing:2px;
+    text-transform:uppercase; color:var(--cyan); margin-bottom:12px;
+  }
+
+  /* ─── LISTS ─── */
+  .big-list { list-style: none; text-align: left; display: inline-block; }
+  .big-list li { font-size:1.2rem; padding: 7px 0; display:flex; align-items:flex-start; gap:12px; }
+  .big-list li::before { content:'✦'; color:var(--cyan); flex-shrink:0; margin-top:3px; }
+
+  /* ─── 2-COL ─── */
+  .two-col { display:flex; gap:22px; width:100%; flex-wrap:wrap; margin-top:8px; }
+  .col { flex:1 1 280px; background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:24px 22px; }
+  .col h3 { font-family:'Fredoka One',sans-serif; font-size:1.35rem; margin-bottom:12px; }
+  .col ul { list-style:none; }
+  .col ul li { padding:6px 0; font-size:1.02rem; display:flex; gap:10px; align-items:flex-start; }
+  .col ul li::before { content:'▸'; flex-shrink:0; margin-top:3px; }
+
+  /* ─── PARTICLE BOX ─── */
+  .particle-box { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:18px; display:flex; flex-direction:column; align-items:center; gap:10px; flex:1 1 180px; max-width:270px; }
+  .particle-box h3 { font-family:'Fredoka One',sans-serif; font-size:1.35rem; }
+  .particle-box p  { font-size:.95rem; opacity:.82; line-height:1.5; text-align:center; }
+
+  /* ─── FLOW DIAGRAM ─── */
+  svg.flow-diagram { max-width: 840px; width: 100%; height: auto; }
+
+  /* ─── SUMMARY GRID ─── */
+  .sum-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:18px; width:100%; max-width:820px; margin-top:12px; }
+  .sum-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:22px 20px; text-align:center; }
+  .sum-card .sum-icon { font-size:2.2rem; margin-bottom:8px; }
+  .sum-card h3 { font-family:'Fredoka One',sans-serif; font-size:1.2rem; margin-bottom:6px; }
+  .sum-card p  { font-size:.93rem; opacity:.8; line-height:1.5; }
+
+  /* ─── SCROLLABLE ─── */
+  .scroll-slide { overflow-y: auto; justify-content: flex-start; padding-top: 54px; padding-bottom: 54px; }
+  .scroll-slide::-webkit-scrollbar { width: 5px; }
+  .scroll-slide::-webkit-scrollbar-thumb { background: rgba(255,255,255,.2); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+<div id="slide-counter"></div>
+<button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592;</button>
+<button class="nav-btn" id="next-btn" onclick="navigate(1)">&#8594;</button>
+
+<div class="deck">
+
+<!-- ══════════════ SLIDE 1: COVER ══════════════ -->
+<div class="slide" id="cover">
+  <canvas id="cover-canvas"></canvas>
+  <div class="cover-content">
+    <div class="cover-badge">Grade 7 · Comprehensive Science</div>
+    <div class="cover-title">Phases of Matter</div>
+    <div class="cover-sub">Solids · Liquids · Gases · Heat Transfer · Energy</div>
+    <div class="cover-divider"></div>
+    <div class="cover-meta">
+      Prepared by: <span>Yolanda Dube</span><br/>
+      <span style="font-size:.9rem;font-weight:400;color:rgba(255,255,255,.45);">© 2026 · All Rights Reserved</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 2: LEARNING OBJECTIVES ══════════════ -->
+<div class="slide">
+  <div class="section-label">Overview</div>
+  <div class="slide-title">🎯 What We Will Learn Today</div>
+  <ul class="big-list" style="margin-top:10px;">
+    <li>Identify the <span class="accent-cyan">three states of matter</span> and their characteristics</li>
+    <li>Understand what causes matter to <span class="accent-gold">change state</span></li>
+    <li>Explore the <span class="accent-coral">three methods</span> of thermal energy transfer</li>
+    <li>Distinguish between <span class="accent-mint">conductors and insulators</span></li>
+    <li>Describe how thermal energy <span class="accent-purple">affects different materials</span></li>
+  </ul>
+</div>
+
+<!-- ══════════════ SLIDE 3: THREE STATES OVERVIEW ══════════════ -->
+<div class="slide">
+  <div class="section-label">Part 1 — States of Matter</div>
+  <div class="slide-title">The <span class="accent-cyan">Three States</span> of Matter</div>
+  <div class="card-row" style="margin-top:16px;">
+    <div class="particle-box">
+      <svg width="130" height="110" viewBox="0 0 130 110">
+        <style>
+          @keyframes vib { 0%,100%{transform:translate(0,0)} 50%{transform:translate(1.5px,1px)} }
+          .sp { fill:#00E5FF; animation: vib .4s ease-in-out infinite alternate; transform-origin:50% 50%; }
+        </style>
+        <g class="sp" style="animation-delay:0s"><circle cx="25" cy="25" r="11"/></g>
+        <g class="sp" style="animation-delay:.05s"><circle cx="65" cy="25" r="11"/></g>
+        <g class="sp" style="animation-delay:.1s"><circle cx="105" cy="25" r="11"/></g>
+        <g class="sp" style="animation-delay:.07s"><circle cx="25" cy="60" r="11"/></g>
+        <g class="sp" style="animation-delay:.02s"><circle cx="65" cy="60" r="11"/></g>
+        <g class="sp" style="animation-delay:.09s"><circle cx="105" cy="60" r="11"/></g>
+        <g class="sp" style="animation-delay:.04s"><circle cx="25" cy="95" r="11"/></g>
+        <g class="sp" style="animation-delay:.08s"><circle cx="65" cy="95" r="11"/></g>
+        <g class="sp" style="animation-delay:.06s"><circle cx="105" cy="95" r="11"/></g>
+      </svg>
+      <h3 class="accent-cyan">SOLID 🧊</h3>
+      <p>Fixed shape &amp; volume<br/>Tightly packed particles<br/>Particles only vibrate</p>
+    </div>
+    <div class="particle-box">
+      <svg width="130" height="110" viewBox="0 0 130 110">
+        <style>
+          @keyframes lm1 { 0%{cx:30;cy:60} 33%{cx:50;cy:75} 66%{cx:35;cy:50} 100%{cx:30;cy:60} }
+          @keyframes lm2 { 0%{cx:70;cy:40} 33%{cx:90;cy:55} 66%{cx:60;cy:65} 100%{cx:70;cy:40} }
+          @keyframes lm3 { 0%{cx:50;cy:85} 33%{cx:20;cy:70} 66%{cx:55;cy:55} 100%{cx:50;cy:85} }
+          @keyframes lm4 { 0%{cx:100;cy:30} 33%{cx:80;cy:25} 66%{cx:95;cy:70} 100%{cx:100;cy:30} }
+          @keyframes lm5 { 0%{cx:20;cy:30} 33%{cx:40;cy:20} 66%{cx:25;cy:45} 100%{cx:20;cy:30} }
+          @keyframes lm6 { 0%{cx:80;cy:80} 33%{cx:105;cy:90} 66%{cx:75;cy:95} 100%{cx:80;cy:80} }
+        </style>
+        <circle r="11" fill="#FFD600" style="animation:lm1 2.5s ease-in-out infinite"/>
+        <circle r="11" fill="#FFD600" style="animation:lm2 2.1s ease-in-out infinite"/>
+        <circle r="11" fill="#FFD600" style="animation:lm3 2.8s ease-in-out infinite"/>
+        <circle r="11" fill="#FFD600" style="animation:lm4 2.3s ease-in-out infinite"/>
+        <circle r="11" fill="#FFD600" style="animation:lm5 1.9s ease-in-out infinite"/>
+        <circle r="11" fill="#FFD600" style="animation:lm6 2.6s ease-in-out infinite"/>
+      </svg>
+      <h3 class="accent-gold">LIQUID 💧</h3>
+      <p>Fixed volume, no fixed shape<br/>Particles close but mobile<br/>Takes shape of container</p>
+    </div>
+    <div class="particle-box">
+      <svg width="130" height="110" viewBox="0 0 130 110">
+        <style>
+          @keyframes gm1 { 0%{cx:15;cy:20} 25%{cx:110;cy:10} 50%{cx:120;cy:100} 75%{cx:10;cy:90} 100%{cx:15;cy:20} }
+          @keyframes gm2 { 0%{cx:110;cy:80} 25%{cx:10;cy:100} 50%{cx:5;cy:15} 75%{cx:115;cy:25} 100%{cx:110;cy:80} }
+          @keyframes gm3 { 0%{cx:60;cy:10} 25%{cx:120;cy:55} 50%{cx:55;cy:100} 75%{cx:5;cy:50} 100%{cx:60;cy:10} }
+          @keyframes gm4 { 0%{cx:5;cy:60} 25%{cx:65;cy:5} 50%{cx:125;cy:65} 75%{cx:60;cy:105} 100%{cx:5;cy:60} }
+        </style>
+        <circle r="9" fill="#FF5C5C" style="animation:gm1 1.5s linear infinite"/>
+        <circle r="9" fill="#FF5C5C" style="animation:gm2 1.8s linear infinite"/>
+        <circle r="9" fill="#FF5C5C" style="animation:gm3 2s linear infinite"/>
+        <circle r="9" fill="#FF5C5C" style="animation:gm4 1.3s linear infinite"/>
+      </svg>
+      <h3 class="accent-coral">GAS 💨</h3>
+      <p>No fixed shape or volume<br/>Particles far apart<br/>Move very fast &amp; freely</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 4: SOLIDS ══════════════ -->
+<div class="slide">
+  <div class="section-label">Part 1 — Solids</div>
+  <div class="slide-title">🧊 Characteristics of <span class="accent-cyan">Solids</span></div>
+  <div class="two-col">
+    <div class="col">
+      <h3 class="accent-cyan">Key Properties</h3>
+      <ul>
+        <li>Definite (fixed) shape</li>
+        <li>Definite (fixed) volume</li>
+        <li>Cannot be compressed easily</li>
+        <li>Particles are <strong>tightly packed</strong> in regular arrangement</li>
+        <li>Particles vibrate but do <strong>not move freely</strong></li>
+        <li>Very strong forces between particles</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h3 class="accent-gold">Real-Life Examples</h3>
+      <ul>
+        <li>🧱 A brick — keeps its shape</li>
+        <li>🪨 A rock — rigid structure</li>
+        <li>🧊 Ice — fixed form</li>
+        <li>⚙️ Metal tools — hold shape under pressure</li>
+        <li>📚 A book — particles don't flow</li>
+        <li>🌍 Earth's rocky crust</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 5: LIQUIDS ══════════════ -->
+<div class="slide">
+  <div class="section-label">Part 1 — Liquids</div>
+  <div class="slide-title">💧 Characteristics of <span class="accent-gold">Liquids</span></div>
+  <div class="two-col">
+    <div class="col">
+      <h3 class="accent-gold">Key Properties</h3>
+      <ul>
+        <li>No definite shape — takes container's shape</li>
+        <li>Definite (fixed) volume</li>
+        <li>Difficult to compress</li>
+        <li>Particles can <strong>slide past each other</strong></li>
+        <li>Moderate forces of attraction</li>
+        <li>Has surface tension and viscosity</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h3 class="accent-cyan">Real-Life Examples</h3>
+      <ul>
+        <li>💧 Water — fills any container</li>
+        <li>🥛 Milk — pourable, fixed volume</li>
+        <li>⛽ Petrol — flows freely</li>
+        <li>🍯 Honey — very viscous liquid</li>
+        <li>🩸 Blood — flows through veins</li>
+        <li>🌊 Ocean — takes shape of the seabed</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 6: GASES ══════════════ -->
+<div class="slide">
+  <div class="section-label">Part 1 — Gases</div>
+  <div class="slide-title">💨 Characteristics of <span class="accent-coral">Gases</span></div>
+  <div class="two-col">
+    <div class="col">
+      <h3 class="accent-coral">Key Properties</h3>
+      <ul>
+        <li>No definite shape or volume</li>
+        <li>Fills the entire container</li>
+        <li><strong>Easily compressible</strong></li>
+        <li>Particles move very fast, very far apart</li>
+        <li>Very weak attractive forces</li>
+        <li>Exerts <strong>pressure</strong> on container walls</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h3 class="accent-mint">Real-Life Examples</h3>
+      <ul>
+        <li>💨 Air — fills entire room</li>
+        <li>🪔 Smoke — spreads everywhere</li>
+        <li>🎈 Helium — fills a balloon</li>
+        <li>🌬️ Steam (water vapour)</li>
+        <li>🚗 Carbon dioxide in exhaust</li>
+        <li>🍳 Cooking gas (LPG)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 7: COMPARISON TABLE ══════════════ -->
+<div class="slide scroll-slide">
+  <div class="section-label">Summary</div>
+  <div class="slide-title" style="margin-bottom:12px;">⚡ Quick <span class="accent-cyan">Comparison</span></div>
+  <table>
+    <thead>
+      <tr>
+        <th>Property</th>
+        <th style="color:var(--cyan)">Solid 🧊</th>
+        <th style="color:var(--gold)">Liquid 💧</th>
+        <th style="color:var(--coral)">Gas 💨</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Shape</strong></td><td>Fixed</td><td>No fixed shape</td><td>No fixed shape</td></tr>
+      <tr><td><strong>Volume</strong></td><td>Fixed</td><td>Fixed</td><td>No fixed volume</td></tr>
+      <tr><td><strong>Compressible?</strong></td><td>No</td><td>Barely</td><td>Yes, easily</td></tr>
+      <tr><td><strong>Particle Spacing</strong></td><td>Very close</td><td>Close</td><td>Very far apart</td></tr>
+      <tr><td><strong>Particle Movement</strong></td><td>Vibrate only</td><td>Slide past each other</td><td>Move freely &amp; fast</td></tr>
+      <tr><td><strong>Attractive Forces</strong></td><td>Very strong</td><td>Moderate</td><td>Very weak</td></tr>
+    </tbody>
+  </table>
+  <div style="margin-top:14px; font-size:1.05rem; opacity:.7; text-align:center;">💡 <strong>Tip:</strong> As you go from solid → liquid → gas, particles have MORE energy and move MORE freely!</div>
+</div>
+
+<!-- ══════════════ SLIDE 8: QUIZ 1 ══════════════ -->
+<div class="slide scroll-slide">
+  <div class="checkpoint-banner">🏆 Quiz Checkpoint 1 — States of Matter</div>
+  <div class="quiz-container">
+    <div class="quiz-q">
+      <p>Q1. Which state of matter has a FIXED shape AND a fixed volume?</p>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz1',0)">A. Gas</button>
+        <button class="quiz-opt" onclick="answer(this,'correct','quiz1',0)">B. Solid</button>
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz1',0)">C. Liquid</button>
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz1',0)">D. Plasma</button>
+      </div>
+      <div class="quiz-feedback" id="quiz1-fb0"></div>
+    </div>
+    <div class="quiz-q">
+      <p>Q2. A liquid is poured from a round cup into a square container. What happens to its VOLUME?</p>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz1',1)">A. It increases</button>
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz1',1)">B. It decreases</button>
+        <button class="quiz-opt" onclick="answer(this,'correct','quiz1',1)">C. It stays the same</button>
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz1',1)">D. It evaporates</button>
+      </div>
+      <div class="quiz-feedback" id="quiz1-fb1"></div>
+    </div>
+    <div class="quiz-q">
+      <p>Q3. In which state of matter are particles FURTHEST apart and moving the FASTEST?</p>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz1',2)">A. Solid</button>
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz1',2)">B. Liquid</button>
+        <button class="quiz-opt" onclick="answer(this,'correct','quiz1',2)">C. Gas</button>
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz1',2)">D. Ice</button>
+      </div>
+      <div class="quiz-feedback" id="quiz1-fb2"></div>
+    </div>
+    <div class="quiz-score" id="quiz1-score"></div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 9: STATE CHANGES INTRO ══════════════ -->
+<div class="slide">
+  <div class="section-label">Part 2 — State Changes</div>
+  <div class="slide-title">🔥 What Causes Matter to <span class="accent-gold">Change State?</span></div>
+  <div class="slide-body" style="max-width:720px; margin-bottom:20px;">
+    Matter changes state when <span class="accent-gold">thermal energy (heat)</span> is added or removed.<br/>
+    Thermal energy changes the <span class="accent-cyan">speed of particles</span> — faster particles = higher energy state!
+  </div>
+  <div class="card-row">
+    <div class="card">
+      <div class="icon">🔥</div>
+      <h3 class="accent-coral">Adding Heat</h3>
+      <p>Particles gain energy → move faster → overcome attractions → state changes to a <strong>higher energy state</strong><br/>(solid → liquid → gas)</p>
+    </div>
+    <div class="card">
+      <div class="icon">❄️</div>
+      <h3 class="accent-cyan">Removing Heat</h3>
+      <p>Particles lose energy → slow down → attractions pull them together → state changes to a <strong>lower energy state</strong><br/>(gas → liquid → solid)</p>
+    </div>
+    <div class="card">
+      <div class="icon">🌡️</div>
+      <h3 class="accent-gold">Temperature Points</h3>
+      <p>Each substance has specific <strong>melting</strong> and <strong>boiling points</strong> at which state changes occur</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 10: STATE CHANGE DIAGRAM ══════════════ -->
+<div class="slide">
+  <div class="section-label">Part 2 — State Changes</div>
+  <div class="slide-title" style="margin-bottom:12px;">♻️ State Change <span class="accent-mint">Diagram</span></div>
+  <svg class="flow-diagram" viewBox="0 0 820 310" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="arrowR" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#FF5C5C"/></marker>
+      <marker id="arrowB" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#00E5FF"/></marker>
+      <marker id="arrowG" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#FFD600"/></marker>
+      <marker id="arrowP" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#CE93D8"/></marker>
+    </defs>
+    <!-- SOLID -->
+    <rect x="30" y="110" width="160" height="80" rx="16" fill="rgba(0,229,255,.18)" stroke="#00E5FF" stroke-width="2"/>
+    <text x="110" y="152" text-anchor="middle" font-family="Fredoka One,sans-serif" font-size="26" fill="#00E5FF">SOLID</text>
+    <text x="110" y="176" text-anchor="middle" font-family="Nunito,sans-serif" font-size="13" fill="rgba(255,255,255,.6)">🧊 Ice, Iron</text>
+    <!-- LIQUID -->
+    <rect x="330" y="110" width="160" height="80" rx="16" fill="rgba(255,214,0,.15)" stroke="#FFD600" stroke-width="2"/>
+    <text x="410" y="152" text-anchor="middle" font-family="Fredoka One,sans-serif" font-size="26" fill="#FFD600">LIQUID</text>
+    <text x="410" y="176" text-anchor="middle" font-family="Nunito,sans-serif" font-size="13" fill="rgba(255,255,255,.6)">💧 Water, Mercury</text>
+    <!-- GAS -->
+    <rect x="630" y="110" width="160" height="80" rx="16" fill="rgba(255,92,92,.15)" stroke="#FF5C5C" stroke-width="2"/>
+    <text x="710" y="152" text-anchor="middle" font-family="Fredoka One,sans-serif" font-size="26" fill="#FF5C5C">GAS</text>
+    <text x="710" y="176" text-anchor="middle" font-family="Nunito,sans-serif" font-size="13" fill="rgba(255,255,255,.6)">💨 Steam, Vapour</text>
+    <!-- MELTING -->
+    <line x1="192" y1="133" x2="328" y2="133" stroke="#FF5C5C" stroke-width="2.5" marker-end="url(#arrowR)"/>
+    <text x="260" y="122" text-anchor="middle" font-family="Fredoka One,sans-serif" font-size="16" fill="#FF5C5C">MELTING</text>
+    <text x="260" y="138" text-anchor="middle" font-family="Nunito,sans-serif" font-size="11" fill="rgba(255,92,92,.8)">+ heat added</text>
+    <!-- FREEZING -->
+    <line x1="328" y1="163" x2="192" y2="163" stroke="#00E5FF" stroke-width="2.5" marker-end="url(#arrowB)"/>
+    <text x="260" y="183" text-anchor="middle" font-family="Fredoka One,sans-serif" font-size="16" fill="#00E5FF">FREEZING</text>
+    <text x="260" y="198" text-anchor="middle" font-family="Nunito,sans-serif" font-size="11" fill="rgba(0,229,255,.8)">− heat removed</text>
+    <!-- EVAPORATION -->
+    <line x1="492" y1="133" x2="628" y2="133" stroke="#FF5C5C" stroke-width="2.5" marker-end="url(#arrowR)"/>
+    <text x="560" y="122" text-anchor="middle" font-family="Fredoka One,sans-serif" font-size="15" fill="#FF5C5C">EVAPORATION</text>
+    <text x="560" y="138" text-anchor="middle" font-family="Nunito,sans-serif" font-size="11" fill="rgba(255,92,92,.8)">+ heat added</text>
+    <!-- CONDENSATION -->
+    <line x1="628" y1="163" x2="492" y2="163" stroke="#00E5FF" stroke-width="2.5" marker-end="url(#arrowB)"/>
+    <text x="560" y="183" text-anchor="middle" font-family="Fredoka One,sans-serif" font-size="15" fill="#00E5FF">CONDENSATION</text>
+    <text x="560" y="198" text-anchor="middle" font-family="Nunito,sans-serif" font-size="11" fill="rgba(0,229,255,.8)">− heat removed</text>
+    <!-- SUBLIMATION (solid → gas) -->
+    <path d="M 190 110 Q 410 22 630 110" fill="none" stroke="#FFD600" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrowG)"/>
+    <text x="410" y="42" text-anchor="middle" font-family="Fredoka One,sans-serif" font-size="15" fill="#FFD600">SUBLIMATION (solid → gas) + heat</text>
+    <!-- DEPOSITION (gas → solid) -->
+    <path d="M 630 190 Q 410 288 190 190" fill="none" stroke="#CE93D8" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrowP)"/>
+    <text x="410" y="278" text-anchor="middle" font-family="Fredoka One,sans-serif" font-size="15" fill="#CE93D8">DEPOSITION (gas → solid) − heat</text>
+  </svg>
+</div>
+
+<!-- ══════════════ SLIDE 11: TEMPERATURE POINTS ══════════════ -->
+<div class="slide scroll-slide">
+  <div class="section-label">Part 2 — Temperature Points</div>
+  <div class="slide-title" style="margin-bottom:14px;">🌡️ Key <span class="accent-coral">Temperature Points</span></div>
+  <div class="card-row">
+    <div class="card">
+      <div class="icon">🧊→💧</div>
+      <h3 class="accent-coral">Melting Point</h3>
+      <p>Temperature at which a <strong>solid turns into a liquid</strong><br/><br/>Water: <span class="accent-cyan">0°C</span></p>
+    </div>
+    <div class="card">
+      <div class="icon">💧→💨</div>
+      <h3 class="accent-coral">Boiling Point</h3>
+      <p>Temperature at which a <strong>liquid turns into a gas</strong><br/><br/>Water: <span class="accent-gold">100°C</span></p>
+    </div>
+    <div class="card">
+      <div class="icon">💧→🧊</div>
+      <h3 class="accent-cyan">Freezing Point</h3>
+      <p>Temperature at which a <strong>liquid becomes a solid</strong><br/><br/>Water: <span class="accent-cyan">0°C</span></p>
+    </div>
+    <div class="card">
+      <div class="icon">💨→💧</div>
+      <h3 class="accent-purple">Condensation Point</h3>
+      <p>Gas cools and becomes a <strong>liquid</strong><br/><br/>Example: droplets on a cold glass 🥤</p>
+    </div>
+  </div>
+  <div style="margin-top:18px; font-size:1.05rem; opacity:.75; text-align:center;">💡 <strong>Remember:</strong> Different substances have different melting and boiling points!</div>
+</div>
+
+<!-- ══════════════ SLIDE 12: QUIZ 2 ══════════════ -->
+<div class="slide scroll-slide">
+  <div class="checkpoint-banner">🏆 Quiz Checkpoint 2 — State Changes</div>
+  <div class="quiz-container">
+    <div class="quiz-q">
+      <p>Q1. What is the process called when a LIQUID turns into a GAS by heating?</p>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz2',0)">A. Freezing</button>
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz2',0)">B. Condensation</button>
+        <button class="quiz-opt" onclick="answer(this,'correct','quiz2',0)">C. Evaporation</button>
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz2',0)">D. Sublimation</button>
+      </div>
+      <div class="quiz-feedback" id="quiz2-fb0"></div>
+    </div>
+    <div class="quiz-q">
+      <p>Q2. At what temperature does water FREEZE?</p>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz2',1)">A. 100°C</button>
+        <button class="quiz-opt" onclick="answer(this,'correct','quiz2',1)">B. 0°C</button>
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz2',1)">C. −100°C</button>
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz2',1)">D. 37°C</button>
+      </div>
+      <div class="quiz-feedback" id="quiz2-fb1"></div>
+    </div>
+    <div class="quiz-q">
+      <p>Q3. Dry ice (solid CO₂) changes directly from solid to gas. What is this process called?</p>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz2',2)">A. Evaporation</button>
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz2',2)">B. Melting</button>
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz2',2)">C. Deposition</button>
+        <button class="quiz-opt" onclick="answer(this,'correct','quiz2',2)">D. Sublimation</button>
+      </div>
+      <div class="quiz-feedback" id="quiz2-fb2"></div>
+    </div>
+    <div class="quiz-score" id="quiz2-score"></div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 13: HEAT TRANSFER INTRO ══════════════ -->
+<div class="slide">
+  <div class="section-label">Part 3 — Heat Transfer</div>
+  <div class="slide-title">🌡️ Three Methods of <span class="accent-coral">Thermal Energy Transfer</span></div>
+  <div class="slide-body" style="max-width:680px; margin-bottom:22px;">
+    Thermal energy always moves from a <span class="accent-coral">hotter</span> region to a <span class="accent-cyan">cooler</span> region.<br/>
+    There are <span class="accent-gold">three ways</span> this transfer can happen:
+  </div>
+  <div class="card-row">
+    <div class="card">
+      <div class="icon">🔩</div>
+      <h3 class="accent-cyan">Conduction</h3>
+      <p>Transfer through <strong>direct contact</strong> between touching particles — mainly in <strong>solids</strong></p>
+    </div>
+    <div class="card">
+      <div class="icon">🌊</div>
+      <h3 class="accent-gold">Convection</h3>
+      <p>Transfer through <strong>moving fluids</strong> (liquids or gases) — creates circular <strong>currents</strong></p>
+    </div>
+    <div class="card">
+      <div class="icon">☀️</div>
+      <h3 class="accent-coral">Radiation</h3>
+      <p>Transfer through <strong>electromagnetic waves</strong> — requires <strong>no medium</strong> at all</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 14: CONDUCTION ══════════════ -->
+<div class="slide">
+  <div class="section-label">Part 3 — Conduction</div>
+  <div class="slide-title">🔩 <span class="accent-cyan">Conduction</span> — Through Direct Contact</div>
+  <svg viewBox="0 0 760 155" style="max-width:760px;width:100%;margin:4px 0 14px;">
+    <defs>
+      <linearGradient id="rodGrad" x1="0" x2="1" y1="0" y2="0">
+        <stop offset="0%" stop-color="#FF5C5C"/>
+        <stop offset="100%" stop-color="#1A3A5E"/>
+      </linearGradient>
+      <radialGradient id="flameG" cx="50%" cy="80%" r="50%">
+        <stop offset="0%" stop-color="#FFD600"/>
+        <stop offset="100%" stop-color="#FF5C5C" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <rect x="80" y="58" width="600" height="38" rx="8" fill="url(#rodGrad)"/>
+    <ellipse cx="80" cy="54" rx="28" ry="36" fill="url(#flameG)" opacity=".9"/>
+    <text x="80" y="138" text-anchor="middle" font-family="Nunito,sans-serif" font-size="13" fill="#FF5C5C">🔥 Heat Source</text>
+    <style>@keyframes cond { 0%,100%{transform:translateX(0)} 50%{transform:translateX(3px)} } .cp{animation:cond .3s ease-in-out infinite alternate;transform-origin:50% 50%;}</style>
+    <g class="cp" style="animation-delay:0s"><circle cx="160" cy="77" r="9" fill="#FF5C5C" opacity=".9"/></g>
+    <g class="cp" style="animation-delay:.15s"><circle cx="240" cy="77" r="9" fill="#FF8C00" opacity=".8"/></g>
+    <g class="cp" style="animation-delay:.3s"><circle cx="320" cy="77" r="9" fill="#FFD600" opacity=".7"/></g>
+    <g class="cp" style="animation-delay:.45s"><circle cx="400" cy="77" r="9" fill="#AAFFAA" opacity=".6"/></g>
+    <g class="cp" style="animation-delay:.6s"><circle cx="480" cy="77" r="9" fill="#00E5FF" opacity=".5"/></g>
+    <g class="cp" style="animation-delay:.75s"><circle cx="560" cy="77" r="9" fill="#00E5FF" opacity=".3"/></g>
+    <text x="420" y="138" text-anchor="middle" font-family="Nunito,sans-serif" font-size="13" fill="rgba(255,255,255,.6)">→ Energy transfers particle-to-particle along the material →</text>
+    <text x="680" y="138" text-anchor="middle" font-family="Nunito,sans-serif" font-size="13" fill="rgba(0,229,255,.7)">Cool end</text>
+  </svg>
+  <div class="two-col" style="max-width:760px;">
+    <div class="col">
+      <h3 class="accent-cyan">How It Works</h3>
+      <ul>
+        <li>Heated particles vibrate faster</li>
+        <li>They collide with neighbouring particles</li>
+        <li>Energy passes along the material</li>
+        <li>Happens mainly in <strong>solids</strong></li>
+      </ul>
+    </div>
+    <div class="col">
+      <h3 class="accent-gold">Real Examples</h3>
+      <ul>
+        <li>🥄 Metal spoon in hot soup gets warm</li>
+        <li>🍳 Pan handle heating up on the stove</li>
+        <li>🤝 Shaking someone's warm hand</li>
+        <li>🏠 Heat moving through a brick wall</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 15: CONVECTION ══════════════ -->
+<div class="slide">
+  <div class="section-label">Part 3 — Convection</div>
+  <div class="slide-title">🌊 <span class="accent-gold">Convection</span> — Through Fluid Movement</div>
+  <div style="display:flex; gap:28px; width:100%; align-items:flex-start; flex-wrap:wrap; max-width:860px; margin-top:6px;">
+    <svg viewBox="0 0 260 240" style="flex:0 0 230px; height:215px;">
+      <style>@keyframes rise{0%{cy:185}100%{cy:42}} @keyframes fall{0%{cy:42}100%{cy:185}} .rb{fill:#FF5C5C;animation:rise 2s linear infinite;} .cb{fill:#00E5FF;animation:fall 2s linear infinite;}</style>
+      <rect x="20" y="35" width="220" height="170" rx="14" fill="rgba(255,214,0,.08)" stroke="#FFD600" stroke-width="2"/>
+      <rect x="5" y="200" width="250" height="22" rx="6" fill="#FF5C5C" opacity=".7"/>
+      <text x="130" y="218" text-anchor="middle" font-family="Nunito,sans-serif" font-size="12" fill="#fff">🔥 Heat Source</text>
+      <circle class="rb" cx="70" r="8" style="animation-delay:0s"/>
+      <circle class="rb" cx="70" r="8" style="animation-delay:.67s"/>
+      <circle class="rb" cx="70" r="8" style="animation-delay:1.34s"/>
+      <circle class="cb" cx="190" r="8" style="animation-delay:.33s"/>
+      <circle class="cb" cx="190" r="8" style="animation-delay:1s"/>
+      <circle class="cb" cx="190" r="8" style="animation-delay:1.67s"/>
+      <text x="48" y="120" font-family="Nunito,sans-serif" font-size="13" fill="#FF5C5C">↑ Hot</text>
+      <text x="172" y="120" font-family="Nunito,sans-serif" font-size="13" fill="#00E5FF">↓ Cool</text>
+      <path d="M70 42 Q130 30 190 42" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <path d="M70 185 Q130 197 190 185" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5" stroke-dasharray="4,3"/>
+    </svg>
+    <div style="flex:1; min-width:240px; display:flex; flex-direction:column; gap:16px;">
+      <div class="col">
+        <h3 class="accent-gold">How It Works</h3>
+        <ul>
+          <li>Hot fluid becomes <strong>less dense</strong> → rises</li>
+          <li>Cool fluid is <strong>more dense</strong> → sinks</li>
+          <li>Creates a circular <strong>convection current</strong></li>
+          <li>Only happens in <strong>liquids and gases</strong></li>
+        </ul>
+      </div>
+      <div class="col">
+        <h3 class="accent-mint">Real Examples</h3>
+        <ul>
+          <li>☁️ Weather patterns &amp; wind formation</li>
+          <li>♨️ Boiling water in a pot</li>
+          <li>🏠 Warm air rising from heaters</li>
+          <li>🌊 Ocean currents around the globe</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 16: RADIATION ══════════════ -->
+<div class="slide">
+  <div class="section-label">Part 3 — Radiation</div>
+  <div class="slide-title">☀️ <span class="accent-coral">Radiation</span> — Through Waves</div>
+  <svg viewBox="0 0 760 155" style="max-width:760px;width:100%;margin:6px 0 14px;">
+    <defs>
+      <radialGradient id="sunG2" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#FFD600"/>
+        <stop offset="100%" stop-color="#FF8C00" stop-opacity=".3"/>
+      </radialGradient>
+      <style>@keyframes wave2{0%{opacity:0;stroke-dashoffset:80}100%{opacity:1;stroke-dashoffset:0}} .wv{stroke-dasharray:80;animation:wave2 1.4s ease-out infinite;}</style>
+    </defs>
+    <circle cx="80" cy="78" r="50" fill="url(#sunG2)"/>
+    <text x="80" y="84" text-anchor="middle" font-family="Fredoka One,sans-serif" font-size="17" fill="#fff">SUN</text>
+    <path class="wv" d="M145 58 Q245 48 345 58 Q445 68 545 58" fill="none" stroke="#FFD600" stroke-width="3" style="animation-delay:0s"/>
+    <path class="wv" d="M145 78 Q245 68 345 78 Q445 88 545 78" fill="none" stroke="#FFD600" stroke-width="3" style="animation-delay:.3s"/>
+    <path class="wv" d="M145 98 Q245 88 345 98 Q445 108 545 98" fill="none" stroke="#FFD600" stroke-width="3" style="animation-delay:.6s"/>
+    <text x="345" y="135" text-anchor="middle" font-family="Nunito,sans-serif" font-size="12" fill="rgba(255,214,0,.7)">Infrared / Electromagnetic Waves — no medium needed!</text>
+    <circle cx="670" cy="52" r="20" fill="#CE93D8"/>
+    <rect x="655" y="75" width="30" height="45" rx="6" fill="#CE93D8"/>
+    <text x="670" y="143" text-anchor="middle" font-family="Nunito,sans-serif" font-size="13" fill="#CE93D8">Receives heat ☀️</text>
+  </svg>
+  <div class="two-col" style="max-width:760px;">
+    <div class="col">
+      <h3 class="accent-coral">How It Works</h3>
+      <ul>
+        <li>Energy travels as <strong>electromagnetic waves</strong></li>
+        <li>Requires <strong>no medium</strong> — works in a vacuum</li>
+        <li>Travels at the <strong>speed of light</strong></li>
+        <li>All objects emit some radiation</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h3 class="accent-gold">Real Examples</h3>
+      <ul>
+        <li>☀️ Sunlight warming your skin</li>
+        <li>🔥 Feeling heat from a campfire without touching it</li>
+        <li>🌡️ Infrared heaters in a room</li>
+        <li>🍕 Heat from a grill — no touching needed!</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 17: QUIZ 3 ══════════════ -->
+<div class="slide scroll-slide">
+  <div class="checkpoint-banner">🏆 Quiz Checkpoint 3 — Heat Transfer</div>
+  <div class="quiz-container">
+    <div class="quiz-q">
+      <p>Q1. You touch a hot metal spoon and burn your finger. Which type of heat transfer is this?</p>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answer(this,'correct','quiz3',0)">A. Conduction</button>
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz3',0)">B. Convection</button>
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz3',0)">C. Radiation</button>
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz3',0)">D. Sublimation</button>
+      </div>
+      <div class="quiz-feedback" id="quiz3-fb0"></div>
+    </div>
+    <div class="quiz-q">
+      <p>Q2. How does the Sun's heat reach Earth through the vacuum of space?</p>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz3',1)">A. Conduction</button>
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz3',1)">B. Convection</button>
+        <button class="quiz-opt" onclick="answer(this,'correct','quiz3',1)">C. Radiation</button>
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz3',1)">D. Evaporation</button>
+      </div>
+      <div class="quiz-feedback" id="quiz3-fb1"></div>
+    </div>
+    <div class="quiz-q">
+      <p>Q3. Hot air rises to the ceiling while cold air sinks to the floor in a room. This is an example of:</p>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz3',2)">A. Conduction</button>
+        <button class="quiz-opt" onclick="answer(this,'correct','quiz3',2)">B. Convection</button>
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz3',2)">C. Radiation</button>
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz3',2)">D. Condensation</button>
+      </div>
+      <div class="quiz-feedback" id="quiz3-fb2"></div>
+    </div>
+    <div class="quiz-score" id="quiz3-score"></div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 18: CONDUCTORS & INSULATORS ══════════════ -->
+<div class="slide">
+  <div class="section-label">Part 4 — Conductors &amp; Insulators</div>
+  <div class="slide-title">⚡ <span class="accent-mint">Conductors</span> &amp; <span class="accent-purple">Insulators</span></div>
+  <div class="two-col" style="margin-top:10px;">
+    <div class="col" style="border-color:rgba(0,230,118,.3);">
+      <h3 class="accent-mint">✅ Conductors</h3>
+      <p style="font-size:1.02rem; opacity:.85; margin-bottom:12px;">Materials that <strong>allow heat to flow through them easily</strong></p>
+      <ul>
+        <li>Particles pass energy along quickly</li>
+        <li>Usually metals</li>
+        <li>Used in cooking pots, electrical wiring</li>
+      </ul>
+      <div style="margin-top:14px; background:rgba(0,230,118,.1); border-radius:12px; padding:12px; font-size:.98rem;">
+        <strong style="color:var(--mint);">Examples: </strong>
+        Iron 🔩 · Steel 🥄 · Copper 🟤 · Gold 🟡 · Aluminium ⚪
+      </div>
+    </div>
+    <div class="col" style="border-color:rgba(206,147,216,.3);">
+      <h3 class="accent-purple">🚫 Insulators</h3>
+      <p style="font-size:1.02rem; opacity:.85; margin-bottom:12px;">Materials that <strong>resist or slow down the transfer of heat</strong></p>
+      <ul>
+        <li>Particles do not pass energy easily</li>
+        <li>Often non-metals or trapped gases</li>
+        <li>Used in handles, clothing, building walls</li>
+      </ul>
+      <div style="margin-top:14px; background:rgba(206,147,216,.1); border-radius:12px; padding:12px; font-size:.98rem;">
+        <strong style="color:var(--purple);">Examples: </strong>
+        Wood 🪵 · Plastic 🧱 · Glass 🪟 · Air 🌬️ · Wool 🧶
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 19: APPLICATIONS ══════════════ -->
+<div class="slide">
+  <div class="section-label">Part 4 — Real-Life Use</div>
+  <div class="slide-title">🏠 Real-Life <span class="accent-gold">Applications</span></div>
+  <div class="card-row" style="margin-top:14px;">
+    <div class="card">
+      <div class="icon">🍳</div>
+      <h3 class="accent-mint">Cooking Pot</h3>
+      <p>Metal body = <strong>conductor</strong> (heats food fast)<br/>Plastic/wood handle = <strong>insulator</strong> (stays cool to touch)</p>
+    </div>
+    <div class="card">
+      <div class="icon">☕</div>
+      <h3 class="accent-gold">Thermos Flask</h3>
+      <p>Double-walled vacuum design blocks <strong>all three</strong> heat transfer methods — keeps drinks hot or cold</p>
+    </div>
+    <div class="card">
+      <div class="icon">🏠</div>
+      <h3 class="accent-purple">Building Insulation</h3>
+      <p>Foam/fiberglass in walls acts as <strong>insulator</strong> — keeps houses warm in winter, cool in summer</p>
+    </div>
+    <div class="card">
+      <div class="icon">🧥</div>
+      <h3 class="accent-coral">Winter Clothing</h3>
+      <p>Wool and down feathers trap <strong>air pockets</strong> — air is an excellent insulator, keeping body heat in</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 20: THERMAL ENERGY EFFECTS ══════════════ -->
+<div class="slide scroll-slide">
+  <div class="section-label">Part 5 — Thermal Effects</div>
+  <div class="slide-title" style="margin-bottom:14px;">🌡️ How Thermal Energy <span class="accent-coral">Affects Materials</span></div>
+  <div class="card-row">
+    <div class="card">
+      <div class="icon">📏</div>
+      <h3 class="accent-coral">1. Expansion &amp; Contraction</h3>
+      <p>Most materials <strong>expand when heated</strong> and <strong>contract when cooled</strong><br/><br/>
+      🚂 Railway tracks have gaps to allow for expansion on hot days</p>
+    </div>
+    <div class="card">
+      <div class="icon">💧</div>
+      <h3 class="accent-gold">2. Change of State</h3>
+      <p>Enough heat causes a <strong>phase change</strong><br/>Solid → Liquid → Gas<br/><br/>
+      Removing heat reverses the process</p>
+    </div>
+    <div class="card">
+      <div class="icon">🎨</div>
+      <h3 class="accent-mint">3. Colour Changes</h3>
+      <p>Some materials change colour with temperature<br/><br/>
+      🔥 Hot metal glows red → orange → white as temperature increases</p>
+    </div>
+    <div class="card">
+      <div class="icon">⚗️</div>
+      <h3 class="accent-purple">4. Chemical Changes</h3>
+      <p>High heat can trigger <strong>irreversible reactions</strong><br/><br/>
+      🥚 Cooking an egg permanently changes the protein structure</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 21: QUIZ 4 ══════════════ -->
+<div class="slide scroll-slide">
+  <div class="checkpoint-banner">🏆 Quiz Checkpoint 4 — Conductors, Insulators &amp; Thermal Effects</div>
+  <div class="quiz-container">
+    <div class="quiz-q">
+      <p>Q1. Why is a cooking pot made of metal but its handle made of plastic?</p>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz4',0)">A. Metal is cheaper and lighter than plastic</button>
+        <button class="quiz-opt" onclick="answer(this,'correct','quiz4',0)">B. Metal conducts heat; plastic insulates so you don't burn your hand</button>
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz4',0)">C. Plastic conducts heat better than metal</button>
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz4',0)">D. Metal handles would make the pot too heavy</button>
+      </div>
+      <div class="quiz-feedback" id="quiz4-fb0"></div>
+    </div>
+    <div class="quiz-q">
+      <p>Q2. Railway tracks are built with small gaps between sections. Why?</p>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz4',1)">A. To save metal during construction</button>
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz4',1)">B. To create the clicking sound of the train</button>
+        <button class="quiz-opt" onclick="answer(this,'correct','quiz4',1)">C. To allow the metal to expand on hot days without buckling</button>
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz4',1)">D. To let rainwater drain away easily</button>
+      </div>
+      <div class="quiz-feedback" id="quiz4-fb1"></div>
+    </div>
+    <div class="quiz-q">
+      <p>Q3. Which of the following is the BEST thermal insulator?</p>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz4',2)">A. Iron</button>
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz4',2)">B. Copper</button>
+        <button class="quiz-opt" onclick="answer(this,'correct','quiz4',2)">C. Wool</button>
+        <button class="quiz-opt" onclick="answer(this,'wrong','quiz4',2)">D. Steel</button>
+      </div>
+      <div class="quiz-feedback" id="quiz4-fb2"></div>
+    </div>
+    <div class="quiz-score" id="quiz4-score"></div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 22: SUMMARY ══════════════ -->
+<div class="slide scroll-slide">
+  <div class="section-label">Wrap-Up</div>
+  <div class="slide-title" style="margin-bottom:16px;">⭐ Lesson <span class="accent-gold">Summary</span></div>
+  <div class="sum-grid">
+    <div class="sum-card">
+      <div class="sum-icon">🧊💧💨</div>
+      <h3 class="accent-cyan">States of Matter</h3>
+      <p>Solid (fixed shape &amp; volume) · Liquid (fixed volume only) · Gas (no fixed shape or volume)</p>
+    </div>
+    <div class="sum-card">
+      <div class="sum-icon">🔥❄️</div>
+      <h3 class="accent-gold">State Changes</h3>
+      <p>Adding heat → higher energy state (melting, evaporation, sublimation) · Removing heat → lower energy state</p>
+    </div>
+    <div class="sum-card">
+      <div class="sum-icon">🔩🌊☀️</div>
+      <h3 class="accent-coral">Heat Transfer</h3>
+      <p>Conduction (solids/contact) · Convection (fluids/currents) · Radiation (waves/no medium)</p>
+    </div>
+    <div class="sum-card">
+      <div class="sum-icon">✅🚫</div>
+      <h3 class="accent-mint">Conductors &amp; Insulators</h3>
+      <p>Conductors let heat flow freely (metals) · Insulators resist heat flow (wood, plastic, air, wool)</p>
+    </div>
+  </div>
+  <div style="margin-top:24px; text-align:center; background:linear-gradient(135deg,rgba(0,229,255,.12),rgba(255,214,0,.12)); border:1px solid rgba(255,214,0,.3); border-radius:18px; padding:18px 36px; max-width:680px; width:100%;">
+    <div style="font-family:'Fredoka One',sans-serif; font-size:1.75rem; margin-bottom:6px;">🎉 Outstanding Work, Scientists!</div>
+    <div style="opacity:.75; font-size:1rem;">You have completed the Phases of Matter lesson.<br/>Prepared by <strong style="color:var(--gold);">Yolanda Dube</strong> · © 2026</div>
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let current = 0;
+  const total = slides.length;
+
+  function showSlide(n) {
+    slides[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    document.getElementById('progress-bar').style.width = ((current+1)/total*100)+'%';
+    document.getElementById('slide-counter').textContent = (current+1)+' / '+total;
+  }
+  function navigate(dir) { showSlide(current + dir); }
+
+  document.addEventListener('keydown', e => {
+    if(e.key==='ArrowRight'||e.key==='ArrowDown') navigate(1);
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp') navigate(-1);
+  });
+  showSlide(0);
+
+  // Cover canvas animation
+  const canvas = document.getElementById('cover-canvas');
+  const ctx = canvas.getContext('2d');
+  function resizeCanvas() { canvas.width=innerWidth; canvas.height=innerHeight; }
+  resizeCanvas(); addEventListener('resize', resizeCanvas);
+  const pts = Array.from({length:80}, ()=>({ x:Math.random()*innerWidth, y:Math.random()*innerHeight, r:Math.random()*2.5+.8, vx:(Math.random()-.5)*.4, vy:(Math.random()-.5)*.4, a:Math.random()*.6+.2 }));
+  function animateCover() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pts.forEach(p => {
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0) p.x=canvas.width; if(p.x>canvas.width) p.x=0;
+      if(p.y<0) p.y=canvas.height; if(p.y>canvas.height) p.y=0;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(0,229,255,${p.a})`; ctx.fill();
+    });
+    requestAnimationFrame(animateCover);
+  }
+  animateCover();
+
+  // Quiz logic
+  const quizScores = {quiz1:0,quiz2:0,quiz3:0,quiz4:0};
+  const quizAnswered = {quiz1:[false,false,false],quiz2:[false,false,false],quiz3:[false,false,false],quiz4:[false,false,false]};
+
+  function answer(btn, result, quizId, qIdx) {
+    if(quizAnswered[quizId][qIdx]) return;
+    quizAnswered[quizId][qIdx] = true;
+    const opts = btn.parentElement.querySelectorAll('.quiz-opt');
+    opts.forEach(o => o.style.pointerEvents='none');
+    const fb = document.getElementById(quizId+'-fb'+qIdx);
+    if(result==='correct') {
+      btn.classList.add('correct');
+      fb.innerHTML='✅ Correct! Excellent work!';
+      fb.style.color='#00E676';
+      quizScores[quizId]++;
+    } else {
+      btn.classList.add('wrong');
+      fb.innerHTML='❌ Not quite — the correct answer is highlighted in green!';
+      fb.style.color='#FF5C5C';
+      opts.forEach(o => { if(o.getAttribute('onclick') && o.getAttribute('onclick').includes("'correct'")) o.classList.add('correct'); });
+    }
+    if(quizAnswered[quizId].every(Boolean)) {
+      const s=quizScores[quizId];
+      const emoji=s===3?'🏆 Perfect!':s===2?'👍 Great!':s===1?'😊 Good try!':'💪 Keep studying!';
+      document.getElementById(quizId+'-score').innerHTML=`${emoji} — You scored <strong>${s}/3</strong> on this checkpoint`;
+    }
+  }
+</script>
+</body>
+</html>
