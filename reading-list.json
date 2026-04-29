@@ -1,5 +1,16 @@
 [
   {
+    "id": "rl_1777487152443_4lv",
+    "url": "https://arxiv.org/abs/0804.3276",
+    "title": "A Concise Introduction to Perturbation Theory in Cosmology",
+    "authors": "Karim A. Malik and David R. Matravers",
+    "type": "arxiv",
+    "tag": "Gauge Theories",
+    "notes": "We give a concise, self-contained introduction to perturbation theory in cosmology at linear and\nsecond order, striking a balance between mathematical rigour and usability. In particular we dis\ncuss gauge issues and the active and passive approach to calculating gauge transformations. We\nalso construct gauge-invariant variables, including the second order tensor perturbation on uniform\ncurvature hypersurfaces.",
+    "status": "unread",
+    "date": "2026-04-29"
+  },
+  {
     "id": "rl_1777486414361_gh8",
     "url": "https://arxiv.org/abs/astro-ph/0602117",
     "title": "Advanced Topics in Cosmology: A Pedagogical Introduction",
