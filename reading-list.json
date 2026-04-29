@@ -1,5 +1,16 @@
 [
   {
+    "id": "rl_1777444616404_hek",
+    "url": "https://arxiv.org/abs/2604.25373v1",
+    "title": "Generalizing the CPL Parametrization through Dark Sector Interaction",
+    "authors": "Mikel Artola, Ruth Lazkoz, Vincenzo Salzano",
+    "type": "arxiv",
+    "tag": "Interacting dark energy models",
+    "notes": "Investigates interacting dark energy (IDE) models with a dynamical coupling Q = 3H(δ + ηa)ρde combined with the CPL equation of state. Derives closed analytical solutions for DM and DE energy densities via confluent hypergeometric functions. Constrains 9 cosmological models using DESI DR2 BAO, Pantheon+ SNIa, and compressed Planck+ACT CMB data. Key result: constant coupling models show 2.7–2.9σ deviation from ΛCDM, but Bayesian model comparison (via Nautilus nested sampler) finds no statistical justification for IDE over ΛCDM. Emphasises Bayesian evidence over frequentist Δχ² metrics.",
+    "status": "reading",
+    "date": "2026-04-29"
+  },
+  {
     "id": "rl_1777306516394_bn2",
     "url": "https://arxiv.org/pdf/2604.12032",
     "title": "Constraints on Coupled Dark Energy in the DESI Era",
