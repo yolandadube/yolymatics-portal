@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Electromagnetic Radiation & the EM Spectrum</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --navy: #0B1A2E;
+    --navy2: #112240;
+    --navy3: #1a3a5c;
+    --cyan: #00E5FF;
+    --gold: #FFD700;
+    --coral: #FF6B6B;
+    --mint: #00FFA3;
+    --purple: #C77DFF;
+    --orange: #FF9F43;
+    --pink: #FF6FC8;
+    --white: #F0F4FF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--navy);
+    font-family: 'Nunito', sans-serif;
+    color: var(--white);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* Progress Bar */
+  #progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--cyan), var(--purple), var(--gold));
+    transition: width 0.4s ease;
+    z-index: 1000;
+    border-radius: 0 3px 3px 0;
+  }
+
+  /* Slide Container */
+  #slide-container {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: var(--navy);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 60px;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    overflow-y: auto;
+  }
+
+  .slide.active {
+    display: flex;
+    opacity: 1;
+  }
+
+  .scroll-slide {
+    justify-content: flex-start;
+    padding-top: 60px;
+    overflow-y: auto;
+  }
+
+  /* Stars background */
+  .stars {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle var(--dur) infinite ease-in-out;
+    opacity: var(--op);
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: var(--op); transform: scale(1); }
+    50% { opacity: 0.1; transform: scale(0.5); }
+  }
+
+  /* Section Label */
+  .section-label {
+    font-family: 'Fredoka One', cursive;
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 10px;
+    opacity: 0.8;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Slide titles */
+  .slide-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(2rem, 4.5vw, 3.8rem);
+    line-height: 1.15;
+    text-align: center;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .slide-subtitle {
+    font-size: clamp(1rem, 2vw, 1.4rem);
+    font-weight: 600;
+    text-align: center;
+    opacity: 0.85;
+    max-width: 800px;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 2;
+    line-height: 1.6;
+  }
+
+  /* Navigation */
+  #nav {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    z-index: 1000;
+    background: rgba(11,26,46,0.85);
+    border: 1px solid rgba(0,229,255,0.2);
+    border-radius: 50px;
+    padding: 10px 22px;
+    backdrop-filter: blur(10px);
+  }
+
+  .nav-btn {
+    background: none;
+    border: 2px solid var(--cyan);
+    color: var(--cyan);
+    border-radius: 50px;
+    padding: 8px 24px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .nav-btn:hover { background: var(--cyan); color: var(--navy); }
+
+  #slide-counter {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1rem;
+    color: var(--gold);
+    min-width: 70px;
+    text-align: center;
+  }
+
+  /* Cards */
+  .card-grid {
+    display: grid;
+    gap: 16px;
+    width: 100%;
+    max-width: 1100px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .card-grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .card-grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .card-grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+  .card {
+    background: var(--navy2);
+    border-radius: 18px;
+    padding: 22px;
+    border: 1px solid rgba(255,255,255,0.07);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s, box-shadow 0.25s;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0,229,255,0.12);
+  }
+
+  .card-icon {
+    font-size: 2.4rem;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .card-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.25rem;
+    margin-bottom: 6px;
+  }
+
+  .card-text {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.55;
+    opacity: 0.85;
+  }
+
+  /* Highlight box */
+  .highlight-box {
+    border-radius: 18px;
+    padding: 20px 30px;
+    margin: 10px 0;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hb-cyan { background: rgba(0,229,255,0.1); border-left: 5px solid var(--cyan); }
+  .hb-gold { background: rgba(255,215,0,0.1); border-left: 5px solid var(--gold); }
+  .hb-coral { background: rgba(255,107,107,0.1); border-left: 5px solid var(--coral); }
+  .hb-mint { background: rgba(0,255,163,0.1); border-left: 5px solid var(--mint); }
+  .hb-purple { background: rgba(199,125,255,0.1); border-left: 5px solid var(--purple); }
+  .hb-orange { background: rgba(255,159,67,0.1); border-left: 5px solid var(--orange); }
+
+  .hb-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.3rem;
+    margin-bottom: 6px;
+  }
+
+  .hb-text {
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.6;
+    opacity: 0.9;
+  }
+
+  /* Formula box */
+  .formula-box {
+    background: rgba(0,229,255,0.08);
+    border: 2px solid var(--cyan);
+    border-radius: 16px;
+    padding: 18px 36px;
+    text-align: center;
+    font-family: 'Fredoka One', cursive;
+    font-size: 2rem;
+    color: var(--cyan);
+    margin: 14px 0;
+    position: relative;
+    z-index: 2;
+    letter-spacing: 2px;
+  }
+
+  /* Cover slide specifics */
+  #slide-1 {
+    background: radial-gradient(ellipse at 30% 50%, rgba(0,229,255,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 50%, rgba(199,125,255,0.07) 0%, transparent 60%),
+                var(--navy);
+  }
+
+  .cover-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    line-height: 1.1;
+    text-align: center;
+    background: linear-gradient(135deg, var(--cyan), var(--purple), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .cover-sub {
+    font-size: clamp(1.1rem, 2.5vw, 1.8rem);
+    font-weight: 700;
+    text-align: center;
+    color: var(--white);
+    opacity: 0.8;
+    margin-bottom: 28px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .cover-credit {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--gold);
+    opacity: 0.9;
+    letter-spacing: 1px;
+    position: relative;
+    z-index: 2;
+    margin-top: 10px;
+  }
+
+  /* EM Spectrum Bar */
+  .spectrum-bar-container {
+    width: 100%;
+    max-width: 1000px;
+    position: relative;
+    z-index: 2;
+    margin: 10px 0;
+  }
+
+  .spectrum-bar {
+    height: 56px;
+    border-radius: 12px;
+    background: linear-gradient(90deg,
+      #FF0000 0%,
+      #FF7700 14.3%,
+      #FFFF00 28.6%,
+      #00FF00 42.9%,
+      #0000FF 57.2%,
+      #8B00FF 71.5%,
+      #FF00FF 85.8%,
+      #FF0055 100%
+    );
+    box-shadow: 0 0 40px rgba(255,255,255,0.15);
+    margin-bottom: 8px;
+  }
+
+  .spectrum-labels {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Fredoka One', cursive;
+    font-size: 0.78rem;
+    opacity: 0.9;
+  }
+
+  /* Wave animation */
+  .wave-container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 900px;
+  }
+
+  /* Quiz styles */
+  .quiz-container {
+    max-width: 700px;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+  }
+
+  .quiz-question {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.6rem;
+    color: var(--gold);
+    margin-bottom: 20px;
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .quiz-opt {
+    background: var(--navy2);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 16px 24px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+  }
+
+  .quiz-opt:hover { border-color: var(--cyan); background: rgba(0,229,255,0.08); }
+  .quiz-opt.correct { border-color: var(--mint); background: rgba(0,255,163,0.15); color: var(--mint); }
+  .quiz-opt.wrong { border-color: var(--coral); background: rgba(255,107,107,0.12); color: var(--coral); }
+
+  .quiz-feedback {
+    margin-top: 16px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-align: center;
+    min-height: 30px;
+    border-radius: 10px;
+    padding: 8px;
+  }
+
+  /* Big fact */
+  .big-fact {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    line-height: 1.2;
+  }
+
+  /* Spectrum row */
+  .spectrum-row {
+    display: flex;
+    width: 100%;
+    max-width: 1100px;
+    gap: 8px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .spectrum-cell {
+    flex: 1;
+    border-radius: 14px;
+    padding: 14px 10px;
+    text-align: center;
+    font-family: 'Fredoka One', cursive;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .spectrum-cell:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  }
+
+  .spectrum-cell .cell-use {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    opacity: 0.85;
+    margin-top: 4px;
+  }
+
+  /* Two-col layout */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    width: 100%;
+    max-width: 1100px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Emoji row */
+  .emoji-row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+    margin: 10px 0;
+  }
+
+  .emoji-card {
+    background: var(--navy2);
+    border-radius: 16px;
+    padding: 18px 22px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.07);
+    min-width: 140px;
+    transition: transform 0.2s;
+  }
+
+  .emoji-card:hover { transform: scale(1.05); }
+  .emoji-card .ec-icon { font-size: 2.5rem; display: block; margin-bottom: 8px; }
+  .emoji-card .ec-label { font-family: 'Fredoka One', cursive; font-size: 1rem; }
+  .emoji-card .ec-sub { font-size: 0.82rem; font-weight: 700; opacity: 0.7; margin-top: 2px; }
+
+  /* Content list */
+  .content-list {
+    list-style: none;
+    width: 100%;
+    max-width: 900px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .content-list li {
+    background: var(--navy2);
+    border-radius: 14px;
+    padding: 16px 22px;
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    line-height: 1.55;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .content-list li .li-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* Pulse animation */
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(0,229,255,0.4); }
+    50% { box-shadow: 0 0 0 15px rgba(0,229,255,0); }
+  }
+
+  .pulse { animation: pulse-glow 2.5s infinite; }
+
+  /* Float animation */
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+
+  .float { animation: float 3.5s ease-in-out infinite; }
+
+  /* Slide-in animations */
+  @keyframes slideInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .slide.active .animate-in {
+    animation: slideInUp 0.5s ease forwards;
+  }
+
+  .slide.active .animate-in:nth-child(2) { animation-delay: 0.1s; }
+  .slide.active .animate-in:nth-child(3) { animation-delay: 0.2s; }
+  .slide.active .animate-in:nth-child(4) { animation-delay: 0.3s; }
+  .slide.active .animate-in:nth-child(5) { animation-delay: 0.4s; }
+
+  /* Decorative corner */
+  .corner-glow {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Responsive text scaling */
+  @media (max-width: 900px) {
+    .card-grid-3 { grid-template-columns: repeat(2, 1fr); }
+    .card-grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .two-col { grid-template-columns: 1fr; }
+    .spectrum-row { flex-wrap: wrap; }
+    .spectrum-cell { min-width: 120px; flex: 0 0 calc(33% - 8px); }
+    .slide { padding: 30px 24px 90px; }
+  }
+
+  /* Keyboard hint */
+  .keyboard-hint {
+    position: fixed;
+    top: 18px;
+    right: 18px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.3);
+    z-index: 999;
+    letter-spacing: 1px;
+  }
+
+  /* EM wave SVG */
+  .em-wave-svg {
+    width: 100%;
+    max-width: 700px;
+    position: relative;
+    z-index: 2;
+    margin: 0 auto;
+    display: block;
+  }
+
+  /* Divider */
+  .divider {
+    width: 80px;
+    height: 4px;
+    border-radius: 4px;
+    margin: 10px auto 16px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .uses-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    width: 100%;
+    max-width: 1050px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .use-card {
+    background: var(--navy2);
+    border-radius: 16px;
+    padding: 18px;
+    border: 1px solid rgba(255,255,255,0.07);
+    transition: transform 0.2s;
+  }
+
+  .use-card:hover { transform: translateY(-4px); }
+  .use-card .uc-icon { font-size: 2rem; margin-bottom: 8px; }
+  .use-card .uc-title { font-family: 'Fredoka One', cursive; font-size: 1.1rem; margin-bottom: 4px; }
+  .use-card .uc-text { font-size: 0.9rem; font-weight: 600; opacity: 0.8; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<!-- Stars background -->
+<div class="stars" id="stars"></div>
+
+<!-- Corner glows -->
+<div class="corner-glow" style="width:500px;height:500px;top:-200px;left:-150px;background:radial-gradient(circle,rgba(0,229,255,0.05),transparent 70%)"></div>
+<div class="corner-glow" style="width:400px;height:400px;bottom:-150px;right:-100px;background:radial-gradient(circle,rgba(199,125,255,0.06),transparent 70%)"></div>
+
+<!-- Progress Bar -->
+<div id="progress-bar"></div>
+
+<!-- Keyboard hint -->
+<div class="keyboard-hint">← → ARROW KEYS</div>
+
+<!-- ==================== SLIDES ==================== -->
+<div id="slide-container">
+
+  <!-- SLIDE 1: COVER -->
+  <div class="slide active" id="slide-1">
+    <svg class="em-wave-svg float" style="max-width:600px;margin-bottom:10px;" viewBox="0 0 600 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="wavGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#FF0000"/>
+          <stop offset="16%" style="stop-color:#FF7700"/>
+          <stop offset="33%" style="stop-color:#FFFF00"/>
+          <stop offset="50%" style="stop-color:#00FF88"/>
+          <stop offset="66%" style="stop-color:#0088FF"/>
+          <stop offset="83%" style="stop-color:#8800FF"/>
+          <stop offset="100%" style="stop-color:#FF00FF"/>
+        </linearGradient>
+      </defs>
+      <!-- E-field wave -->
+      <path d="M 0 50 Q 15 10, 30 50 Q 45 90, 60 50 Q 75 10, 90 50 Q 105 90, 120 50 Q 135 10, 150 50 Q 165 90, 180 50 Q 195 10, 210 50 Q 225 90, 240 50 Q 255 10, 270 50 Q 285 90, 300 50 Q 315 10, 330 50 Q 345 90, 360 50 Q 375 10, 390 50 Q 405 90, 420 50 Q 435 10, 450 50 Q 465 90, 480 50 Q 495 10, 510 50 Q 525 90, 540 50 Q 555 10, 570 50 Q 585 90, 600 50" fill="none" stroke="url(#wavGrad)" stroke-width="4" stroke-linecap="round"/>
+      <!-- Arrow -->
+      <line x1="590" y1="50" x2="600" y2="50" stroke="white" stroke-width="2"/>
+      <text x="2" y="22" fill="rgba(0,229,255,0.7)" font-size="11" font-family="Nunito,sans-serif" font-weight="700">E-field →</text>
+    </svg>
+
+    <div class="cover-title animate-in">Electromagnetic Radiation<br/>&amp; the EM Spectrum</div>
+    <div class="cover-sub animate-in">Properties · Types · Real-World Applications</div>
+
+    <div class="divider animate-in" style="background:linear-gradient(90deg,var(--cyan),var(--purple),var(--gold));"></div>
+
+    <div style="position:relative;z-index:2;display:flex;gap:30px;flex-wrap:wrap;justify-content:center;margin-bottom:16px;" class="animate-in">
+      <span style="font-size:2.2rem;" title="Radio">📻</span>
+      <span style="font-size:2.2rem;" title="Microwave">📡</span>
+      <span style="font-size:2.2rem;" title="Infrared">🌡️</span>
+      <span style="font-size:2.2rem;" title="Visible">🌈</span>
+      <span style="font-size:2.2rem;" title="UV">🔆</span>
+      <span style="font-size:2.2rem;" title="X-ray">🩻</span>
+      <span style="font-size:2.2rem;" title="Gamma">☢️</span>
+    </div>
+
+    <div class="cover-credit animate-in">Prepared by: Yolanda Dube &nbsp;©&nbsp;2026</div>
+  </div>
+
+  <!-- SLIDE 2: WHAT IS EM RADIATION? -->
+  <div class="slide" id="slide-2">
+    <div class="section-label animate-in">Introduction</div>
+    <div class="slide-title animate-in" style="color:var(--cyan);">What is Electromagnetic Radiation?</div>
+
+    <svg class="em-wave-svg animate-in" style="max-width:640px;margin-bottom:18px;" viewBox="0 0 640 140" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="ah" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8 Z" fill="white" opacity="0.6"/>
+        </marker>
+      </defs>
+      <!-- Direction arrow -->
+      <line x1="10" y1="70" x2="630" y2="70" stroke="rgba(255,255,255,0.15)" stroke-width="2" stroke-dasharray="6,4"/>
+      <text x="600" y="86" fill="rgba(255,255,255,0.5)" font-size="12" font-family="Nunito,sans-serif" font-weight="700">direction →</text>
+      <!-- E wave -->
+      <path d="M 10 70 Q 25 25, 50 70 Q 75 115, 100 70 Q 125 25, 150 70 Q 175 115, 200 70 Q 225 25, 250 70 Q 275 115, 300 70 Q 325 25, 350 70 Q 375 115, 400 70 Q 425 25, 450 70 Q 475 115, 500 70 Q 525 25, 550 70 Q 575 115, 600 70" fill="none" stroke="var(--cyan)" stroke-width="3.5"/>
+      <text x="12" y="18" fill="var(--cyan)" font-size="13" font-family="Fredoka One,cursive">E (Electric Field)</text>
+      <!-- B wave dots approximation -->
+      <circle cx="50" cy="70" r="3" fill="var(--coral)" opacity="0.7"/>
+      <circle cx="150" cy="70" r="3" fill="var(--coral)" opacity="0.7"/>
+      <circle cx="250" cy="70" r="3" fill="var(--coral)" opacity="0.7"/>
+      <circle cx="350" cy="70" r="3" fill="var(--coral)" opacity="0.7"/>
+      <circle cx="450" cy="70" r="3" fill="var(--coral)" opacity="0.7"/>
+      <circle cx="550" cy="70" r="3" fill="var(--coral)" opacity="0.7"/>
+      <text x="12" y="128" fill="var(--coral)" font-size="13" font-family="Fredoka One,cursive">B (Magnetic Field) — perpendicular to E</text>
+    </svg>
+
+    <div class="card-grid card-grid-2 animate-in" style="max-width:900px;">
+      <div class="card" style="border-color:rgba(0,229,255,0.25);">
+        <span class="card-icon">⚡</span>
+        <div class="card-title" style="color:var(--cyan);">Electric &amp; Magnetic Fields</div>
+        <div class="card-text">EM radiation consists of oscillating electric (E) and magnetic (B) fields that travel together and are always perpendicular to each other and to the direction of travel.</div>
+      </div>
+      <div class="card" style="border-color:rgba(255,215,0,0.25);">
+        <span class="card-icon">🌌</span>
+        <div class="card-title" style="color:var(--gold);">No Medium Needed</div>
+        <div class="card-text">Unlike sound, EM waves do <strong>not</strong> need a medium — they travel through the vacuum of space at the speed of light: <span style="color:var(--gold);">c = 3 × 10⁸ m/s</span>.</div>
+      </div>
+    </div>
+
+    <div class="formula-box animate-in" style="margin-top:14px;">
+      c = f × λ &nbsp;&nbsp;|&nbsp;&nbsp; c = 3 × 10⁸ m/s
+    </div>
+    <div style="font-size:1rem;font-weight:700;opacity:0.7;position:relative;z-index:2;margin-top:4px;">c = speed of light &nbsp;·&nbsp; f = frequency (Hz) &nbsp;·&nbsp; λ = wavelength (m)</div>
+  </div>
+
+  <!-- SLIDE 3: PROPERTIES -->
+  <div class="slide" id="slide-3">
+    <div class="section-label animate-in">Key Properties</div>
+    <div class="slide-title animate-in" style="color:var(--mint);">Properties of EM Waves</div>
+
+    <div class="card-grid card-grid-3 animate-in">
+      <div class="card">
+        <span class="card-icon">〰️</span>
+        <div class="card-title" style="color:var(--cyan);">Wavelength (λ)</div>
+        <div class="card-text">Distance between two successive crests (or troughs). Measured in metres. Shorter λ = more energy.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🔄</span>
+        <div class="card-title" style="color:var(--gold);">Frequency (f)</div>
+        <div class="card-text">Number of complete wave cycles per second. Measured in Hertz (Hz). Higher f = higher energy.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">⚡</span>
+        <div class="card-title" style="color:var(--coral);">Energy (E)</div>
+        <div class="card-text">E = hf where h = Planck's constant (6.63 × 10⁻³⁴ J·s). Higher frequency = higher energy photon.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🚀</span>
+        <div class="card-title" style="color:var(--purple);">Speed in Vacuum</div>
+        <div class="card-text">All EM waves travel at exactly c = 3 × 10⁸ m/s in a vacuum — the fastest speed possible in the universe.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">📐</span>
+        <div class="card-title" style="color:var(--mint);">Transverse Waves</div>
+        <div class="card-text">EM waves are transverse — the oscillation is perpendicular to the direction of energy propagation.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">↔️</span>
+        <div class="card-title" style="color:var(--orange);">Polarisation</div>
+        <div class="card-text">EM waves can be polarised — the E-field oscillates in one specific plane. Used in sunglasses and LCD screens.</div>
+      </div>
+    </div>
+
+    <div class="highlight-box hb-cyan animate-in" style="margin-top:14px;max-width:700px;">
+      <div class="hb-text">📌 Key inverse relationship: <strong>λ × f = c</strong> &nbsp;→&nbsp; As wavelength increases, frequency decreases, and the photon energy decreases.</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: THE EM SPECTRUM OVERVIEW -->
+  <div class="slide" id="slide-4">
+    <div class="section-label animate-in">The Big Picture</div>
+    <div class="slide-title animate-in" style="color:var(--gold);">The Electromagnetic Spectrum</div>
+
+    <div class="spectrum-bar-container animate-in">
+      <div class="spectrum-bar"></div>
+      <div class="spectrum-labels">
+        <span style="color:#FF6060;">Radio</span>
+        <span style="color:#FF9940;">Micro</span>
+        <span style="color:#FFD700;">Infrared</span>
+        <span style="color:#88FF88;">Visible</span>
+        <span style="color:#6699FF;">UV</span>
+        <span style="color:#AA77FF;">X-ray</span>
+        <span style="color:#FF66CC;">Gamma</span>
+      </div>
+    </div>
+
+    <div class="spectrum-row animate-in" style="margin-top:10px;">
+      <div class="spectrum-cell" style="background:rgba(255,60,60,0.15);border:2px solid #FF6060;">
+        <div>📻</div>
+        <div style="color:#FF6060;">Radio</div>
+        <div class="cell-use">TV, Radio, MRI</div>
+        <div class="cell-use" style="font-size:0.68rem;opacity:0.6;">λ: km–0.1m</div>
+      </div>
+      <div class="spectrum-cell" style="background:rgba(255,153,64,0.15);border:2px solid #FF9940;">
+        <div>📡</div>
+        <div style="color:#FF9940;">Micro</div>
+        <div class="cell-use">Cooking, WiFi, Radar</div>
+        <div class="cell-use" style="font-size:0.68rem;opacity:0.6;">λ: 0.1m–1mm</div>
+      </div>
+      <div class="spectrum-cell" style="background:rgba(255,215,0,0.12);border:2px solid var(--gold);">
+        <div>🌡️</div>
+        <div style="color:var(--gold);">Infrared</div>
+        <div class="cell-use">Heat, Remote ctrl</div>
+        <div class="cell-use" style="font-size:0.68rem;opacity:0.6;">λ: 1mm–700nm</div>
+      </div>
+      <div class="spectrum-cell" style="background:linear-gradient(135deg,rgba(255,0,0,0.1),rgba(128,0,255,0.1));border:2px solid #ccc;">
+        <div>🌈</div>
+        <div style="background:linear-gradient(90deg,red,orange,yellow,green,blue,violet);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:700;">Visible</div>
+        <div class="cell-use">Human sight</div>
+        <div class="cell-use" style="font-size:0.68rem;opacity:0.6;">λ: 700–400nm</div>
+      </div>
+      <div class="spectrum-cell" style="background:rgba(100,153,255,0.15);border:2px solid #6699FF;">
+        <div>🔆</div>
+        <div style="color:#6699FF;">UV</div>
+        <div class="cell-use">Sterilisation, tanning</div>
+        <div class="cell-use" style="font-size:0.68rem;opacity:0.6;">λ: 400–10nm</div>
+      </div>
+      <div class="spectrum-cell" style="background:rgba(170,119,255,0.15);border:2px solid var(--purple);">
+        <div>🩻</div>
+        <div style="color:var(--purple);">X-ray</div>
+        <div class="cell-use">Medical imaging</div>
+        <div class="cell-use" style="font-size:0.68rem;opacity:0.6;">λ: 10nm–0.01nm</div>
+      </div>
+      <div class="spectrum-cell" style="background:rgba(255,102,200,0.15);border:2px solid var(--pink);">
+        <div>☢️</div>
+        <div style="color:var(--pink);">Gamma</div>
+        <div class="cell-use">Cancer therapy</div>
+        <div class="cell-use" style="font-size:0.68rem;opacity:0.6;">λ: &lt;0.01nm</div>
+      </div>
+    </div>
+
+    <div class="two-col animate-in" style="margin-top:14px;max-width:700px;gap:14px;">
+      <div class="highlight-box hb-cyan" style="padding:14px 20px;border-radius:14px;">
+        <div class="hb-text">⬅️ <strong>Longer λ, lower f, lower energy</strong><br/>(Radio waves)</div>
+      </div>
+      <div class="highlight-box hb-coral" style="padding:14px 20px;border-radius:14px;">
+        <div class="hb-text">➡️ <strong>Shorter λ, higher f, higher energy</strong><br/>(Gamma rays)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: RADIO WAVES -->
+  <div class="slide" id="slide-5">
+    <div class="section-label animate-in">The Spectrum — Part 1</div>
+    <div class="slide-title animate-in" style="color:#FF6060;">📻 Radio Waves</div>
+
+    <div class="two-col animate-in">
+      <div>
+        <div class="highlight-box hb-coral" style="margin-bottom:14px;">
+          <div class="hb-title" style="color:#FF9090;">Key Facts</div>
+          <div class="hb-text">
+            • Longest wavelength (cm to km) and lowest frequency<br/>
+            • Lowest energy of all EM waves<br/>
+            • Produced by oscillating electric charges in antennas<br/>
+            • Can travel very long distances<br/>
+            • Some reflect off the ionosphere
+          </div>
+        </div>
+        <div class="formula-box" style="font-size:1.3rem;color:#FF9090;border-color:#FF6060;">
+          λ : 0.1 m → 100 km &nbsp;|&nbsp; f : 3 Hz → 3 GHz
+        </div>
+      </div>
+      <div>
+        <div class="uses-grid" style="grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="use-card">
+            <div class="uc-icon">📺</div>
+            <div class="uc-title" style="color:#FF9090;">TV Broadcasting</div>
+            <div class="uc-text">Terrestrial and satellite TV signals are transmitted as radio waves</div>
+          </div>
+          <div class="use-card">
+            <div class="uc-icon">🎙️</div>
+            <div class="uc-title" style="color:#FF9090;">AM/FM Radio</div>
+            <div class="uc-text">AM uses longer waves that reflect off ionosphere; FM uses shorter line-of-sight waves</div>
+          </div>
+          <div class="use-card">
+            <div class="uc-icon">🧲</div>
+            <div class="uc-title" style="color:#FF9090;">MRI Scans</div>
+            <div class="uc-text">Radio waves used with strong magnets to image soft tissue in the body — no ionising radiation</div>
+          </div>
+          <div class="use-card">
+            <div class="uc-icon">📶</div>
+            <div class="uc-title" style="color:#FF9090;">Mobile Phones</div>
+            <div class="uc-text">Cell networks (3G/4G/5G) transmit data using radio wave frequencies</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: MICROWAVES -->
+  <div class="slide" id="slide-6">
+    <div class="section-label animate-in">The Spectrum — Part 2</div>
+    <div class="slide-title animate-in" style="color:#FF9940;">📡 Microwaves</div>
+
+    <div class="two-col animate-in">
+      <div>
+        <div class="highlight-box hb-orange" style="margin-bottom:14px;">
+          <div class="hb-title" style="color:#FFAA55;">Key Facts</div>
+          <div class="hb-text">
+            • Wavelength: 1 mm to 10 cm<br/>
+            • Frequency: 300 MHz – 300 GHz<br/>
+            • Water molecules absorb microwaves very efficiently<br/>
+            • Can penetrate clouds, smoke and rain<br/>
+            • Used in telecommunications and cooking
+          </div>
+        </div>
+        <div class="formula-box" style="font-size:1.3rem;color:#FFAA55;border-color:#FF9940;">
+          λ : 1 mm → 10 cm &nbsp;|&nbsp; f : ~300 MHz → 300 GHz
+        </div>
+      </div>
+      <div>
+        <div class="uses-grid" style="grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="use-card">
+            <div class="uc-icon">🍕</div>
+            <div class="uc-title" style="color:#FFAA55;">Microwave Oven</div>
+            <div class="uc-text">2.45 GHz microwaves cause water molecules to vibrate rapidly, generating heat from within the food</div>
+          </div>
+          <div class="use-card">
+            <div class="uc-icon">✈️</div>
+            <div class="uc-title" style="color:#FFAA55;">RADAR</div>
+            <div class="uc-text">Radio Detection And Ranging — used in aviation, shipping, weather forecasting, and speed guns</div>
+          </div>
+          <div class="use-card">
+            <div class="uc-icon">📡</div>
+            <div class="uc-title" style="color:#FFAA55;">Satellite Communication</div>
+            <div class="uc-text">Microwaves pass easily through Earth's atmosphere — used for GPS, satellite TV, and internet</div>
+          </div>
+          <div class="use-card">
+            <div class="uc-icon">📶</div>
+            <div class="uc-title" style="color:#FFAA55;">WiFi &amp; Bluetooth</div>
+            <div class="uc-text">Home and office wireless networks use microwave frequencies (2.4 GHz and 5 GHz)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: INFRARED -->
+  <div class="slide" id="slide-7">
+    <div class="section-label animate-in">The Spectrum — Part 3</div>
+    <div class="slide-title animate-in" style="color:var(--gold);">🌡️ Infrared Radiation</div>
+
+    <div class="two-col animate-in">
+      <div>
+        <div class="highlight-box hb-gold" style="margin-bottom:14px;">
+          <div class="hb-title" style="color:#FFD700;">Key Facts</div>
+          <div class="hb-text">
+            • Wavelength: 700 nm – 1 mm<br/>
+            • Experienced as <strong>heat</strong> — all warm objects emit IR<br/>
+            • Just below the red end of visible light<br/>
+            • Cannot be seen by the human eye<br/>
+            • Detected by special cameras and sensors
+          </div>
+        </div>
+        <div class="formula-box" style="font-size:1.3rem;color:#FFD700;border-color:var(--gold);">
+          λ : 700 nm → 1 mm
+        </div>
+        <div class="highlight-box hb-gold" style="margin-top:10px;padding:12px 18px;">
+          <div class="hb-text">🌡️ Hotter objects emit IR at <strong>shorter wavelengths</strong> and much greater intensity (Stefan–Boltzmann law)</div>
+        </div>
+      </div>
+      <div>
+        <div class="uses-grid" style="grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="use-card">
+            <div class="uc-icon">📷</div>
+            <div class="uc-title" style="color:var(--gold);">Thermal Imaging</div>
+            <div class="uc-text">Infrared cameras detect heat signatures — used by fire services, military, and medical diagnosis</div>
+          </div>
+          <div class="use-card">
+            <div class="uc-icon">🎮</div>
+            <div class="uc-title" style="color:var(--gold);">Remote Controls</div>
+            <div class="uc-text">TV remotes use IR pulses to send signals to devices — line-of-sight required</div>
+          </div>
+          <div class="use-card">
+            <div class="uc-icon">🔭</div>
+            <div class="uc-title" style="color:var(--gold);">Astronomy</div>
+            <div class="uc-text">IR telescopes (like James Webb) reveal cool stars, dust clouds and distant galaxies</div>
+          </div>
+          <div class="use-card">
+            <div class="uc-icon">🏥</div>
+            <div class="uc-title" style="color:var(--gold);">Physiotherapy</div>
+            <div class="uc-text">IR lamps used to warm muscles, relieve pain, and improve blood circulation in injured tissue</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: VISIBLE LIGHT -->
+  <div class="slide" id="slide-8">
+    <div class="section-label animate-in">The Spectrum — Part 4</div>
+    <div class="slide-title animate-in" style="background:linear-gradient(90deg,#FF4444,#FF9900,#FFFF00,#44FF88,#4488FF,#8800FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">🌈 Visible Light</div>
+
+    <div class="two-col animate-in">
+      <div>
+        <div class="highlight-box" style="background:rgba(255,255,255,0.05);border-left:5px solid #FFFFFF;margin-bottom:14px;">
+          <div class="hb-title" style="color:white;">Key Facts</div>
+          <div class="hb-text">
+            • Only part of the spectrum the human eye detects<br/>
+            • Wavelength: 400 nm (violet) – 700 nm (red)<br/>
+            • White light is a mixture of all colours<br/>
+            • Each colour has a different frequency and energy<br/>
+            • Can be refracted (prism, rainbow) and diffracted
+          </div>
+        </div>
+
+        <!-- Rainbow strip -->
+        <div style="width:100%;height:40px;border-radius:10px;background:linear-gradient(90deg,#FF0000,#FF7700,#FFFF00,#00FF00,#0000FF,#4B0082,#8B00FF);box-shadow:0 0 25px rgba(255,255,255,0.2);margin-bottom:12px;"></div>
+
+        <div style="display:flex;justify-content:space-between;font-size:0.78rem;font-weight:700;opacity:0.8;">
+          <span style="color:#FF6060;">RED 700nm</span>
+          <span style="color:#FF9940;">ORANGE</span>
+          <span style="color:#FFD700;">YELLOW</span>
+          <span style="color:#44FF88;">GREEN</span>
+          <span style="color:#6699FF;">BLUE</span>
+          <span style="color:#CC88FF;">VIOLET 400nm</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="uses-grid" style="grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="use-card">
+            <div class="uc-icon">👁️</div>
+            <div class="uc-title" style="color:white;">Human Vision</div>
+            <div class="uc-text">Cone cells in the retina detect red, green, and blue wavelengths — our colour perception</div>
+          </div>
+          <div class="use-card">
+            <div class="uc-icon">📸</div>
+            <div class="uc-title" style="color:white;">Photography</div>
+            <div class="uc-text">Cameras capture visible light on sensors to form images of the world around us</div>
+          </div>
+          <div class="use-card">
+            <div class="uc-icon">💡</div>
+            <div class="uc-title" style="color:white;">LED Lighting</div>
+            <div class="uc-text">Energy-efficient light-emitting diodes produce specific visible wavelengths for illumination</div>
+          </div>
+          <div class="use-card">
+            <div class="uc-icon">💻</div>
+            <div class="uc-title" style="color:white;">Fibre Optics</div>
+            <div class="uc-text">Laser light carries data through glass fibres — the backbone of modern internet infrastructure</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: ULTRAVIOLET -->
+  <div class="slide" id="slide-9">
+    <div class="section-label animate-in">The Spectrum — Part 5</div>
+    <div class="slide-title animate-in" style="color:#6699FF;">🔆 Ultraviolet Radiation</div>
+
+    <div class="two-col animate-in">
+      <div>
+        <div class="highlight-box" style="background:rgba(100,153,255,0.1);border-left:5px solid #6699FF;margin-bottom:14px;">
+          <div class="hb-title" style="color:#88AAFF;">Key Facts</div>
+          <div class="hb-text">
+            • Wavelength: 10 nm – 400 nm<br/>
+            • Frequency just above visible violet<br/>
+            • Mostly blocked by Earth's ozone layer<br/>
+            • Can cause damage to living tissue (ionising)<br/>
+            • Three types: UV-A, UV-B, UV-C
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+          <div style="background:rgba(100,153,255,0.12);border-radius:12px;padding:12px;text-align:center;border:1px solid rgba(100,153,255,0.3);">
+            <div style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#88BBFF;">UV-A</div>
+            <div style="font-size:0.8rem;font-weight:700;opacity:0.75;margin-top:4px;">320–400nm<br/>Tanning, ageing</div>
+          </div>
+          <div style="background:rgba(170,100,255,0.12);border-radius:12px;padding:12px;text-align:center;border:1px solid rgba(170,100,255,0.3);">
+            <div style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:#CCAAFF;">UV-B</div>
+            <div style="font-size:0.8rem;font-weight:700;opacity:0.75;margin-top:4px;">280–320nm<br/>Sunburn, Vit D</div>
+          </div>
+          <div style="background:rgba(255,100,200,0.12);border-radius:12px;padding:12px;text-align:center;border:1px solid rgba(255,100,200,0.3);">
+            <div style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:var(--pink);">UV-C</div>
+            <div style="font-size:0.8rem;font-weight:700;opacity:0.75;margin-top:4px;">100–280nm<br/>Germicidal</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="uses-grid" style="grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="use-card">
+            <div class="uc-icon">🦠</div>
+            <div class="uc-title" style="color:#88AAFF;">Sterilisation</div>
+            <div class="uc-text">UV-C light destroys DNA in bacteria and viruses — used in hospitals, water purification, and labs</div>
+          </div>
+          <div class="use-card">
+            <div class="uc-icon">💡</div>
+            <div class="uc-title" style="color:#88AAFF;">Fluorescence</div>
+            <div class="uc-text">UV causes certain materials to fluoresce (glow) — used in banknote security and forensics</div>
+          </div>
+          <div class="use-card">
+            <div class="uc-icon">☀️</div>
+            <div class="uc-title" style="color:#88AAFF;">Vitamin D</div>
+            <div class="uc-text">Skin uses UV-B radiation to synthesise vitamin D, essential for bone health and immunity</div>
+          </div>
+          <div class="use-card">
+            <div class="uc-icon">🔭</div>
+            <div class="uc-title" style="color:#88AAFF;">Astronomy</div>
+            <div class="uc-text">UV telescopes observe hot young stars, galaxies and active galactic nuclei that emit strongly in UV</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: X-RAYS -->
+  <div class="slide" id="slide-10">
+    <div class="section-label animate-in">The Spectrum — Part 6</div>
+    <div class="slide-title animate-in" style="color:var(--purple);">🩻 X-Rays</div>
+
+    <div class="two-col animate-in">
+      <div>
+        <div class="highlight-box hb-purple" style="margin-bottom:14px;">
+          <div class="hb-title" style="color:var(--purple);">Key Facts</div>
+          <div class="hb-text">
+            • Wavelength: 0.01 nm – 10 nm<br/>
+            • Very high frequency, high energy<br/>
+            • Ionising radiation — can damage DNA<br/>
+            • Penetrate soft tissue but absorbed by bone/metal<br/>
+            • Discovered by Wilhelm Röntgen in 1895
+          </div>
+        </div>
+        <div class="formula-box" style="font-size:1.3rem;color:var(--purple);border-color:var(--purple);">
+          λ : 0.01 – 10 nm &nbsp;|&nbsp; E = hf
+        </div>
+        <div class="highlight-box hb-purple" style="margin-top:10px;padding:12px 18px;">
+          <div class="hb-text">⚠️ X-rays are <strong>ionising</strong> — prolonged exposure can break chemical bonds in DNA and cause cancer. Protective lead shields are used.</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="uses-grid" style="grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="use-card">
+            <div class="uc-icon">🦷</div>
+            <div class="uc-title" style="color:var(--purple);">Medical X-rays</div>
+            <div class="uc-text">Image bones, detect fractures and cavities. Bones absorb X-rays, appearing white on film</div>
+          </div>
+          <div class="use-card">
+            <div class="uc-icon">🫁</div>
+            <div class="uc-title" style="color:var(--purple);">CT Scans</div>
+            <div class="uc-text">Computed Tomography takes multiple X-ray images to build detailed 3D images of internal organs</div>
+          </div>
+          <div class="use-card">
+            <div class="uc-icon">🔐</div>
+            <div class="uc-title" style="color:var(--purple);">Security Scanning</div>
+            <div class="uc-text">Airport and customs scanners use X-rays to inspect luggage and cargo for contraband</div>
+          </div>
+          <div class="use-card">
+            <div class="uc-icon">🌠</div>
+            <div class="uc-title" style="color:var(--purple);">Astronomy</div>
+            <div class="uc-text">X-ray telescopes observe black holes, neutron stars and supernova remnants — sources of extreme energies</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 11: GAMMA RAYS -->
+  <div class="slide" id="slide-11">
+    <div class="section-label animate-in">The Spectrum — Part 7</div>
+    <div class="slide-title animate-in" style="color:var(--pink);">☢️ Gamma Rays</div>
+
+    <div class="two-col animate-in">
+      <div>
+        <div class="highlight-box" style="background:rgba(255,102,200,0.1);border-left:5px solid var(--pink);margin-bottom:14px;">
+          <div class="hb-title" style="color:var(--pink);">Key Facts</div>
+          <div class="hb-text">
+            • Shortest wavelength (&lt; 0.01 nm)<br/>
+            • Highest frequency and highest energy<br/>
+            • Emitted from radioactive nuclei during nuclear decay<br/>
+            • Strongly ionising — very penetrating, dangerous<br/>
+            • Thick lead or concrete needed for shielding
+          </div>
+        </div>
+        <div class="formula-box" style="font-size:1.3rem;color:var(--pink);border-color:var(--pink);">
+          λ &lt; 0.01 nm &nbsp;|&nbsp; f &gt; 3 × 10¹⁹ Hz
+        </div>
+        <div class="highlight-box" style="background:rgba(255,102,200,0.08);border-left:5px solid var(--pink);margin-top:10px;padding:12px 18px;">
+          <div class="hb-text">🌌 Cosmic gamma-ray bursts are the most energetic explosions in the universe — some from neutron star mergers or supernovae</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="uses-grid" style="grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="use-card">
+            <div class="uc-icon">🎯</div>
+            <div class="uc-title" style="color:var(--pink);">Cancer Treatment</div>
+            <div class="uc-text">Gamma Knife radiotherapy targets tumours with precise beams of gamma radiation to destroy cancer cells</div>
+          </div>
+          <div class="use-card">
+            <div class="uc-icon">🧫</div>
+            <div class="uc-title" style="color:var(--pink);">Sterilisation</div>
+            <div class="uc-text">Medical equipment and food is sterilised using gamma irradiation — kills all microorganisms effectively</div>
+          </div>
+          <div class="use-card">
+            <div class="uc-icon">⚛️</div>
+            <div class="uc-title" style="color:var(--pink);">PET Scans</div>
+            <div class="uc-text">Positron Emission Tomography: detects gamma rays to image metabolic activity in living tissue</div>
+          </div>
+          <div class="use-card">
+            <div class="uc-icon">🌠</div>
+            <div class="uc-title" style="color:var(--pink);">Astrophysics</div>
+            <div class="uc-text">Gamma-ray telescopes (Fermi) detect gamma bursts from neutron stars, black holes and supernovae</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 12: COMPARISON TABLE -->
+  <div class="slide scroll-slide" id="slide-12">
+    <div class="section-label animate-in" style="margin-top:10px;">Summary</div>
+    <div class="slide-title animate-in" style="color:var(--cyan);font-size:clamp(1.8rem,3.5vw,3rem);">Complete EM Spectrum at a Glance</div>
+
+    <div style="width:100%;max-width:1100px;position:relative;z-index:2;overflow-x:auto;" class="animate-in">
+      <table style="width:100%;border-collapse:collapse;font-size:0.95rem;font-weight:700;min-width:700px;">
+        <thead>
+          <tr style="background:rgba(0,229,255,0.1);border-bottom:2px solid var(--cyan);">
+            <th style="padding:14px 12px;text-align:left;font-family:'Fredoka One',cursive;color:var(--cyan);">Wave Type</th>
+            <th style="padding:14px 12px;text-align:left;font-family:'Fredoka One',cursive;color:var(--gold);">Wavelength</th>
+            <th style="padding:14px 12px;text-align:left;font-family:'Fredoka One',cursive;color:var(--mint);">Frequency</th>
+            <th style="padding:14px 12px;text-align:left;font-family:'Fredoka One',cursive;color:var(--coral);">Energy</th>
+            <th style="padding:14px 12px;text-align:left;font-family:'Fredoka One',cursive;color:var(--purple);">Key Uses</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+            <td style="padding:12px;color:#FF8888;">📻 Radio</td>
+            <td style="padding:12px;opacity:0.85;">0.1 m – 100 km</td>
+            <td style="padding:12px;opacity:0.85;">3 Hz – 3 GHz</td>
+            <td style="padding:12px;opacity:0.85;">Lowest</td>
+            <td style="padding:12px;opacity:0.85;">Broadcasting, MRI, mobile phones</td>
+          </tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);">
+            <td style="padding:12px;color:#FFAA55;">📡 Microwave</td>
+            <td style="padding:12px;opacity:0.85;">1 mm – 10 cm</td>
+            <td style="padding:12px;opacity:0.85;">300 MHz – 300 GHz</td>
+            <td style="padding:12px;opacity:0.85;">Low</td>
+            <td style="padding:12px;opacity:0.85;">Cooking, radar, WiFi, GPS</td>
+          </tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+            <td style="padding:12px;color:#FFD700;">🌡️ Infrared</td>
+            <td style="padding:12px;opacity:0.85;">700 nm – 1 mm</td>
+            <td style="padding:12px;opacity:0.85;">300 GHz – 430 THz</td>
+            <td style="padding:12px;opacity:0.85;">Medium-low</td>
+            <td style="padding:12px;opacity:0.85;">Heat, remote controls, thermal cameras</td>
+          </tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);">
+            <td style="padding:12px;">🌈 Visible</td>
+            <td style="padding:12px;opacity:0.85;">400 – 700 nm</td>
+            <td style="padding:12px;opacity:0.85;">430 – 750 THz</td>
+            <td style="padding:12px;opacity:0.85;">Medium</td>
+            <td style="padding:12px;opacity:0.85;">Vision, photography, fibre optics</td>
+          </tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+            <td style="padding:12px;color:#88AAFF;">🔆 Ultraviolet</td>
+            <td style="padding:12px;opacity:0.85;">10 – 400 nm</td>
+            <td style="padding:12px;opacity:0.85;">750 THz – 30 PHz</td>
+            <td style="padding:12px;opacity:0.85;">Medium-high</td>
+            <td style="padding:12px;opacity:0.85;">Sterilisation, fluorescence, Vit D</td>
+          </tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);">
+            <td style="padding:12px;color:var(--purple);">🩻 X-ray</td>
+            <td style="padding:12px;opacity:0.85;">0.01 – 10 nm</td>
+            <td style="padding:12px;opacity:0.85;">30 PHz – 30 EHz</td>
+            <td style="padding:12px;opacity:0.85;">High</td>
+            <td style="padding:12px;opacity:0.85;">Medical imaging, CT scans, security</td>
+          </tr>
+          <tr>
+            <td style="padding:12px;color:var(--pink);">☢️ Gamma</td>
+            <td style="padding:12px;opacity:0.85;">&lt; 0.01 nm</td>
+            <td style="padding:12px;opacity:0.85;">&gt; 30 EHz</td>
+            <td style="padding:12px;opacity:0.85;"><strong>Highest</strong></td>
+            <td style="padding:12px;opacity:0.85;">Cancer therapy, sterilisation, PET scans</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highlight-box hb-cyan animate-in" style="margin-top:16px;max-width:900px;">
+      <div class="hb-text">🔑 All EM waves travel at the speed of light (c = 3 × 10⁸ m/s) in a vacuum. They differ only in frequency and wavelength. Energy increases with frequency: <strong>E = hf</strong>.</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 13: QUIZ 1 -->
+  <div class="slide" id="slide-13">
+    <div class="section-label animate-in">🎯 Quiz Checkpoint</div>
+    <div class="slide-title animate-in" style="color:var(--gold);margin-bottom:20px;">Test Your Knowledge!</div>
+
+    <div class="quiz-container animate-in">
+      <div class="quiz-question">Which type of electromagnetic wave has the LONGEST wavelength?</div>
+      <div class="quiz-options" id="q1-options">
+        <button class="quiz-opt" onclick="checkAnswer('q1',this,'wrong')">🌈 Visible Light</button>
+        <button class="quiz-opt" onclick="checkAnswer('q1',this,'correct')">📻 Radio Waves</button>
+        <button class="quiz-opt" onclick="checkAnswer('q1',this,'wrong')">☢️ Gamma Rays</button>
+        <button class="quiz-opt" onclick="checkAnswer('q1',this,'wrong')">🔆 Ultraviolet Radiation</button>
+      </div>
+      <div class="quiz-feedback" id="q1-feedback"></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 14: QUIZ 2 -->
+  <div class="slide" id="slide-14">
+    <div class="section-label animate-in">🎯 Quiz Checkpoint</div>
+    <div class="slide-title animate-in" style="color:var(--mint);margin-bottom:20px;">Keep Going!</div>
+
+    <div class="quiz-container animate-in">
+      <div class="quiz-question">An EM wave has wavelength 2.5 cm. Using c = f × λ and c = 3 × 10⁸ m/s, what is its frequency?</div>
+      <div class="quiz-options" id="q2-options">
+        <button class="quiz-opt" onclick="checkAnswer('q2',this,'wrong')">3 × 10⁸ Hz</button>
+        <button class="quiz-opt" onclick="checkAnswer('q2',this,'wrong')">7.5 × 10⁶ Hz</button>
+        <button class="quiz-opt" onclick="checkAnswer('q2',this,'correct')">1.2 × 10¹⁰ Hz</button>
+        <button class="quiz-opt" onclick="checkAnswer('q2',this,'wrong')">1.2 × 10⁸ Hz</button>
+      </div>
+      <div class="quiz-feedback" id="q2-feedback"></div>
+      <div class="highlight-box hb-mint" style="margin-top:14px;padding:12px 18px;">
+        <div class="hb-text">💡 Hint: Convert λ = 2.5 cm = 0.025 m, then f = c ÷ λ</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 15: QUIZ 3 -->
+  <div class="slide" id="slide-15">
+    <div class="section-label animate-in">🎯 Quiz Checkpoint</div>
+    <div class="slide-title animate-in" style="color:var(--cyan);margin-bottom:20px;">One More!</div>
+
+    <div class="quiz-container animate-in">
+      <div class="quiz-question">Which type of EM radiation is used in MRI (Magnetic Resonance Imaging) scans?</div>
+      <div class="quiz-options" id="q3-options">
+        <button class="quiz-opt" onclick="checkAnswer('q3',this,'wrong')">🩻 X-rays</button>
+        <button class="quiz-opt" onclick="checkAnswer('q3',this,'wrong')">☢️ Gamma Rays</button>
+        <button class="quiz-opt" onclick="checkAnswer('q3',this,'wrong')">🌡️ Infrared</button>
+        <button class="quiz-opt" onclick="checkAnswer('q3',this,'correct')">📻 Radio Waves</button>
+      </div>
+      <div class="quiz-feedback" id="q3-feedback"></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 16: BIG FACT -->
+  <div class="slide" id="slide-16">
+    <div class="section-label animate-in">Mind-Blowing Fact ✨</div>
+
+    <div class="big-fact animate-in" style="color:var(--cyan);margin-bottom:10px;">
+      3 × 10⁸ m/s
+    </div>
+    <div class="slide-subtitle animate-in" style="color:var(--white);">The speed of all EM waves in a vacuum</div>
+
+    <div class="card-grid card-grid-3 animate-in" style="margin-top:10px;max-width:900px;">
+      <div class="card" style="text-align:center;">
+        <div style="font-size:2.5rem;margin-bottom:8px;">🌍</div>
+        <div class="card-title" style="color:var(--gold);">Earth Circumference</div>
+        <div class="card-text">Light could circle the Earth <strong style="color:var(--cyan);">7.5 times</strong> in just 1 second</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:2.5rem;margin-bottom:8px;">🌙</div>
+        <div class="card-title" style="color:var(--mint);">Moon Distance</div>
+        <div class="card-text">Light from the Moon reaches us in only <strong style="color:var(--mint);">1.3 seconds</strong></div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:2.5rem;margin-bottom:8px;">⭐</div>
+        <div class="card-title" style="color:var(--purple);">Nearest Star</div>
+        <div class="card-text">Light from Proxima Centauri takes <strong style="color:var(--purple);">4.2 years</strong> to reach Earth</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 17: SUMMARY & WRAP-UP -->
+  <div class="slide scroll-slide" id="slide-17">
+    <div class="section-label animate-in" style="margin-top:10px;">Lesson Wrap-Up</div>
+    <div class="slide-title animate-in" style="color:var(--mint);">What We Learned Today 🎓</div>
+
+    <ul class="content-list animate-in">
+      <li>
+        <span class="li-icon">⚡</span>
+        <span>Electromagnetic radiation consists of oscillating electric and magnetic fields that travel at c = 3 × 10⁸ m/s in a vacuum — no medium required.</span>
+      </li>
+      <li>
+        <span class="li-icon">〰️</span>
+        <span>Key wave relationship: <strong style="color:var(--gold);">c = f × λ</strong> and photon energy <strong style="color:var(--cyan);">E = hf</strong>. Higher frequency means shorter wavelength and more energy.</span>
+      </li>
+      <li>
+        <span class="li-icon">📊</span>
+        <span>The EM spectrum spans from radio waves (lowest energy, longest λ) to gamma rays (highest energy, shortest λ).</span>
+      </li>
+      <li>
+        <span class="li-icon">📻</span>
+        <span><strong style="color:#FF8888;">Radio waves</strong> — TV, FM/AM radio, MRI, mobile phones</span>
+      </li>
+      <li>
+        <span class="li-icon">📡</span>
+        <span><strong style="color:#FFAA55;">Microwaves</strong> — Cooking, radar, WiFi, satellite communications</span>
+      </li>
+      <li>
+        <span class="li-icon">🌡️</span>
+        <span><strong style="color:var(--gold);">Infrared</strong> — Heat, thermal cameras, remote controls, IR astronomy</span>
+      </li>
+      <li>
+        <span class="li-icon">🌈</span>
+        <span><strong>Visible light</strong> — Human vision, photography, LED lighting, fibre optics</span>
+      </li>
+      <li>
+        <span class="li-icon">🔆</span>
+        <span><strong style="color:#88AAFF;">Ultraviolet</strong> — Sterilisation, fluorescence, vitamin D synthesis (ionising)</span>
+      </li>
+      <li>
+        <span class="li-icon">🩻</span>
+        <span><strong style="color:var(--purple);">X-rays</strong> — Medical imaging, CT scans, airport security (strongly ionising)</span>
+      </li>
+      <li>
+        <span class="li-icon">☢️</span>
+        <span><strong style="color:var(--pink);">Gamma rays</strong> — Cancer radiotherapy, sterilisation, PET scans (most dangerous)</span>
+      </li>
+    </ul>
+
+    <div style="text-align:center;position:relative;z-index:2;margin-top:16px;padding-bottom:80px;" class="animate-in">
+      <div style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:var(--gold);">Prepared by: Yolanda Dube &nbsp;©&nbsp;2026</div>
+      <div style="font-size:0.9rem;font-weight:700;opacity:0.5;margin-top:4px;">Yolymatics Tutorials (PTY Ltd) · University of the Western Cape</div>
+    </div>
+  </div>
+
+</div><!-- end slide-container -->
+
+<!-- Navigation -->
+<div id="nav">
+  <button class="nav-btn" onclick="changeSlide(-1)">◀ Prev</button>
+  <div id="slide-counter">1 / 17</div>
+  <button class="nav-btn" onclick="changeSlide(1)">Next ▶</button>
+</div>
+
+<script>
+  // Generate stars
+  const starsEl = document.getElementById('stars');
+  for (let i = 0; i < 120; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 2.5 + 0.5;
+    s.style.cssText = `
+      width:${size}px; height:${size}px;
+      top:${Math.random()*100}%;
+      left:${Math.random()*100}%;
+      --dur:${2 + Math.random()*4}s;
+      --op:${0.2 + Math.random()*0.6};
+      animation-delay:${Math.random()*5}s;
+    `;
+    starsEl.appendChild(s);
+  }
+
+  let current = 1;
+  const total = 17;
+
+  function showSlide(n) {
+    const prev = document.querySelector('.slide.active');
+    if (prev) { prev.classList.remove('active'); prev.style.display = 'none'; }
+    const next = document.getElementById('slide-' + n);
+    next.style.display = 'flex';
+    requestAnimationFrame(() => { next.classList.add('active'); });
+    document.getElementById('slide-counter').textContent = n + ' / ' + total;
+    const pct = ((n - 1) / (total - 1)) * 100;
+    document.getElementById('progress-bar').style.width = pct + '%';
+    // Reset scroll
+    next.scrollTop = 0;
+  }
+
+  function changeSlide(dir) {
+    const next = current + dir;
+    if (next < 1 || next > total) return;
+    current = next;
+    showSlide(current);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changeSlide(1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') changeSlide(-1);
+  });
+
+  // Touch/swipe
+  let touchX = 0;
+  document.addEventListener('touchstart', (e) => { touchX = e.changedTouches[0].clientX; });
+  document.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) > 50) changeSlide(dx < 0 ? 1 : -1);
+  });
+
+  // Quiz
+  function checkAnswer(qid, btn, result) {
+    const opts = document.querySelectorAll('#' + qid + '-options .quiz-opt');
+    opts.forEach(o => o.disabled = true);
+    btn.classList.add(result);
+    const fb = document.getElementById(qid + '-feedback');
+    if (result === 'correct') {
+      fb.textContent = '🎉 Correct! Well done!';
+      fb.style.color = 'var(--mint)';
+    } else {
+      btn.classList.add('wrong');
+      // highlight the correct one
+      opts.forEach(o => {
+        if (o.getAttribute('onclick').includes("'correct'")) o.classList.add('correct');
+      });
+      fb.textContent = '❌ Not quite — check the highlighted answer above!';
+      fb.style.color = 'var(--coral)';
+    }
+  }
+
+  showSlide(1);
+</script>
+</body>
+</html>
