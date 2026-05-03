@@ -1,5 +1,16 @@
 [
   {
+    "id": "pg_1777831297385_a57",
+    "platform": "yt",
+    "subject": "Physics",
+    "topic": "Waves and Sound",
+    "title": "Electromagnetic Radiation & the EM Spectrum",
+    "desc": "Electromagnetic Radiation",
+    "accent": "#fbbf24",
+    "date": "2026-05-03",
+    "filename": "em_radiation_slides.html"
+  },
+  {
     "id": "pg_1777545661947_xln",
     "platform": "is",
     "subject": "Science",
