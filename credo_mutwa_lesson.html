@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Credo Mutwa – The Great Keeper of African Wisdom</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --gold:    #D4A017;
+    --amber:   #C47A1E;
+    --terr:    #8B3A0F;
+    --deep:    #1A0A00;
+    --cream:   #F5E6C8;
+    --rust:    #A0390C;
+    --sage:    #4A6741;
+    --sky:     #1C3A5E;
+    --warm:    #2C1505;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: var(--deep);
+    font-family: 'Lora', serif;
+    overflow: hidden;
+  }
+
+  /* ── SCROLLING TRACK ── */
+  #track {
+    display: flex;
+    height: 100vh;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  #track::-webkit-scrollbar { height: 8px; }
+  #track::-webkit-scrollbar-track { background: var(--warm); }
+  #track::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 4px; }
+
+  /* ── SLIDE BASE ── */
+  .slide {
+    flex: none;
+    width: 100vw;
+    height: 100vh;
+    scroll-snap-align: start;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 48px 80px;
+    overflow: hidden;
+  }
+
+  /* ── DECORATIVE PATTERN OVERLAY ── */
+  .slide::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(60deg, rgba(212,160,23,.06) 0px, rgba(212,160,23,.06) 1px, transparent 1px, transparent 30px),
+      repeating-linear-gradient(-60deg, rgba(212,160,23,.06) 0px, rgba(212,160,23,.06) 1px, transparent 1px, transparent 30px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .slide > * { position: relative; z-index: 1; }
+
+  /* ── SLIDE BACKGROUNDS ── */
+  .s-cover    { background: radial-gradient(ellipse at 30% 50%, #3D1200 0%, #1A0800 60%, #0A0300 100%); }
+  .s-earth    { background: radial-gradient(ellipse at 70% 40%, #2A1500 0%, #150900 70%, #0A0400 100%); }
+  .s-sky      { background: radial-gradient(ellipse at 40% 60%, #0D2038 0%, #071525 60%, #020A14 100%); }
+  .s-forest   { background: radial-gradient(ellipse at 60% 30%, #162110 0%, #0A1508 60%, #040A03 100%); }
+  .s-fire     { background: radial-gradient(ellipse at 50% 70%, #2E0D00 0%, #1A0500 60%, #080200 100%); }
+  .s-gold     { background: radial-gradient(ellipse at 30% 50%, #1E1200 0%, #0E0800 70%, #050300 100%); }
+
+  /* ── SLIDE NUMBER ── */
+  .slide-num {
+    position: absolute;
+    top: 24px; right: 36px;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 13px;
+    color: var(--gold);
+    opacity: .6;
+    letter-spacing: 3px;
+  }
+
+  /* ── GOLD DIVIDER ── */
+  .divider {
+    width: 120px; height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 22px auto;
+    border-radius: 2px;
+  }
+  .divider-sm {
+    width: 60px; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--amber), transparent);
+    margin: 14px auto;
+  }
+
+  /* ── TYPOGRAPHY ── */
+  .label {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 12px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--gold);
+    opacity: .8;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(2.4rem, 5vw, 4.8rem);
+    color: var(--cream);
+    line-height: 1.1;
+    text-align: center;
+    text-shadow: 0 4px 30px rgba(212,160,23,.4);
+  }
+  h1 span { color: var(--gold); }
+
+  h2 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.6rem, 3.2vw, 3rem);
+    color: var(--gold);
+    text-align: center;
+    line-height: 1.2;
+    text-shadow: 0 2px 20px rgba(212,160,23,.3);
+  }
+
+  h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.3rem, 2.5vw, 2.2rem);
+    color: var(--cream);
+    text-align: center;
+    font-style: italic;
+  }
+
+  p.body {
+    font-size: clamp(1.05rem, 1.8vw, 1.55rem);
+    color: #E8D5B0;
+    line-height: 1.85;
+    text-align: center;
+    max-width: 820px;
+  }
+  p.body strong { color: var(--gold); font-weight: 600; }
+
+  /* ── QUOTE BLOCK ── */
+  .quote-wrap {
+    border-left: 4px solid var(--gold);
+    border-right: 4px solid var(--gold);
+    padding: 28px 48px;
+    margin: 10px 0;
+    background: rgba(212,160,23,.06);
+    border-radius: 4px;
+    max-width: 860px;
+  }
+  .quote-wrap p {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.1rem, 2vw, 1.65rem);
+    color: var(--cream);
+    line-height: 1.9;
+    text-align: center;
+    font-style: italic;
+  }
+  .quote-attr {
+    font-size: 1rem;
+    color: var(--gold);
+    text-align: center;
+    margin-top: 12px;
+    letter-spacing: 2px;
+  }
+
+  /* ── CARD GRID ── */
+  .card-grid {
+    display: grid;
+    gap: 22px;
+    width: 100%;
+    max-width: 1000px;
+  }
+  .card-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .card-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .card {
+    background: rgba(212,160,23,.08);
+    border: 1px solid rgba(212,160,23,.25);
+    border-radius: 12px;
+    padding: 28px 30px;
+    text-align: center;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(212,160,23,.2);
+  }
+  .card .icon { font-size: 2.4rem; margin-bottom: 12px; }
+  .card h4 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(.85rem, 1.3vw, 1.1rem);
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+  .card p {
+    font-size: clamp(.9rem, 1.4vw, 1.15rem);
+    color: #D4C4A0;
+    line-height: 1.7;
+  }
+
+  /* ── TIMELINE ── */
+  .timeline { display: flex; flex-direction: column; gap: 18px; max-width: 800px; width: 100%; }
+  .tl-item { display: flex; gap: 24px; align-items: flex-start; }
+  .tl-year {
+    flex: none; width: 90px;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(.85rem, 1.4vw, 1.1rem);
+    color: var(--gold);
+    text-align: right;
+    padding-top: 2px;
+  }
+  .tl-dot-col { flex: none; display: flex; flex-direction: column; align-items: center; gap: 0; }
+  .tl-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--gold); flex: none; margin-top: 4px; }
+  .tl-line { width: 2px; flex: 1; background: linear-gradient(180deg, var(--amber), transparent); min-height: 30px; }
+  .tl-text { flex: 1; }
+  .tl-text p {
+    font-size: clamp(.95rem, 1.5vw, 1.2rem);
+    color: #D4C4A0;
+    line-height: 1.65;
+  }
+  .tl-text strong { color: var(--cream); }
+
+  /* ── PROPHECY BOX ── */
+  .prophecy-box {
+    background: linear-gradient(135deg, rgba(160,57,12,.15) 0%, rgba(26,8,0,.3) 100%);
+    border: 2px solid rgba(212,160,23,.4);
+    border-radius: 16px;
+    padding: 36px 48px;
+    max-width: 900px;
+    text-align: center;
+    box-shadow: 0 0 60px rgba(212,160,23,.12), inset 0 0 40px rgba(0,0,0,.3);
+  }
+  .prophecy-box p {
+    font-size: clamp(1.05rem, 1.8vw, 1.5rem);
+    color: #EDD8A8;
+    line-height: 1.9;
+  }
+  .prophecy-box p strong { color: #FFD060; }
+
+  /* ── ACTIVITY BOX ── */
+  .activity-box {
+    background: linear-gradient(135deg, rgba(74,103,65,.2) 0%, rgba(10,21,8,.3) 100%);
+    border: 2px solid rgba(74,103,65,.5);
+    border-radius: 16px;
+    padding: 36px 48px;
+    max-width: 900px;
+    width: 100%;
+  }
+  .activity-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1rem, 1.8vw, 1.4rem);
+    color: #7EC870;
+    margin-bottom: 20px;
+    text-align: center;
+    letter-spacing: 2px;
+  }
+  .activity-list { list-style: none; }
+  .activity-list li {
+    font-size: clamp(.95rem, 1.5vw, 1.2rem);
+    color: #C8DDB4;
+    line-height: 1.75;
+    margin-bottom: 14px;
+    padding-left: 30px;
+    position: relative;
+  }
+  .activity-list li::before {
+    content: '✦';
+    position: absolute; left: 0;
+    color: #7EC870;
+    font-size: .9rem;
+  }
+
+  /* ── NAV ARROWS ── */
+  .nav {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    z-index: 100;
+  }
+  .nav button {
+    width: 54px; height: 54px;
+    border-radius: 50%;
+    border: 2px solid var(--gold);
+    background: rgba(26,8,0,.7);
+    color: var(--gold);
+    font-size: 1.3rem;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: background .2s, transform .15s;
+  }
+  .nav button:hover { background: var(--gold); color: var(--deep); transform: scale(1.1); }
+
+  /* ── PROGRESS DOTS ── */
+  .dots {
+    position: fixed;
+    bottom: 32px;
+    right: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 100;
+  }
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(212,160,23,.3);
+    cursor: pointer;
+    transition: background .2s, transform .2s;
+  }
+  .dot.active { background: var(--gold); transform: scale(1.4); }
+
+  /* ── CORNER ORNAMENT ── */
+  .ornament {
+    position: absolute;
+    font-size: 5rem;
+    opacity: .06;
+    pointer-events: none;
+    color: var(--gold);
+    font-family: 'Cinzel Decorative', serif;
+  }
+  .ornament.tl { top: 16px; left: 24px; }
+  .ornament.br { bottom: 16px; right: 24px; transform: rotate(180deg); }
+
+  /* ── ANIMATIONS ── */
+  .slide .content-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: fadeUp .7s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── COVER GLOW ── */
+  .glow-ring {
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(212,160,23,.12) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    animation: pulse 4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { transform: translate(-50%,-50%) scale(1); opacity: 1; }
+    50%      { transform: translate(-50%,-50%) scale(1.15); opacity: .6; }
+  }
+
+  /* ── RESPONSIVE TWEAKS ── */
+  @media (max-width: 700px) {
+    .slide { padding: 36px 24px; }
+    .card-grid.cols-3 { grid-template-columns: 1fr; }
+    .card-grid.cols-2 { grid-template-columns: 1fr; }
+    .quote-wrap { padding: 20px 24px; }
+    .prophecy-box { padding: 24px 20px; }
+    .activity-box { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="track">
+
+  <!-- ══ SLIDE 1 · COVER ══ -->
+  <div class="slide s-cover">
+    <div class="glow-ring"></div>
+    <span class="slide-num">01 / 10</span>
+    <div class="ornament tl">✦</div>
+    <div class="ornament br">✦</div>
+    <div class="content-wrap" style="gap:0">
+      <div class="label">A Journey Into African Wisdom</div>
+      <h1>CREDO<br/><span>MUTWA</span></h1>
+      <div class="divider"></div>
+      <h3>The Great Keeper of African Prophecy &amp; Sacred Knowledge</h3>
+      <div class="divider-sm"></div>
+      <p class="body" style="max-width:600px;margin-top:8px;">
+        Explore the life, teachings, and remarkable prophecies of one of Africa's most
+        extraordinary spiritual elders — a man who carried the soul of a continent.
+      </p>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 2 · WHO WAS CREDO MUTWA ══ -->
+  <div class="slide s-earth">
+    <span class="slide-num">02 / 10</span>
+    <div class="ornament tl">✦</div>
+    <div class="content-wrap" style="gap:12px">
+      <div class="label">The Man</div>
+      <h2>Who Was<br/>Credo Mutwa?</h2>
+      <div class="divider"></div>
+      <p class="body">
+        <strong>Vusamazulu Credo Mutwa</strong> (1921 – 2020) was a South African <strong>Zulu Sangoma</strong> —
+        a traditional healer, prophet, and keeper of oral history. His name means
+        <strong>"Awakener of the Zulus"</strong>.
+      </p>
+      <div class="divider-sm"></div>
+      <p class="body">
+        He was recognised across Africa and internationally as a <strong>custodian of
+        ancient African knowledge</strong> — stories, rituals, star lore, healing arts,
+        and prophecies passed down over thousands of years.
+      </p>
+      <div class="divider-sm"></div>
+      <p class="body">
+        He lived to the age of <strong>98</strong>, spending his entire life preserving
+        traditions that might otherwise have been lost forever.
+      </p>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 3 · TIMELINE ══ -->
+  <div class="slide s-sky">
+    <span class="slide-num">03 / 10</span>
+    <div class="ornament tl">✦</div>
+    <div class="content-wrap" style="gap:14px;width:100%">
+      <div class="label">Life Journey</div>
+      <h2>Key Moments<br/>in His Life</h2>
+      <div class="divider"></div>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-year">1921</div>
+          <div class="tl-dot-col"><div class="tl-dot"></div><div class="tl-line"></div></div>
+          <div class="tl-text"><p><strong>Born</strong> in KwaZulu-Natal, South Africa, into a mixed Zulu-Catholic family.</p></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">1940s</div>
+          <div class="tl-dot-col"><div class="tl-dot"></div><div class="tl-line"></div></div>
+          <div class="tl-text"><p>Called to become a <strong>Sangoma</strong> after a series of visions and near-death experiences.</p></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">1964</div>
+          <div class="tl-dot-col"><div class="tl-dot"></div><div class="tl-line"></div></div>
+          <div class="tl-text"><p>Published <strong><em>Indaba, My Children</em></strong> — his landmark book of African oral history &amp; legend.</p></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">1993</div>
+          <div class="tl-dot-col"><div class="tl-dot"></div><div class="tl-line"></div></div>
+          <div class="tl-text"><p>Recorded his <strong>famous prophecy</strong> about great migration, conflict, and the future of South Africa.</p></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">2020</div>
+          <div class="tl-dot-col"><div class="tl-dot"></div></div>
+          <div class="tl-text"><p>Passed away at <strong>age 98</strong>, leaving behind an unparalleled legacy of African spiritual wisdom.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 4 · THE SANGOMA ══ -->
+  <div class="slide s-earth">
+    <span class="slide-num">04 / 10</span>
+    <div class="ornament tl">✦</div>
+    <div class="content-wrap" style="gap:16px">
+      <div class="label">Spiritual Role</div>
+      <h2>What Is a<br/>Sangoma?</h2>
+      <div class="divider"></div>
+      <div class="card-grid cols-3" style="max-width:950px">
+        <div class="card">
+          <div class="icon">🌿</div>
+          <h4>Healer</h4>
+          <p>Uses plants, rituals, and spiritual guidance to heal the body, mind, and community.</p>
+        </div>
+        <div class="card">
+          <div class="icon">👁️</div>
+          <h4>Prophet &amp; Seer</h4>
+          <p>Receives visions and messages from ancestors to warn or guide the living.</p>
+        </div>
+        <div class="card">
+          <div class="icon">📖</div>
+          <h4>Keeper of Knowledge</h4>
+          <p>Memorises and passes on thousands of years of African history, law, and sacred stories.</p>
+        </div>
+      </div>
+      <div class="divider-sm"></div>
+      <p class="body">
+        Credo Mutwa was regarded as the <strong>Sanusi</strong> — the highest level of Sangoma —
+        entrusted with the most sacred and secret knowledge of his people.
+      </p>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 5 · HIS WORKS ══ -->
+  <div class="slide s-forest">
+    <span class="slide-num">05 / 10</span>
+    <div class="ornament tl">✦</div>
+    <div class="content-wrap" style="gap:14px">
+      <div class="label">Legacy</div>
+      <h2>His Works &amp;<br/>Contributions</h2>
+      <div class="divider"></div>
+      <div class="card-grid cols-2" style="max-width:860px">
+        <div class="card">
+          <div class="icon">📚</div>
+          <h4>Indaba, My Children (1964)</h4>
+          <p>A vast collection of Zulu myths, legends, and oral traditions — considered a masterpiece of African literature.</p>
+        </div>
+        <div class="card">
+          <div class="icon">🌍</div>
+          <h4>Africa Is My Witness (1966)</h4>
+          <p>Explores African history through storytelling, challenging colonial narratives about the continent.</p>
+        </div>
+        <div class="card">
+          <div class="icon">🎨</div>
+          <h4>Art &amp; Sculpture</h4>
+          <p>Created large murals and sculptures depicting African mythology — displayed across South Africa.</p>
+        </div>
+        <div class="card">
+          <div class="icon">🎙️</div>
+          <h4>Recorded Interviews &amp; Prophecies</h4>
+          <p>Left hours of recorded teachings and prophecies that continue to be studied and discussed worldwide.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 6 · THE 1993 PROPHECY ══ -->
+  <div class="slide s-fire">
+    <span class="slide-num">06 / 10</span>
+    <div class="ornament tl">✦</div>
+    <div class="content-wrap" style="gap:16px">
+      <div class="label">November 1993</div>
+      <h2>The Famous<br/>Prophecy</h2>
+      <div class="divider"></div>
+      <div class="prophecy-box">
+        <p>
+          In <strong>November 1993</strong>, Credo Mutwa recorded a prophecy in which he foresaw a time of
+          <strong>great upheaval</strong> in South Africa — a period of <strong>mass human movement</strong>,
+          conflict between different groups of people, economic strain, and social tension.
+        </p>
+        <div class="divider-sm"></div>
+        <p>
+          He warned that <strong>strangers would come from far lands</strong> in great numbers, that
+          communities would clash, and that South Africa would face tests of unity and identity
+          that would challenge the very soul of the nation.
+        </p>
+      </div>
+      <div class="divider-sm"></div>
+      <p class="body" style="font-style:italic;font-size:clamp(.95rem,1.5vw,1.3rem)">
+        Many people today believe these words describe the <strong>xenophobia crisis</strong> and
+        <strong>large-scale migration</strong> that South Africa has experienced in recent decades.
+      </p>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 7 · XENOPHOBIA CONNECTION ══ -->
+  <div class="slide s-sky">
+    <span class="slide-num">07 / 10</span>
+    <div class="ornament tl">✦</div>
+    <div class="content-wrap" style="gap:16px">
+      <div class="label">Prophecy &amp; Reality</div>
+      <h2>What People<br/>Believe It Foretold</h2>
+      <div class="divider"></div>
+      <div class="card-grid cols-2" style="max-width:860px">
+        <div class="card">
+          <div class="icon">🌊</div>
+          <h4>Mass Migration</h4>
+          <p>Millions of people from Zimbabwe, Mozambique, and other African nations moved into South Africa — a scale not seen before.</p>
+        </div>
+        <div class="card">
+          <div class="icon">⚡</div>
+          <h4>Xenophobic Violence</h4>
+          <p>Attacks on foreign nationals erupted in 2008, 2015, and beyond — communities turning on one another.</p>
+        </div>
+        <div class="card">
+          <div class="icon">📉</div>
+          <h4>Economic Pressure</h4>
+          <p>Rising unemployment and poverty fuelled tensions between locals and newcomers, just as the prophecy hinted.</p>
+        </div>
+        <div class="card">
+          <div class="icon">🤝</div>
+          <h4>A Call for Unity</h4>
+          <p>Many read Mutwa's words not as doom but as a warning — a call for Africans to find unity and common humanity.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 8 · HIS PHILOSOPHY ══ -->
+  <div class="slide s-gold">
+    <span class="slide-num">08 / 10</span>
+    <div class="ornament tl">✦</div>
+    <div class="content-wrap" style="gap:16px">
+      <div class="label">His Beliefs</div>
+      <h2>Credo Mutwa's<br/>Core Philosophy</h2>
+      <div class="divider"></div>
+      <div class="quote-wrap">
+        <p>"Africa must know herself before she can be known by others.<br/>
+        Our stories are not myths — they are maps of who we are."</p>
+        <p class="quote-attr">— Credo Mutwa</p>
+      </div>
+      <div class="divider-sm"></div>
+      <div class="card-grid cols-3" style="max-width:900px">
+        <div class="card">
+          <div class="icon">🌟</div>
+          <h4>Ubuntu</h4>
+          <p>"I am because we are." He believed deeply in the African philosophy of communal humanity.</p>
+        </div>
+        <div class="card">
+          <div class="icon">🌙</div>
+          <h4>Ancestor Wisdom</h4>
+          <p>The ancestors speak through seers. Their warnings must be honoured — not ignored — by the living.</p>
+        </div>
+        <div class="card">
+          <div class="icon">🔥</div>
+          <h4>Preservation</h4>
+          <p>African knowledge is endangered. Every elder who dies without passing on their wisdom is a library burned.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 9 · ACTIVITY ══ -->
+  <div class="slide s-forest">
+    <span class="slide-num">09 / 10</span>
+    <div class="ornament tl">✦</div>
+    <div class="content-wrap" style="gap:16px">
+      <div class="label">Let's Explore Together</div>
+      <h2>Class Activities</h2>
+      <div class="divider"></div>
+      <div class="activity-box">
+        <div class="activity-title">🌿 Reflect · Discuss · Discover</div>
+        <ul class="activity-list">
+          <li>
+            <strong>Think &amp; Share:</strong> In your own words, explain what a Sangoma does.
+            Why do you think this role was so important in traditional African communities?
+          </li>
+          <li>
+            <strong>Discussion Circle:</strong> Do you believe Credo Mutwa's 1993 prophecy came
+            true? Give at least <em>two examples</em> from current events to support your view.
+          </li>
+          <li>
+            <strong>Creative Storytelling:</strong> Imagine you are a keeper of knowledge like
+            Mutwa. Write or tell a short story that warns your community about a challenge
+            you see coming in the future.
+          </li>
+          <li>
+            <strong>Research &amp; Present:</strong> Find one other African elder, prophet, or
+            storyteller from history. Share their most important message with the class.
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 10 · LEGACY & CLOSE ══ -->
+  <div class="slide s-cover">
+    <div class="glow-ring" style="animation-delay:-2s"></div>
+    <span class="slide-num">10 / 10</span>
+    <div class="ornament tl">✦</div>
+    <div class="ornament br">✦</div>
+    <div class="content-wrap" style="gap:14px">
+      <div class="label">Final Reflection</div>
+      <h2>The Legacy Lives On</h2>
+      <div class="divider"></div>
+      <div class="quote-wrap">
+        <p>"A nation that does not know its past<br/>has no future."</p>
+        <p class="quote-attr">— Credo Mutwa</p>
+      </div>
+      <div class="divider-sm"></div>
+      <p class="body" style="max-width:700px">
+        Credo Mutwa gave his entire life to preserving the <strong>soul of Africa</strong>.
+        His prophecies challenge us to pay attention — to our history, our communities,
+        and the world around us.
+      </p>
+      <div class="divider-sm"></div>
+      <p class="body" style="font-size:clamp(.9rem,1.4vw,1.2rem);opacity:.75">
+        Whether or not every prophecy comes true, the deeper message is timeless:<br/>
+        <strong>Know who you are. Protect your people. Listen to your elders.</strong>
+      </p>
+    </div>
+  </div>
+
+</div><!-- end #track -->
+
+<!-- NAV BUTTONS -->
+<div class="nav">
+  <button onclick="navigate(-1)" title="Previous">&#8592;</button>
+  <button onclick="navigate(1)"  title="Next">&#8594;</button>
+</div>
+
+<!-- DOTS -->
+<div class="dots" id="dots"></div>
+
+<script>
+  const track  = document.getElementById('track');
+  const dotsEl = document.getElementById('dots');
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total  = slides.length;
+  let current  = 0;
+
+  // Build dots
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => goTo(i));
+    dotsEl.appendChild(d);
+  });
+
+  function goTo(index) {
+    if (index < 0 || index >= total) return;
+    current = index;
+    track.scrollTo({ left: index * window.innerWidth, behavior: 'smooth' });
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === index));
+  }
+
+  function navigate(dir) { goTo(current + dir); }
+
+  // Sync dots on manual scroll
+  let scrollTimer;
+  track.addEventListener('scroll', () => {
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(() => {
+      const idx = Math.round(track.scrollLeft / window.innerWidth);
+      if (idx !== current) {
+        current = idx;
+        document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+      }
+    }, 80);
+  });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') navigate(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   navigate(-1);
+  });
+</script>
+</body>
+</html>
