@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>06.01 Comprehensive Science II : Biotechnology Assignment</title>
+    <style>
+        /* ----- PAGE LAYOUT + HORIZONTAL SCROLL ----- */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow-x: auto;   /* allow horizontal scroll */
+            overflow-y: auto;
+        }
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: linear-gradient(135deg, #e0ffe8, #f5f0ff);
+            color: #222;
+        }
+        /* make the main content wider than most screens so scrolling is visible */
+        .page-wrapper {
+            min-width: 1200px;
+        }
+
+        header {
+            background: linear-gradient(90deg, #00897b, #26c6da);
+            color: white;
+            text-align: center;
+            padding: 20px 10px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+        header h1 {
+            margin: 5px 0;
+            font-size: 1.9rem;
+            letter-spacing: 0.03em;
+        }
+        header h2 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 25px auto 40px;
+            padding: 0 15px 30px;
+        }
+
+        .intro-card {
+            background: white;
+            border-radius: 12px;
+            padding: 18px 22px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border-left: 10px solid #26c6da;
+        }
+        .intro-card h3 {
+            margin-top: 0;
+            color: #00695c;
+        }
+        .intro-highlight {
+            background: #e0f7fa;
+            border-radius: 10px;
+            padding: 8px 12px;
+            margin-top: 8px;
+            font-weight: 600;
+            color: #004d40;
+        }
+
+        section {
+            margin-top: 24px;
+        }
+        section h2 {
+            margin-bottom: 10px;
+            color: #4a148c;
+            border-bottom: 3px solid #ba68c8;
+            display: inline-block;
+            padding-bottom: 4px;
+        }
+
+        .pill-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 8px 0 2px;
+        }
+        .pill {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: white;
+        }
+        .pill.genetic { background: #8e24aa; }
+        .pill.cloning { background: #3949ab; }
+        .pill.selection { background: #00897b; }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(260px, 1fr));
+            gap: 18px;
+            margin-top: 10px;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 14px 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-top: 5px solid #26c6da;
+        }
+        .card h3 {
+            margin-top: 0;
+            font-size: 1.05rem;
+            color: #006064;
+        }
+
+        .number-circle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: #26c6da;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-right: 6px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            margin-top: 4px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+        }
+        .tag.individual { background: #f06292; }
+        .tag.society { background: #ffb300; }
+        .tag.environment { background: #66bb6a; }
+
+        ul {
+            padding-left: 18px;
+            margin: 6px 0;
+        }
+        li {
+            margin-bottom: 4px;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(220px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .step-card {
+            background: #fff3e0;
+            border-radius: 12px;
+            padding: 12px 14px;
+            border-left: 6px solid #ffb74d;
+        }
+        .step-card h3 {
+            margin-top: 0;
+            color: #e65100;
+            font-size: 1rem;
+        }
+        .example-box {
+            background: rgba(255,255,255,0.7);
+            border-radius: 8px;
+            padding: 6px 8px;
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+
+        .argument-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.95rem;
+        }
+        .argument-table th,
+        .argument-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            vertical-align: top;
+        }
+        .argument-table thead {
+            background: #ede7f6;
+        }
+        .argument-table th {
+            text-align: left;
+            color: #4527a0;
+        }
+        .argument-table tr:nth-child(even) {
+            background: #fafafa;
+        }
+        .argument-table caption {
+            caption-side: top;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #4527a0;
+        }
+
+        .picture-box {
+            background: #e8f5e9;
+            border-radius: 12px;
+            padding: 12px 14px;
+            border-left: 6px solid #66bb6a;
+        }
+        .choice-box {
+            background: #f3e5f5;
+            border-radius: 12px;
+            padding: 12px 14px;
+            border-left: 6px solid #ab47bc;
+            margin-top: 10px;
+        }
+        .choice-flex {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .choice-option {
+            flex: 0 0 220px;
+            background: white;
+            border-radius: 10px;
+            padding: 8px 10px;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.15);
+            font-size: 0.9rem;
+        }
+        .choice-option h4 {
+            margin: 0 0 4px;
+            color: #6a1b9a;
+            font-size: 0.95rem;
+        }
+
+        .rubric-box {
+            margin-top: 16px;
+            background: #e3f2fd;
+            border-radius: 12px;
+            padding: 10px 12px;
+            border-left: 6px solid #42a5f5;
+            font-size: 0.9rem;
+        }
+        .rubric-box a {
+            color: #0d47a1;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .rubric-box a:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            margin-top: 24px;
+            padding: 15px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #004d40;
+        }
+        .teacher-note {
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+<div class="page-wrapper">
+<header>
+    <h1>06.01 Comprehensive Science II : Biotechnology Assignment</h1>
+    <h2>Benefits, Risks, and Impacts of Biotechnology</h2>
+</header>
+
+<main>
+    <section class="intro-card">
+        <h3>Today’s Activity: Take a Stand!</h3>
+        <p>
+            You have learned about how biotechnology can help people, but also how it can be risky.
+            Now it is your turn to choose a side and explain your thinking clearly.
+        </p>
+        <div class="intro-highlight">
+            Your task: Choose <strong>ONE</strong> type of biotechnology and argue for either its
+            <span style="color:#1b5e20;">benefits</span> or its
+            <span style="color:#b71c1c;">risks</span>.
+        </div>
+        <div class="pill-row">
+            <span class="pill genetic">Genetic Engineering</span>
+            <span class="pill cloning">Cloning</span>
+            <span class="pill selection">Artificial Selection</span>
+        </div>
+    </section>
+
+    <section>
+        <h2>Step 1: Choose and Describe Your Biotechnology</h2>
+        <p>
+            First, choose <strong>one</strong> of the three options below and write a
+            <strong>1–2 paragraph summary</strong> explaining what it is and how it works.
+        </p>
+        <div class="card-grid">
+            <div class="card">
+                <h3>Option A: Genetic Engineering</h3>
+                <ul>
+                    <li>Changing or adding genes in an organism’s DNA.</li>
+                    <li>Can give organisms new traits, such as pest resistance or faster growth.</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>Option B: Cloning</h3>
+                <ul>
+                    <li>Making a new organism that is genetically identical to another one.</li>
+                    <li>Can be done with plants, animals, and even individual cells.</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>Option C: Artificial Selection</h3>
+                <ul>
+                    <li>Humans choose which plants or animals reproduce to get desired traits.</li>
+                    <li>Used for crops, pets, and farm animals over many generations.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Step 2: Decide — Are You For It or Against It?</h2>
+        <p>
+            Next, decide if you are <strong>for</strong> your chosen biotechnology
+            or <strong>against</strong> it. Your paragraphs must:
+        </p>
+        <div class="steps-grid">
+            <div class="step-card">
+                <h3><span class="number-circle">1</span> State Your Position</h3>
+                <p>Clearly say if you support or oppose this type of biotechnology.</p>
+                <div class="example-box">
+                    Example: “I support genetic engineering because it can help treat serious diseases.”
+                </div>
+            </div>
+            <div class="step-card">
+                <h3><span class="number-circle">2</span> Explain Your Evidence</h3>
+                <p>Use information from your lessons or research to support your position.</p>
+                <div class="example-box">
+                    Start sentences with “Scientists have found…”, “Research shows…”, or “In our lesson, we learned that…”.
+                </div>
+            </div>
+            <div class="step-card">
+                <h3><span class="number-circle">3</span> Connect to Individual, Society, Environment</h3>
+                <p>Show how your biotechnology affects people, communities, and the natural world.</p>
+            </div>
+            <div class="step-card">
+                <h3><span class="number-circle">4</span> Write in Complete Sentences</h3>
+                <p>Use full sentences and your own words. Check spelling and punctuation.</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Step 3: Checklist – What Your Argument Must Include</h2>
+        <p>Make sure your final work includes <strong>ALL</strong> of these parts:</p>
+        <table class="argument-table">
+            <caption>Biotechnology Argument Checklist</caption>
+            <thead>
+                <tr>
+                    <th>Requirement</th>
+                    <th>Details</th>
+                    <th>Space for Your Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Description</strong></td>
+                    <td>Describe your chosen biotechnology in your own words.</td>
+                    <td>✔ Did I explain what it is?</td>
+                </tr>
+                <tr>
+                    <td><span class="tag individual">Individual</span></td>
+                    <td>Include one benefit or one risk for an individual person or organism.</td>
+                    <td>✔ Did I give a clear example?</td>
+                </tr>
+                <tr>
+                    <td><span class="tag society">Society</span></td>
+                    <td>Include one benefit or one risk for society (a group, community, or country).</td>
+                    <td>✔ Did I explain how it affects groups of people?</td>
+                </tr>
+                <tr>
+                    <td><span class="tag environment">Environment</span></td>
+                    <td>Include one benefit or one risk for the environment (ecosystems, plants, animals, etc.).</td>
+                    <td>✔ Did I connect it to nature?</td>
+                </tr>
+                <tr>
+                    <td><strong>Picture</strong></td>
+                    <td>Add a picture that matches your topic (drawn, photo, or stock image).</td>
+                    <td>✔ Did I choose or draw a picture?</td>
+                </tr>
+                <tr>
+                    <td><strong>1–2 Paragraphs</strong></td>
+                    <td>Write one or two well-organized paragraphs including all parts above.</td>
+                    <td>✔ Did I revise and proofread?</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section>
+        <h2>Step 4: Choose How You Will Present Your Work</h2>
+        <div class="picture-box">
+            <h3>Remember the Picture!</h3>
+            <p>Your assignment must include at least one picture that connects to your topic.</p>
+            <ul>
+                <li>Draw your own illustration and upload or attach it.</li>
+                <li>Take your own photo in nature or of a model you create.</li>
+                <li>Use a school-appropriate stock image.</li>
+            </ul>
+        </div>
+
+        <div class="choice-box">
+            <h3>Be Creative – Choose a Format</h3>
+            <p>You may present your 1–2 paragraphs and picture in one of these formats:</p>
+            <div class="choice-flex">
+                <div class="choice-option">
+                    <h4>Brochure</h4>
+                    <p>Design a colorful brochure with headings, short sections, and your picture.</p>
+                </div>
+                <div class="choice-option">
+                    <h4>Letter</h4>
+                    <p>Write a letter to a friend, family member, or leader explaining your position.</p>
+                </div>
+                <div class="choice-option">
+                    <h4>Presentation</h4>
+                    <p>Create slides using software (PowerPoint, Google Slides, etc.).</p>
+                </div>
+                <div class="choice-option">
+                    <h4>Other (Ask First)</h4>
+                    <p>If you have another idea or software, check with your instructor for approval.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="rubric-box">
+            <strong>Grading Reminder:</strong>
+            Before you submit, review the
+            <a href="https://lti.flvsgl.com/flvs-cat-content/4u49pvdl4fk4i1uh6kmjnc82be/flvs-cat-session/science2_v18/module06/lesson01/pop/activity_rubric.htm" target="_blank">
+                Biotechnology Activity Grading Rubric
+            </a>
+            to be sure you have completed every part of the assignment.
+        </div>
+    </section>
+
+    <footer>
+        <p class="teacher-note">
+            Teacher tip: Project this page and walk through each colored box with the class
+            before students start writing.
+        </p>
+    </footer>
+</main>
+</div>
+</body>
+</html>
