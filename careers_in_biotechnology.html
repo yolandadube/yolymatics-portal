@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Careers in Biotechnology</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Bebas+Neue&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --rust:      #9B2D1F;
+  --rust-dark: #6B1A0F;
+  --rust-lite: #C84B35;
+  --cream:     #FAF6F0;
+  --warm:      #EDE5D8;
+  --gold:      #C8962A;
+  --green:     #2A6E4E;
+  --dark:      #1C1208;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: #111;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── SCROLL TRACK ── */
+.track {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.track::-webkit-scrollbar { display: none; }
+
+/* ── EACH SLIDE ── */
+.slide {
+  flex: 0 0 100vw;
+  height: 100vh;
+  scroll-snap-align: start;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ══════════════════════════════
+   SLIDE 0 — COVER
+══════════════════════════════ */
+#s0 {
+  background: var(--rust-dark);
+  justify-content: center;
+}
+
+#s0 .geo {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 80% at 90% 50%, rgba(200,150,42,.18) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 50% at 5%  90%, rgba(100,20,10,.5)   0%, transparent 55%);
+}
+
+#s0 .stripe {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 14px;
+  background: var(--gold);
+}
+
+#s0 .cover-inner {
+  position: relative;
+  padding: 0 100px;
+}
+
+#s0 .eyebrow {
+  font-family: 'Oswald', sans-serif;
+  font-size: 18px;
+  letter-spacing: 8px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 24px;
+}
+
+#s0 h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(90px, 12vw, 160px);
+  line-height: .92;
+  color: var(--cream);
+  margin-bottom: 30px;
+}
+
+#s0 h1 span { color: var(--gold); display: block; }
+
+#s0 .rule {
+  width: 80px; height: 5px;
+  background: var(--gold);
+  margin-bottom: 28px;
+}
+
+#s0 .sub {
+  font-size: 22px;
+  color: rgba(250,246,240,.6);
+  font-weight: 400;
+  letter-spacing: .5px;
+  max-width: 560px;
+  line-height: 1.55;
+}
+
+#s0 .pills {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  margin-top: 40px;
+}
+
+#s0 .pill {
+  border: 1.5px solid rgba(200,150,42,.45);
+  color: rgba(250,246,240,.7);
+  font-family: 'Oswald', sans-serif;
+  font-size: 15px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 8px 20px;
+  border-radius: 2px;
+}
+
+/* ══════════════════════════════
+   SHARED SECTION STYLES
+══════════════════════════════ */
+.slide-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 56px 80px 40px;
+}
+
+.eyebrow-label {
+  font-family: 'Oswald', sans-serif;
+  font-size: 15px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.slide-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(54px, 7vw, 90px);
+  line-height: .95;
+  margin-bottom: 22px;
+}
+
+.h-rule {
+  width: 70px; height: 5px;
+  margin-bottom: 28px;
+}
+
+.lead {
+  font-size: 22px;
+  line-height: 1.6;
+  max-width: 800px;
+  font-weight: 400;
+}
+
+/* ══════════════════════════════
+   SLIDE 1 — INTRODUCTION
+══════════════════════════════ */
+#s1 { background: var(--cream); }
+
+#s1 .accent-bar {
+  height: 12px;
+  background: linear-gradient(90deg, var(--rust) 0%, var(--rust-lite) 100%);
+}
+
+#s1 .eyebrow-label { color: var(--rust); }
+#s1 .slide-title   { color: var(--dark); }
+#s1 .slide-title span { color: var(--rust); }
+#s1 .h-rule        { background: var(--rust); }
+#s1 .lead          { color: #3A2A1C; }
+
+#s1 .cards {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 20px;
+  margin-top: 30px;
+  flex: 1;
+}
+
+#s1 .card {
+  border-radius: 4px;
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+#s1 .card:nth-child(1) { background: var(--rust);  color: white; }
+#s1 .card:nth-child(2) { background: var(--dark);  color: white; }
+#s1 .card:nth-child(3) { background: var(--gold);  color: white; }
+
+#s1 .card .ico  { font-size: 38px; }
+#s1 .card h3 {
+  font-family: 'Oswald', sans-serif;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+#s1 .card p { font-size: 17px; opacity: .85; line-height: 1.6; }
+
+/* ══════════════════════════════
+   SLIDE 2 — MEDICAL & AGRI
+══════════════════════════════ */
+#s2 {
+  background: var(--dark);
+  color: white;
+}
+
+#s2 .accent-bar {
+  height: 12px;
+  background: linear-gradient(90deg, var(--green) 0%, #4CAF85 100%);
+}
+
+#s2 .eyebrow-label { color: var(--gold); }
+#s2 .slide-title   { color: white; }
+#s2 .slide-title span { color: #5DD4A0; }
+#s2 .h-rule        { background: var(--gold); }
+#s2 .lead          { color: rgba(255,255,255,.65); }
+
+#s2 .two-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 28px;
+  flex: 1;
+}
+
+.col-box {
+  border-radius: 4px;
+  padding: 28px 26px;
+}
+
+#s2 .col-box:first-child  { background: rgba(155,45,31,.35); border: 1px solid rgba(155,45,31,.5); }
+#s2 .col-box:last-child   { background: rgba(42,110,78,.35); border: 1px solid rgba(42,110,78,.5); }
+
+.col-box h3 {
+  font-family: 'Oswald', sans-serif;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid rgba(255,255,255,.12);
+}
+
+#s2 .col-box:first-child h3 { color: #FF8A75; }
+#s2 .col-box:last-child  h3 { color: #5DD4A0; }
+
+.col-box ul { list-style: none; }
+.col-box ul li {
+  font-size: 17px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  color: rgba(255,255,255,.8);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.col-box ul li::before {
+  content: '›';
+  font-size: 20px;
+  opacity: .5;
+}
+
+/* ══════════════════════════════
+   SLIDE 3 — ADMIN & LEGISLATIVE
+══════════════════════════════ */
+#s3 { background: #F2EDE4; }
+
+#s3 .accent-bar {
+  height: 12px;
+  background: linear-gradient(90deg, var(--gold) 0%, #E8B84B 100%);
+}
+
+#s3 .eyebrow-label { color: var(--rust-dark); }
+#s3 .slide-title   { color: var(--dark); }
+#s3 .slide-title span { color: var(--rust); }
+#s3 .h-rule        { background: var(--gold); }
+#s3 .lead          { color: #3A2A1C; }
+
+#s3 .cards {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 20px;
+  margin-top: 28px;
+  flex: 1;
+}
+
+#s3 .card {
+  background: white;
+  border-radius: 4px;
+  padding: 30px 26px;
+  border-top: 6px solid var(--rust);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.07);
+}
+
+#s3 .card:nth-child(2) { border-top-color: var(--gold); }
+#s3 .card:nth-child(3) { border-top-color: var(--green); }
+
+#s3 .card .ico { font-size: 40px; }
+#s3 .card h3 {
+  font-family: 'Oswald', sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--dark);
+}
+#s3 .card p { font-size: 17px; color: #4A3728; line-height: 1.6; }
+
+#s3 .also {
+  margin-top: 24px;
+  background: var(--rust-dark);
+  color: white;
+  border-radius: 4px;
+  padding: 16px 24px;
+  font-size: 17px;
+  line-height: 1.6;
+  font-style: italic;
+  opacity: .92;
+}
+
+/* ══════════════════════════════
+   SLIDE 4 — ENTREPRENEURSHIP
+══════════════════════════════ */
+#s4 { background: var(--dark); color: white; }
+
+#s4 .accent-bar {
+  height: 12px;
+  background: linear-gradient(90deg, var(--gold) 0%, var(--rust-lite) 100%);
+}
+
+#s4 .eyebrow-label { color: var(--gold); }
+#s4 .slide-title   { color: white; }
+#s4 .slide-title span { color: var(--gold); }
+#s4 .h-rule        { background: var(--rust-lite); }
+#s4 .lead          { color: rgba(255,255,255,.65); }
+
+#s4 .two-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 28px;
+  flex: 1;
+}
+
+#s4 .col-box {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.1);
+}
+
+#s4 .col-box:first-child h3 { color: var(--gold); }
+#s4 .col-box:last-child  h3 { color: var(--rust-lite); }
+#s4 .col-box ul li { color: rgba(255,255,255,.8); }
+
+#s4 .quote-box {
+  margin-top: 22px;
+  border-left: 6px solid var(--gold);
+  padding: 14px 22px;
+  background: rgba(200,150,42,.08);
+  border-radius: 0 4px 4px 0;
+  font-size: 18px;
+  color: rgba(255,255,255,.75);
+  font-style: italic;
+  line-height: 1.6;
+}
+
+/* ══════════════════════════════
+   SLIDE 5 — FUTURE CAREERS
+══════════════════════════════ */
+#s5 { background: var(--rust-dark); color: white; }
+
+#s5 .accent-bar {
+  height: 12px;
+  background: linear-gradient(90deg, var(--cream) 0%, var(--warm) 100%);
+}
+
+#s5 .eyebrow-label { color: var(--gold); }
+#s5 .slide-title   { color: white; }
+#s5 .slide-title span { color: var(--gold); }
+#s5 .h-rule        { background: var(--gold); }
+#s5 .lead          { color: rgba(255,255,255,.65); }
+
+#s5 .future-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  grid-template-rows: 1fr 1fr;
+  gap: 16px;
+  margin-top: 24px;
+  flex: 1;
+}
+
+.fc {
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 4px;
+  padding: 24px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fc .fc-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 48px;
+  color: rgba(200,150,42,.3);
+  line-height: 1;
+}
+
+.fc h3 {
+  font-family: 'Oswald', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  color: var(--gold);
+  line-height: 1.2;
+}
+
+.fc p {
+  font-size: 15px;
+  color: rgba(255,255,255,.65);
+  line-height: 1.6;
+}
+
+/* ══════════════════════════════
+   NAVIGATION DOTS + ARROWS
+══════════════════════════════ */
+.nav-overlay {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(8px);
+  padding: 10px 20px;
+  border-radius: 100px;
+  z-index: 999;
+}
+
+.dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.3);
+  cursor: pointer;
+  transition: all .25s;
+}
+.dot.on { background: var(--gold); width: 28px; border-radius: 5px; }
+
+.arr {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,.6);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  transition: color .2s;
+}
+.arr:hover { color: var(--gold); }
+.arr:disabled { opacity: .2; cursor: default; }
+</style>
+</head>
+<body>
+
+<div class="track" id="track">
+
+  <!-- ══ SLIDE 0: COVER ══ -->
+  <div class="slide" id="s0">
+    <div class="geo"></div>
+    <div class="stripe"></div>
+    <div class="cover-inner">
+      <div class="eyebrow">Tutorial · Five Modules</div>
+      <h1>Careers in<br><span>Biotechnology</span></h1>
+      <div class="rule"></div>
+      <p class="sub">From laboratory benches to legislative chambers — explore the diverse pathways shaping the future of life sciences.</p>
+      <div class="pills">
+        <span class="pill">Introduction</span>
+        <span class="pill">Medical &amp; Agricultural</span>
+        <span class="pill">Administrative &amp; Legislative</span>
+        <span class="pill">Entrepreneurship</span>
+        <span class="pill">Future Careers</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 1: INTRODUCTION ══ -->
+  <div class="slide" id="s1">
+    <div class="accent-bar"></div>
+    <div class="slide-body">
+      <div class="eyebrow-label">Module 01 · Introduction</div>
+      <div class="slide-title">What Is <span>Biotechnology?</span></div>
+      <div class="h-rule"></div>
+      <p class="lead">Biotechnology uses living systems and organisms to develop products and processes that improve lives — spanning healthcare, agriculture, environment, and policy.</p>
+      <div class="cards">
+        <div class="card">
+          <div class="ico">🔬</div>
+          <h3>Science at the Core</h3>
+          <p>Built on molecular biology, genetics, biochemistry &amp; cell biology.</p>
+        </div>
+        <div class="card">
+          <div class="ico">🌱</div>
+          <h3>Wide-Reaching Impact</h3>
+          <p>Influences food security, disease treatment &amp; environmental sustainability.</p>
+        </div>
+        <div class="card">
+          <div class="ico">🚀</div>
+          <h3>Explosive Growth</h3>
+          <p>One of the fastest-expanding sectors globally — surging demand for skilled professionals.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 2: MEDICAL & AGRICULTURAL ══ -->
+  <div class="slide" id="s2">
+    <div class="accent-bar"></div>
+    <div class="slide-body">
+      <div class="eyebrow-label">Module 02 · Specializations</div>
+      <div class="slide-title">Medical &amp; Agricultural <span>Biotechnology</span></div>
+      <div class="h-rule"></div>
+      <p class="lead">Two pillars: saving lives through medicine, and securing food supplies through agricultural innovation.</p>
+      <div class="two-cols">
+        <div class="col-box">
+          <h3>🏥 Medical Biotechnology</h3>
+          <ul>
+            <li>Pharmaceutical researcher / scientist</li>
+            <li>Clinical trial coordinator</li>
+            <li>Genetic counselor</li>
+            <li>Bioinformatics analyst</li>
+            <li>Biomedical engineer</li>
+            <li>Regulatory affairs specialist</li>
+            <li>Vaccine / therapeutics developer</li>
+          </ul>
+        </div>
+        <div class="col-box">
+          <h3>🌾 Agricultural Biotechnology</h3>
+          <ul>
+            <li>Crop geneticist / plant breeder</li>
+            <li>Soil &amp; microbiome scientist</li>
+            <li>Agrochemical researcher</li>
+            <li>Food safety scientist</li>
+            <li>Precision fermentation specialist</li>
+            <li>Biosafety officer</li>
+            <li>Sustainable agriculture consultant</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 3: ADMIN & LEGISLATIVE ══ -->
+  <div class="slide" id="s3">
+    <div class="accent-bar"></div>
+    <div class="slide-body">
+      <div class="eyebrow-label">Module 03 · Policy &amp; Governance</div>
+      <div class="slide-title">Administrative &amp; <span>Legislative</span> Biotechnology</div>
+      <div class="h-rule"></div>
+      <p class="lead">Behind every breakthrough is a framework of regulation, ethics, and policy that governs how biotechnology is developed and applied.</p>
+      <div class="cards">
+        <div class="card">
+          <div class="ico">⚖️</div>
+          <h3>Regulatory Affairs</h3>
+          <p>Work with agencies like the FDA or EMA to ensure safe, compliant products reach the market.</p>
+        </div>
+        <div class="card">
+          <div class="ico">🏛️</div>
+          <h3>Science Policy</h3>
+          <p>Advise legislators and government bodies on biotech legislation and public health strategy.</p>
+        </div>
+        <div class="card">
+          <div class="ico">🌍</div>
+          <h3>Bioethics</h3>
+          <p>Evaluate the moral and societal implications of new biotechnologies and guide responsible innovation.</p>
+        </div>
+      </div>
+      <div class="also">Also includes: patent attorneys, science communicators, biosafety coordinators &amp; international treaty compliance officers.</div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 4: ENTREPRENEURSHIP ══ -->
+  <div class="slide" id="s4">
+    <div class="accent-bar"></div>
+    <div class="slide-body">
+      <div class="eyebrow-label">Module 04 · Innovation &amp; Business</div>
+      <div class="slide-title">Biotech <span>Entrepreneurship</span></div>
+      <div class="h-rule"></div>
+      <p class="lead">Entrepreneurs translate scientific discoveries into commercial realities — launching startups, attracting investment, and scaling world-changing solutions.</p>
+      <div class="two-cols">
+        <div class="col-box">
+          <h3>Key Roles</h3>
+          <ul>
+            <li>Biotech startup founder / CEO</li>
+            <li>Venture capital analyst / investor</li>
+            <li>Technology transfer officer</li>
+            <li>Business development manager</li>
+            <li>Medical device entrepreneur</li>
+            <li>Product commercialization lead</li>
+          </ul>
+        </div>
+        <div class="col-box">
+          <h3>Essential Skills</h3>
+          <ul>
+            <li>IP &amp; patent understanding</li>
+            <li>Fundraising &amp; pitch strategy</li>
+            <li>Market analysis &amp; validation</li>
+            <li>Regulatory pathway navigation</li>
+            <li>Team building &amp; leadership</li>
+            <li>Scientific communication</li>
+          </ul>
+        </div>
+      </div>
+      <div class="quote-box">Many successful biotech entrepreneurs hold dual qualifications — a science degree combined with an MBA or law degree — bridging the lab and the boardroom.</div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 5: FUTURE CAREERS ══ -->
+  <div class="slide" id="s5">
+    <div class="accent-bar"></div>
+    <div class="slide-body">
+      <div class="eyebrow-label">Module 05 · Looking Ahead</div>
+      <div class="slide-title">Future <span>Biotechnology</span> Careers</div>
+      <div class="h-rule"></div>
+      <p class="lead">The next decade will create entirely new roles as AI, synthetic biology, and climate science converge with biotechnology.</p>
+      <div class="future-grid">
+        <div class="fc"><div class="fc-num">01</div><h3>AI-Driven Drug Discovery</h3><p>Machine learning meets molecular biology to accelerate therapeutics.</p></div>
+        <div class="fc"><div class="fc-num">02</div><h3>Synthetic Biology Designer</h3><p>Engineer custom organisms for medicine, materials &amp; environment.</p></div>
+        <div class="fc"><div class="fc-num">03</div><h3>Biofoundry Operator</h3><p>Manage automated labs for high-throughput biological experiments.</p></div>
+        <div class="fc"><div class="fc-num">04</div><h3>Climate Biotech Specialist</h3><p>Biological solutions to carbon capture, biofuels &amp; ecosystem restoration.</p></div>
+        <div class="fc"><div class="fc-num">05</div><h3>Longevity Researcher</h3><p>Investigate the biology of aging and develop healthy lifespan interventions.</p></div>
+        <div class="fc"><div class="fc-num">06</div><h3>Microbiome Engineer</h3><p>Design personalized microbiome therapies for metabolic &amp; immune conditions.</p></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- NAV -->
+<nav class="nav-overlay" id="nav">
+  <button class="arr" id="prev" onclick="go(-1)" disabled>&#8592;</button>
+  <div id="dots"></div>
+  <button class="arr" id="next" onclick="go(1)">&#8594;</button>
+</nav>
+
+<script>
+  const track = document.getElementById('track');
+  const dotsWrap = document.getElementById('dots');
+  const N = 6;
+  let cur = 0;
+
+  const dots = Array.from({length: N}, (_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i===0?' on':'');
+    d.onclick = () => scrollTo(i);
+    dotsWrap.appendChild(d);
+    return d;
+  });
+
+  function scrollTo(n) {
+    cur = Math.max(0, Math.min(N-1, n));
+    track.scrollTo({ left: cur * window.innerWidth, behavior: 'smooth' });
+    dots.forEach((d,i) => d.classList.toggle('on', i===cur));
+    document.getElementById('prev').disabled = cur === 0;
+    document.getElementById('next').disabled = cur === N-1;
+  }
+
+  function go(dir) { scrollTo(cur + dir); }
+
+  let scrollTimer;
+  track.addEventListener('scroll', () => {
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(() => {
+      const idx = Math.round(track.scrollLeft / window.innerWidth);
+      if (idx !== cur) scrollTo(idx);
+    }, 80);
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') go(1);
+    if (e.key === 'ArrowLeft')  go(-1);
+  });
+
+  let tx = 0;
+  track.addEventListener('touchstart', e => tx = e.touches[0].clientX, {passive:true});
+  track.addEventListener('touchend',   e => {
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
+  }, {passive:true});
+</script>
+</body>
+</html>
