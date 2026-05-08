@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Early Universe – Teaching Slides</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #01020a;
+    --deep: #050b1a;
+    --nebula1: #0a1628;
+    --accent1: #00d4ff;
+    --accent2: #ff6b35;
+    --accent3: #c77dff;
+    --accent4: #ffbe0b;
+    --accent5: #06d6a0;
+    --star: #e8f4f8;
+    --text: #cde8f5;
+    --muted: #7aa8c0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: var(--void);
+    font-family: 'Syne', sans-serif;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    position: fixed; width: 16px; height: 16px;
+    border: 2px solid var(--accent1);
+    border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: transform 0.1s, border-color 0.3s;
+    mix-blend-mode: screen;
+  }
+
+  /* Nav arrows */
+  .nav-arrow {
+    position: fixed; top: 50%; transform: translateY(-50%);
+    width: 56px; height: 56px;
+    border: 2px solid rgba(0,212,255,0.4);
+    border-radius: 50%;
+    background: rgba(0,10,30,0.7);
+    color: var(--accent1);
+    font-size: 24px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; z-index: 200;
+    transition: all 0.3s;
+    backdrop-filter: blur(10px);
+  }
+  .nav-arrow:hover { background: rgba(0,212,255,0.2); border-color: var(--accent1); transform: translateY(-50%) scale(1.1); }
+  #prev { left: 18px; }
+  #next { right: 18px; }
+  .nav-arrow.hidden { opacity: 0; pointer-events: none; }
+
+  /* Slide counter */
+  .slide-counter {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 10px; z-index: 200;
+  }
+  .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: rgba(0,212,255,0.25);
+    border: 1.5px solid rgba(0,212,255,0.5);
+    transition: all 0.3s; cursor: pointer;
+  }
+  .dot.active { background: var(--accent1); box-shadow: 0 0 12px var(--accent1); }
+
+  /* Slide wrapper */
+  .slides-container {
+    width: 100%; height: 100vh;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 60px 100px;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: transform 0.65s cubic-bezier(0.77,0,0.175,1), opacity 0.65s ease;
+    overflow: hidden;
+  }
+  .slide.active {
+    opacity: 1; transform: translateX(0);
+  }
+  .slide.exit-left {
+    opacity: 0; transform: translateX(-100%);
+  }
+
+  /* Starfield background */
+  .stars-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 30%, rgba(10,22,60,0.9) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 70%, rgba(40,5,60,0.7) 0%, transparent 50%),
+      var(--void);
+    overflow: hidden;
+  }
+  .stars-bg::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.9) 0%, transparent 100%),
+      radial-gradient(1px 1px at 25% 45%, rgba(255,255,255,0.7) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 40% 10%, rgba(255,255,255,0.95) 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 60%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 25%, rgba(255,255,255,0.8) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 85% 80%, rgba(255,255,255,0.9) 0%, transparent 100%),
+      radial-gradient(1px 1px at 15% 75%, rgba(255,255,255,0.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 40%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 35% 85%, rgba(255,255,255,0.8) 0%, transparent 100%),
+      radial-gradient(1px 1px at 62% 5%, rgba(255,255,255,0.9) 0%, transparent 100%),
+      radial-gradient(1px 1px at 78% 55%, rgba(200,220,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 5% 50%, rgba(255,255,255,0.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 48% 35%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 92% 15%, rgba(255,255,255,0.8) 0%, transparent 100%),
+      radial-gradient(1px 1px at 30% 60%, rgba(200,210,255,0.6) 0%, transparent 100%);
+  }
+
+  /* Shared typography */
+  .slide-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: var(--accent1);
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    opacity: 0.8;
+  }
+
+  .big-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(72px, 10vw, 140px);
+    line-height: 0.9;
+    color: var(--star);
+    letter-spacing: 2px;
+    text-shadow: 0 0 60px rgba(0,212,255,0.3);
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 7vw, 100px);
+    line-height: 0.95;
+    color: var(--star);
+    letter-spacing: 1px;
+  }
+
+  .big-question {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(26px, 3.5vw, 50px);
+    font-weight: 800;
+    color: var(--accent4);
+    line-height: 1.2;
+    margin-bottom: 30px;
+  }
+
+  .key-fact {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(20px, 2.5vw, 36px);
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.5;
+    max-width: 700px;
+  }
+
+  .highlight { color: var(--accent1); font-weight: 700; }
+  .hl-orange { color: var(--accent2); font-weight: 700; }
+  .hl-purple { color: var(--accent3); font-weight: 700; }
+  .hl-yellow { color: var(--accent4); font-weight: 700; }
+  .hl-green { color: var(--accent5); font-weight: 700; }
+
+  /* Animated glowing line */
+  .glow-line {
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--accent1), var(--accent3), transparent);
+    border-radius: 2px;
+    margin: 20px 0;
+    animation: shimmer 3s ease-in-out infinite;
+  }
+  @keyframes shimmer {
+    0%,100% { opacity: 0.6; } 50% { opacity: 1; }
+  }
+
+  /* ========== SLIDE 0 – TITLE ========== */
+  #slide-0 { background: transparent; }
+  #slide-0 .stars-bg {
+    background:
+      radial-gradient(ellipse at 30% 40%, rgba(0,80,180,0.5) 0%, transparent 55%),
+      radial-gradient(ellipse at 75% 60%, rgba(100,0,180,0.4) 0%, transparent 45%),
+      var(--void);
+  }
+
+  .title-layout {
+    position: relative; z-index: 2;
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center;
+  }
+
+  .orbit-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(0,212,255,0.15);
+    animation: spin linear infinite;
+  }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+  .planet-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  }
+
+  .subtitle-line {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(14px, 1.8vw, 22px);
+    color: var(--muted);
+    letter-spacing: 6px;
+    margin-top: 20px;
+  }
+
+  .start-hint {
+    margin-top: 50px;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--accent1);
+    letter-spacing: 3px;
+    animation: pulse 2s ease-in-out infinite;
+    opacity: 0.8;
+  }
+  @keyframes pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+  /* ========== SLIDE 1 – OLBERS' PARADOX ========== */
+  .two-col {
+    position: relative; z-index: 2;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 60px; width: 100%; align-items: center;
+  }
+  .left-col { display: flex; flex-direction: column; gap: 20px; }
+  .right-col { display: flex; align-items: center; justify-content: center; }
+
+  /* Night sky visual */
+  .night-sky-vis {
+    width: 360px; height: 360px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at center, #030814 0%, #010208 100%);
+    border: 2px solid rgba(0,212,255,0.3);
+    position: relative;
+    box-shadow: 0 0 60px rgba(0,50,150,0.4), inset 0 0 40px rgba(0,0,50,0.8);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .sky-star {
+    position: absolute; border-radius: 50%;
+    background: white;
+    animation: twinkle var(--dur, 2s) ease-in-out infinite;
+  }
+  @keyframes twinkle { 0%,100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); } }
+
+  .question-tag {
+    display: inline-block;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 80px;
+    color: var(--accent4);
+    line-height: 1;
+    text-shadow: 0 0 40px rgba(255,190,11,0.5);
+  }
+
+  .paradox-label {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: rgba(255,107,53,0.15);
+    border: 1.5px solid rgba(255,107,53,0.4);
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    color: var(--accent2);
+    letter-spacing: 2px;
+  }
+
+  /* ========== SLIDE 2 – OLBERS RESOLUTION ========== */
+  .three-cards {
+    position: relative; z-index: 2;
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 24px; width: 100%;
+  }
+  .card {
+    background: rgba(5,15,40,0.8);
+    border: 1.5px solid rgba(0,212,255,0.2);
+    border-radius: 16px;
+    padding: 36px 28px;
+    display: flex; flex-direction: column; gap: 16px;
+    backdrop-filter: blur(12px);
+    transition: border-color 0.3s, transform 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .card:hover { border-color: var(--accent1); transform: translateY(-4px); }
+  .card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--card-color, var(--accent1));
+  }
+  .card-icon { font-size: 52px; line-height: 1; }
+  .card-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px; color: var(--star); letter-spacing: 1px;
+  }
+  .card-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px; color: var(--text); line-height: 1.5;
+  }
+
+  /* ========== SLIDE 3 – TWO THEORIES ========== */
+  .vs-layout {
+    position: relative; z-index: 2;
+    display: grid; grid-template-columns: 1fr 80px 1fr;
+    gap: 20px; width: 100%; align-items: center;
+  }
+  .theory-card {
+    background: rgba(5,15,40,0.85);
+    border-radius: 20px;
+    padding: 40px 36px;
+    display: flex; flex-direction: column; gap: 18px;
+    backdrop-filter: blur(12px);
+    border: 2px solid transparent;
+  }
+  .theory-card.steady { border-color: rgba(255,107,53,0.4); }
+  .theory-card.bigbang { border-color: rgba(0,212,255,0.4); }
+  .theory-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 44px; letter-spacing: 1px;
+  }
+  .theory-card.steady .theory-title { color: var(--accent2); }
+  .theory-card.bigbang .theory-title { color: var(--accent1); }
+  .theory-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px; color: var(--text); line-height: 1.5;
+  }
+  .verdict {
+    display: inline-block;
+    font-family: 'Space Mono', monospace; font-size: 13px;
+    padding: 8px 16px; border-radius: 6px; letter-spacing: 2px;
+  }
+  .verdict.wrong { background: rgba(255,50,50,0.15); color: #ff5555; border: 1px solid rgba(255,50,50,0.3); }
+  .verdict.right { background: rgba(0,212,255,0.15); color: var(--accent1); border: 1px solid rgba(0,212,255,0.3); }
+  .vs-circle {
+    width: 80px; height: 80px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,190,11,0.1);
+    border: 2px solid var(--accent4);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px; color: var(--accent4);
+    flex-shrink: 0; align-self: center;
+  }
+
+  /* ========== SLIDE 4 – COSMIC HORIZON ========== */
+  .horizon-layout {
+    position: relative; z-index: 2;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 60px; width: 100%; align-items: center;
+  }
+  .universe-vis {
+    position: relative;
+    width: 380px; height: 380px;
+    flex-shrink: 0;
+  }
+  .obs-ring {
+    position: absolute; border-radius: 50%;
+    border-style: solid;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .stat-block {
+    display: flex; flex-direction: column; gap: 6px;
+    border-left: 3px solid var(--accent1);
+    padding-left: 20px;
+  }
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 54px; line-height: 1;
+  }
+  .stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px; letter-spacing: 2px; color: var(--muted);
+  }
+
+  /* ========== SLIDE 5 – ANTIMATTER ========== */
+  .antimatter-layout {
+    position: relative; z-index: 2;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 60px; width: 100%; align-items: center;
+  }
+  .particle-vis {
+    width: 360px; height: 360px;
+    position: relative; flex-shrink: 0;
+  }
+
+  .matter-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Space Mono', monospace;
+    font-size: 16px;
+  }
+  .matter-table th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 13px; letter-spacing: 2px;
+    color: var(--muted);
+  }
+  .matter-table td {
+    padding: 14px 16px;
+    color: var(--text);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    font-size: 17px;
+  }
+  .matter-table tr.matter-row td { border-left: 3px solid var(--accent1); }
+  .matter-table tr.anti-row td { border-left: 3px solid var(--accent3); }
+  .charge-pos { color: var(--accent2); font-weight: 700; }
+  .charge-neg { color: var(--accent1); font-weight: 700; }
+  .charge-neu { color: var(--accent5); font-weight: 700; }
+
+  /* ========== SLIDE 6 – ERA OF RECOMBINATION ========== */
+  .timeline-slide {
+    position: relative; z-index: 2;
+    width: 100%; display: flex; flex-direction: column; gap: 30px;
+  }
+  .timeline-bar {
+    position: relative; width: 100%; height: 80px;
+    background: rgba(5,15,40,0.7);
+    border-radius: 40px; overflow: visible;
+    border: 1.5px solid rgba(0,212,255,0.2);
+    display: flex; align-items: center;
+  }
+  .timeline-fill {
+    height: 100%; border-radius: 40px;
+    background: linear-gradient(90deg, var(--accent3), var(--accent1), var(--accent5));
+    opacity: 0.3; position: absolute; left: 0;
+  }
+  .timeline-marker {
+    position: absolute; top: 50%; transform: translate(-50%, -50%);
+    display: flex; flex-direction: column; align-items: center;
+    gap: 8px;
+  }
+  .marker-dot {
+    width: 20px; height: 20px; border-radius: 50%;
+    border: 3px solid;
+    background: var(--void);
+    z-index: 2;
+  }
+  .marker-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; letter-spacing: 1px;
+    white-space: nowrap; color: var(--muted);
+    position: absolute; top: 36px; transform: translateX(-50%);
+    background: rgba(1,2,10,0.9); padding: 4px 8px; border-radius: 4px;
+  }
+
+  .before-after {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 30px;
+  }
+  .ba-card {
+    background: rgba(5,15,40,0.7);
+    border-radius: 16px; padding: 28px;
+    border: 1.5px solid rgba(0,212,255,0.15);
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .ba-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 38px;
+  }
+  .ba-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px; color: var(--text); line-height: 1.5;
+  }
+
+  /* ========== SLIDE 7 – HEAVY ELEMENTS ========== */
+  .elements-layout {
+    position: relative; z-index: 2;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 60px; width: 100%; align-items: center;
+  }
+  .element-chain {
+    display: flex; flex-direction: column; gap: 0;
+    align-items: flex-start;
+  }
+  .chain-step {
+    display: flex; align-items: center; gap: 20px;
+    padding: 20px 0;
+    border-left: 3px solid rgba(0,212,255,0.3);
+    padding-left: 28px;
+    position: relative;
+  }
+  .chain-step::before {
+    content: '';
+    position: absolute; left: -7px; top: 50%; transform: translateY(-50%);
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--step-color, var(--accent1));
+    box-shadow: 0 0 12px var(--step-color, var(--accent1));
+  }
+  .step-icon { font-size: 36px; line-height: 1; }
+  .step-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px; color: var(--text); line-height: 1.4;
+  }
+  .step-text strong { color: var(--star); font-size: 22px; }
+
+  /* ========== SLIDE 8 – KEY TERMS ========== */
+  .terms-grid {
+    position: relative; z-index: 2;
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 20px; width: 100%;
+  }
+  .term-card {
+    background: rgba(5,15,40,0.8);
+    border: 1.5px solid rgba(0,212,255,0.2);
+    border-radius: 14px; padding: 26px 22px;
+    display: flex; flex-direction: column; gap: 10px;
+    backdrop-filter: blur(8px);
+    transition: all 0.3s;
+  }
+  .term-card:hover { border-color: var(--card-color, var(--accent1)); transform: translateY(-3px); }
+  .term-word {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px; letter-spacing: 1px;
+  }
+  .term-def {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px; color: var(--text); line-height: 1.5;
+  }
+
+  /* Floating particles */
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.4;
+    animation: float var(--dur, 8s) ease-in-out infinite var(--del, 0s);
+    pointer-events: none;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) scale(1); }
+    50% { transform: translateY(-30px) scale(1.1); }
+  }
+
+  /* Nebula glow blobs */
+  .nebula-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.12;
+    pointer-events: none;
+    animation: drift var(--dur, 15s) ease-in-out infinite var(--del, 0s) alternate;
+  }
+  @keyframes drift {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(20px, -20px) scale(1.05); }
+  }
+
+  /* Keyboard hint */
+  .key-hint {
+    position: fixed; bottom: 28px; right: 80px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px; color: var(--muted);
+    letter-spacing: 2px; opacity: 0.5;
+  }
+
+  /* Slide transition overrides for first/last */
+  .slide-content-wrapper {
+    position: relative; z-index: 2;
+    width: 100%; display: contents;
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+
+<div class="slides-container">
+
+  <!-- ====== SLIDE 0: TITLE ====== -->
+  <div class="slide active" id="slide-0">
+    <div class="stars-bg">
+      <div class="nebula-blob" style="width:500px;height:500px;background:radial-gradient(circle, #0050bb, transparent);top:10%;left:10%;--dur:18s;"></div>
+      <div class="nebula-blob" style="width:400px;height:400px;background:radial-gradient(circle, #7700cc, transparent);top:40%;right:5%;--dur:22s;--del:-5s;"></div>
+    </div>
+
+    <div class="title-layout">
+      <!-- Decorative orbit rings -->
+      <div style="position:absolute;pointer-events:none;">
+        <div class="orbit-ring" style="width:500px;height:500px;animation-duration:40s;top:50%;left:50%;transform:translate(-50%,-50%);">
+          <div class="planet-dot" style="background:var(--accent1);box-shadow:0 0 12px var(--accent1);"></div>
+        </div>
+        <div class="orbit-ring" style="width:320px;height:320px;animation-duration:25s;animation-direction:reverse;top:50%;left:50%;transform:translate(-50%,-50%);">
+          <div class="planet-dot" style="background:var(--accent3);box-shadow:0 0 10px var(--accent3);"></div>
+        </div>
+      </div>
+
+      <div class="slide-label" style="position:relative;z-index:3;">Astronomy · Cosmology</div>
+      <div class="big-title" style="position:relative;z-index:3;text-align:center;">THE<br>EARLY<br>UNIVERSE</div>
+      <div class="subtitle-line" style="position:relative;z-index:3;">13.7 BILLION YEARS IN THE MAKING</div>
+
+      <div class="glow-line" style="width:300px;position:relative;z-index:3;"></div>
+
+      <div style="position:relative;z-index:3;display:flex;gap:30px;margin-top:10px;flex-wrap:wrap;justify-content:center;">
+        <span style="font-family:'Space Mono',monospace;font-size:13px;color:var(--muted);letter-spacing:2px;">OLBERS' PARADOX</span>
+        <span style="color:rgba(0,212,255,0.3);">·</span>
+        <span style="font-family:'Space Mono',monospace;font-size:13px;color:var(--muted);letter-spacing:2px;">BIG BANG</span>
+        <span style="color:rgba(0,212,255,0.3);">·</span>
+        <span style="font-family:'Space Mono',monospace;font-size:13px;color:var(--muted);letter-spacing:2px;">ANTIMATTER</span>
+        <span style="color:rgba(0,212,255,0.3);">·</span>
+        <span style="font-family:'Space Mono',monospace;font-size:13px;color:var(--muted);letter-spacing:2px;">RECOMBINATION</span>
+      </div>
+
+      <div class="start-hint" style="position:relative;z-index:3;">▶ CLICK ARROW TO BEGIN</div>
+    </div>
+  </div>
+
+  <!-- ====== SLIDE 1: OLBERS' PARADOX – THE BIG QUESTION ====== -->
+  <div class="slide" id="slide-1">
+    <div class="stars-bg">
+      <div class="nebula-blob" style="width:600px;height:400px;background:radial-gradient(circle, #003580, transparent);top:20%;right:0%;--dur:20s;"></div>
+    </div>
+
+    <div class="slide-label" style="position:relative;z-index:2;align-self:flex-start;">Slide 01 · Olbers' Paradox</div>
+
+    <div class="two-col">
+      <div class="left-col" style="gap:16px;">
+        <!-- Big name -->
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,6vw,82px);color:var(--star);line-height:0.95;letter-spacing:1px;">OLBERS'<br><span style="color:var(--accent4);">PARADOX</span></div>
+
+        <!-- The paradox stated clearly -->
+        <div style="background:rgba(0,212,255,0.07);border-left:4px solid var(--accent1);border-radius:0 12px 12px 0;padding:18px 22px;display:flex;flex-direction:column;gap:10px;">
+          <div style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:3px;color:var(--accent1);">THE PARADOX STATES:</div>
+          <div style="font-family:'Syne',sans-serif;font-size:clamp(16px,1.8vw,22px);color:var(--star);line-height:1.5;font-weight:700;">If the universe is <span class="hl-yellow">infinite, static,</span> and filled with <span class="hl-yellow">evenly spread stars</span> — every line of sight should eventually hit a star.</div>
+          <div style="font-family:'Syne',sans-serif;font-size:clamp(15px,1.6vw,19px);color:var(--text);line-height:1.5;">Therefore, the <strong style="color:white;">entire night sky</strong> should be as <span class="hl-orange">blindingly bright as the surface of the Sun.</span></div>
+        </div>
+
+        <!-- But observation -->
+        <div style="display:flex;align-items:center;gap:16px;background:rgba(199,125,255,0.08);border:1.5px solid rgba(199,125,255,0.3);border-radius:12px;padding:14px 20px;">
+          <div style="font-size:36px;flex-shrink:0;">🌑</div>
+          <div style="font-family:'Syne',sans-serif;font-size:clamp(15px,1.6vw,19px);color:var(--text);line-height:1.4;"><strong style="color:var(--accent3);">But in reality</strong> — the night sky is mostly <strong style="color:white;">dark.</strong> This contradiction is the paradox.</div>
+        </div>
+
+        <!-- Definition box -->
+        <div style="display:inline-flex;align-items:center;gap:12px;background:rgba(255,107,53,0.12);border:1.5px solid rgba(255,107,53,0.35);border-radius:8px;padding:10px 18px;">
+          <span style="font-size:20px;">⚠</span>
+          <span style="font-family:'Space Mono',monospace;font-size:13px;color:var(--accent2);letter-spacing:1px;">A COSMOLOGICAL PUZZLE · PAVED THE WAY FOR MODERN COSMOLOGY</span>
+        </div>
+      </div>
+
+      <div class="right-col" style="flex-direction:column;gap:14px;">
+        <!-- Animated night sky circle -->
+        <div class="night-sky-vis" id="nightSky" style="width:320px;height:320px;">
+          <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 60% 40%, rgba(0,30,80,0.6) 0%, transparent 70%);"></div>
+          <div style="position:absolute;bottom:0;left:0;right:0;height:30%;background:linear-gradient(to top,rgba(0,5,20,0.9),transparent);"></div>
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:90px;color:rgba(255,190,11,0.12);font-family:'Bebas Neue',sans-serif;pointer-events:none;">?</div>
+        </div>
+        <!-- Assumption vs Reality labels -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;width:320px;">
+          <div style="background:rgba(255,190,11,0.08);border:1px solid rgba(255,190,11,0.3);border-radius:8px;padding:10px 12px;text-align:center;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--accent4);letter-spacing:1px;">ASSUMPTION</div>
+            <div style="font-family:'Syne',sans-serif;font-size:13px;color:var(--text);margin-top:4px;">Sky should be bright</div>
+          </div>
+          <div style="background:rgba(199,125,255,0.08);border:1px solid rgba(199,125,255,0.3);border-radius:8px;padding:10px 12px;text-align:center;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--accent3);letter-spacing:1px;">REALITY</div>
+            <div style="font-family:'Syne',sans-serif;font-size:13px;color:var(--text);margin-top:4px;">Sky is mostly dark</div>
+          </div>
+        </div>
+        <div style="text-align:center;font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);letter-spacing:2px;">JAMES WEBB &amp; HUBBLE CONFIRM<br>VAST DARK GAPS BETWEEN GALAXIES</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== SLIDE 2: OLBERS – THREE RESOLUTIONS ====== -->
+  <div class="slide" id="slide-2">
+    <div class="stars-bg">
+      <div class="nebula-blob" style="width:500px;height:500px;background:radial-gradient(circle, #1a0040, transparent);bottom:0%;left:20%;--dur:16s;"></div>
+    </div>
+
+    <div class="slide-label" style="position:relative;z-index:2;align-self:flex-start;">Slide 02 · Resolving the Paradox</div>
+
+    <div style="position:relative;z-index:2;width:100%;margin-bottom:24px;">
+      <div class="section-title">THE ANSWER IS<br><span style="color:var(--accent1);">THREE-FOLD</span></div>
+      <div style="font-family:'Syne',sans-serif;font-size:22px;color:var(--muted);margin-top:8px;">For the night sky to be dark, at least one of these must be TRUE</div>
+    </div>
+
+    <div class="three-cards">
+      <div class="card" style="--card-color: var(--accent1);">
+        <div class="card-icon">📏</div>
+        <div class="card-title">FINITE UNIVERSE</div>
+        <div class="card-text">The universe has a <span class="highlight">limited number of stars</span> — not infinite. There simply aren't enough light sources to fill the sky.</div>
+      </div>
+      <div class="card" style="--card-color: var(--accent2);">
+        <div class="card-icon">⏰</div>
+        <div class="card-title">TOO YOUNG</div>
+        <div class="card-text">The universe is only <span class="hl-orange">13.7 billion years old.</span> Light from distant regions hasn't had enough time to reach us yet.</div>
+      </div>
+      <div class="card" style="--card-color: var(--accent3);">
+        <div class="card-icon">🔭</div>
+        <div class="card-title">EXPANDING SPACE</div>
+        <div class="card-text">The universe is <span class="hl-purple">expanding</span>, stretching light into longer wavelengths — beyond what our eyes can see.</div>
+      </div>
+    </div>
+
+    <div style="position:relative;z-index:2;margin-top:20px;text-align:center;font-family:'Space Mono',monospace;font-size:14px;color:var(--accent5);letter-spacing:2px;">
+      ✦ MODERN TELESCOPES (JAMES WEBB, HUBBLE) REVEAL VAST DARK GAPS BETWEEN GALAXIES ✦
+    </div>
+  </div>
+
+  <!-- ====== SLIDE 3: TWO THEORIES ====== -->
+  <div class="slide" id="slide-3">
+    <div class="stars-bg">
+      <div class="nebula-blob" style="width:400px;height:400px;background:radial-gradient(circle, #400010, transparent);top:0%;right:10%;--dur:19s;"></div>
+      <div class="nebula-blob" style="width:400px;height:400px;background:radial-gradient(circle, #001040, transparent);bottom:0%;left:10%;--dur:23s;--del:-3s;"></div>
+    </div>
+
+    <div class="slide-label" style="position:relative;z-index:2;align-self:flex-start;">Slide 03 · Origin Theories</div>
+    <div style="position:relative;z-index:2;width:100%;margin-bottom:24px;">
+      <div class="section-title">THE <span style="color:var(--accent4);">GREAT</span> DEBATE</div>
+    </div>
+
+    <div class="vs-layout">
+      <div class="theory-card steady">
+        <div style="font-size:50px;">♾️</div>
+        <div class="theory-title">STEADY STATE<br>THEORY</div>
+        <div class="theory-text">The universe is <strong>expanding</strong> but <span class="hl-orange">never changes</span>. New matter constantly appears to keep density constant. The universe has no beginning and no end.</div>
+        <div class="verdict wrong">✗ DISPROVEN · NOW OBSOLETE</div>
+      </div>
+
+      <div class="vs-circle">VS</div>
+
+      <div class="theory-card bigbang">
+        <div style="font-size:50px;">💥</div>
+        <div class="theory-title">THE BIG BANG<br>THEORY</div>
+        <div class="theory-text">Universe exploded from an <span class="highlight">infinitely hot, dense point.</span> Matter expanded outward, density decreased. Remnant radiation still exists today.</div>
+        <div class="verdict right">✓ ACCEPTED BY SCIENCE TODAY</div>
+      </div>
+    </div>
+
+    <div style="position:relative;z-index:2;margin-top:20px;background:rgba(255,190,11,0.08);border:1.5px solid rgba(255,190,11,0.25);border-radius:12px;padding:16px 24px;max-width:80%;text-align:center;">
+      <span style="font-family:'Space Mono',monospace;font-size:14px;color:var(--accent4);letter-spacing:1px;">⚡ MISCONCEPTION: The Big Bang was NOT an explosion from a single point — the entire universe expanded simultaneously, with no edge.</span>
+    </div>
+  </div>
+
+  <!-- ====== SLIDE 4: COSMIC HORIZON ====== -->
+  <div class="slide" id="slide-4">
+    <div class="stars-bg">
+      <div class="nebula-blob" style="width:600px;height:600px;background:radial-gradient(circle, #000f40, transparent);center;--dur:25s;"></div>
+    </div>
+
+    <div class="slide-label" style="position:relative;z-index:2;align-self:flex-start;">Slide 04 · The Observable Universe</div>
+
+    <div class="horizon-layout">
+      <div class="left-col" style="gap:28px;">
+        <div class="section-title">HOW FAR<br>CAN WE <span style="color:var(--accent5);">SEE?</span></div>
+        <div class="glow-line" style="width:150px;"></div>
+
+        <div style="display:flex;flex-direction:column;gap:20px;">
+          <div class="stat-block">
+            <div class="stat-num" style="color:var(--accent5);">46.5</div>
+            <div style="font-family:'Space Mono',monospace;font-size:18px;color:var(--text);">Billion Light-Years</div>
+            <div class="stat-label">OBSERVABLE UNIVERSE</div>
+          </div>
+          <div class="stat-block" style="border-color:var(--accent3);">
+            <div class="stat-num" style="color:var(--accent3);">23 T</div>
+            <div style="font-family:'Space Mono',monospace;font-size:18px;color:var(--text);">Trillion Light-Years</div>
+            <div class="stat-label">UNOBSERVABLE UNIVERSE (est.)</div>
+          </div>
+        </div>
+
+        <div style="font-family:'Syne',sans-serif;font-size:20px;color:var(--text);line-height:1.5;">The <span class="hl-green">cosmic horizon</span> is the boundary beyond which light from the Big Bang hasn't reached us yet.</div>
+      </div>
+
+      <div class="right-col">
+        <!-- Universe concentric rings visual -->
+        <svg width="380" height="380" viewBox="0 0 380 380">
+          <defs>
+            <radialGradient id="uniGrad" cx="50%" cy="50%">
+              <stop offset="0%" stop-color="#00d4ff" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#000814" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <!-- Outer: unobservable -->
+          <circle cx="190" cy="190" r="178" fill="none" stroke="rgba(199,125,255,0.3)" stroke-width="2" stroke-dasharray="8 6"/>
+          <text x="190" y="32" text-anchor="middle" font-family="Space Mono, monospace" font-size="11" fill="rgba(199,125,255,0.7)" letter-spacing="1">UNOBSERVABLE UNIVERSE</text>
+          <!-- Cosmic horizon -->
+          <circle cx="190" cy="190" r="138" fill="none" stroke="rgba(6,214,160,0.5)" stroke-width="2.5"/>
+          <text x="190" y="64" text-anchor="middle" font-family="Space Mono, monospace" font-size="11" fill="rgba(6,214,160,0.8)" letter-spacing="1">COSMIC HORIZON</text>
+          <!-- Observable -->
+          <circle cx="190" cy="190" r="95" fill="url(#uniGrad)" stroke="rgba(0,212,255,0.6)" stroke-width="2"/>
+          <text x="190" y="110" text-anchor="middle" font-family="Space Mono, monospace" font-size="11" fill="rgba(0,212,255,0.9)" letter-spacing="1">OBSERVABLE</text>
+          <!-- Milky Way -->
+          <circle cx="190" cy="190" r="45" fill="rgba(255,190,11,0.08)" stroke="rgba(255,190,11,0.5)" stroke-width="2"/>
+          <text x="190" y="186" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="13" fill="rgba(255,190,11,0.9)">MILKY</text>
+          <text x="190" y="200" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="13" fill="rgba(255,190,11,0.9)">WAY</text>
+          <!-- You are here dot -->
+          <circle cx="190" cy="190" r="5" fill="#ffbe0b"/>
+          <circle cx="190" cy="190" r="10" fill="none" stroke="rgba(255,190,11,0.4)" stroke-width="1.5">
+            <animate attributeName="r" values="10;20;10" dur="2s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0.8;0;0.8" dur="2s" repeatCount="indefinite"/>
+          </circle>
+          <!-- Light travel arrows (dashed) -->
+          <line x1="190" y1="190" x2="60" y2="80" stroke="rgba(0,212,255,0.3)" stroke-width="1" stroke-dasharray="4 4"/>
+          <line x1="190" y1="190" x2="340" y2="100" stroke="rgba(0,212,255,0.3)" stroke-width="1" stroke-dasharray="4 4"/>
+          <!-- Stars -->
+          <circle cx="90" cy="90" r="2" fill="white" opacity="0.8"/>
+          <circle cx="300" cy="120" r="1.5" fill="white" opacity="0.7"/>
+          <circle cx="70" cy="280" r="2" fill="white" opacity="0.6"/>
+          <circle cx="330" cy="300" r="1.5" fill="white" opacity="0.9"/>
+          <circle cx="250" cy="60" r="1.5" fill="rgba(199,125,255,0.8)"/>
+          <circle cx="130" cy="310" r="2" fill="rgba(0,212,255,0.8)"/>
+          <circle cx="340" cy="230" r="1.5" fill="white" opacity="0.5"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== SLIDE 5: ANTIMATTER ====== -->
+  <div class="slide" id="slide-5">
+    <div class="stars-bg">
+      <div class="nebula-blob" style="width:500px;height:500px;background:radial-gradient(circle, #300060, transparent);top:10%;left:30%;--dur:20s;"></div>
+    </div>
+
+    <div class="slide-label" style="position:relative;z-index:2;align-self:flex-start;">Slide 05 · Antimatter</div>
+
+    <!-- Title row -->
+    <div style="position:relative;z-index:2;width:100%;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(44px,6vw,80px);line-height:0.95;letter-spacing:1px;color:var(--star);">
+        <span style="color:var(--accent1);">MATTER</span> VS <span style="color:var(--accent3);">ANTIMATTER</span>
+      </div>
+      <div style="background:rgba(199,125,255,0.08);border:1.5px solid rgba(199,125,255,0.3);border-radius:10px;padding:10px 18px;font-family:'Space Mono',monospace;font-size:13px;color:var(--accent3);letter-spacing:1px;line-height:1.7;">
+        ⚡ ENERGY ⟷ MATTER<br>
+        Contact = <span style="color:var(--accent2);font-weight:700;">ANNIHILATION</span><br>
+        ~500 gamma-ray flashes / day on Earth
+      </div>
+    </div>
+
+    <!-- 3-column layout: description | collision SVG | table -->
+    <div style="position:relative;z-index:2;display:grid;grid-template-columns:1fr 260px 1fr;gap:28px;width:100%;align-items:center;">
+
+      <!-- Col 1: What is antimatter -->
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div style="font-family:'Syne',sans-serif;font-size:clamp(16px,1.8vw,22px);color:var(--text);line-height:1.6;">
+          In the early universe, <span class="hl-yellow">energy transformed into matter.</span> Two particles were always created simultaneously — one ordinary, one its <span class="hl-purple">antimatter opposite.</span>
+        </div>
+        <div style="font-family:'Syne',sans-serif;font-size:clamp(15px,1.6vw,20px);color:var(--text);line-height:1.6;">
+          Charges are <span class="hl-orange">exactly reversed.</span> When matter meets antimatter, both are destroyed — leaving only <span class="highlight">gamma-ray radiation.</span>
+        </div>
+        <div style="background:rgba(0,212,255,0.07);border-left:4px solid var(--accent1);padding:12px 16px;border-radius:0 10px 10px 0;font-family:'Space Mono',monospace;font-size:13px;color:var(--accent1);letter-spacing:1px;line-height:1.7;">
+          NASA detects antimatter<br>bursts using gamma-ray<br>telescopes in space &amp; storms
+        </div>
+      </div>
+
+      <!-- Col 2: Collision SVG -->
+      <div style="display:flex;align-items:center;justify-content:center;">
+        <svg width="240" height="280" viewBox="0 0 240 280">
+          <defs>
+            <radialGradient id="blueGlow2" cx="50%" cy="50%">
+              <stop offset="0%" stop-color="#00d4ff" stop-opacity="0.9"/>
+              <stop offset="100%" stop-color="#00d4ff" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="purpleGlow2" cx="50%" cy="50%">
+              <stop offset="0%" stop-color="#c77dff" stop-opacity="0.9"/>
+              <stop offset="100%" stop-color="#c77dff" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="explodeGlow2" cx="50%" cy="50%">
+              <stop offset="0%" stop-color="#ffbe0b" stop-opacity="1"/>
+              <stop offset="50%" stop-color="#ff6b35" stop-opacity="0.6"/>
+              <stop offset="100%" stop-color="#ff6b35" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <!-- Matter ball -->
+          <circle cx="50" cy="120" r="36" fill="url(#blueGlow2)">
+            <animate attributeName="cx" values="50;90;50" dur="2.5s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="50" cy="120" r="20" fill="#00d4ff" opacity="0.95">
+            <animate attributeName="cx" values="50;90;50" dur="2.5s" repeatCount="indefinite"/>
+          </circle>
+          <text text-anchor="middle" y="125" font-family="Bebas Neue, sans-serif" font-size="11" fill="#001020">
+            <animateTransform attributeName="transform" type="translate" values="50,0;90,0;50,0" dur="2.5s" repeatCount="indefinite"/>
+            MATTER
+          </text>
+          <!-- Antimatter ball -->
+          <circle cx="190" cy="120" r="36" fill="url(#purpleGlow2)">
+            <animate attributeName="cx" values="190;150;190" dur="2.5s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="190" cy="120" r="20" fill="#c77dff" opacity="0.95">
+            <animate attributeName="cx" values="190;150;190" dur="2.5s" repeatCount="indefinite"/>
+          </circle>
+          <text text-anchor="middle" y="125" font-family="Bebas Neue, sans-serif" font-size="10" fill="#0a001a">
+            <animateTransform attributeName="transform" type="translate" values="190,0;150,0;190,0" dur="2.5s" repeatCount="indefinite"/>
+            ANTI
+          </text>
+          <!-- Explosion -->
+          <circle cx="120" cy="120" r="50" fill="url(#explodeGlow2)" opacity="0">
+            <animate attributeName="opacity" values="0;0;1;0;0" dur="2.5s" repeatCount="indefinite"/>
+            <animate attributeName="r" values="10;10;65;10;10" dur="2.5s" repeatCount="indefinite"/>
+          </circle>
+          <!-- Labels -->
+          <text x="120" y="210" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="22" fill="rgba(255,190,11,0.8)">ANNIHILATION!</text>
+          <text x="120" y="232" text-anchor="middle" font-family="Space Mono, monospace" font-size="10" fill="var(--muted)" letter-spacing="1">→ GAMMA RAYS</text>
+          <!-- Arrows -->
+          <line x1="88" y1="120" x2="108" y2="120" stroke="rgba(255,190,11,0.6)" stroke-width="2">
+            <animate attributeName="x1" values="88;108;88" dur="2.5s" repeatCount="indefinite"/>
+          </line>
+          <line x1="152" y1="120" x2="132" y2="120" stroke="rgba(255,190,11,0.6)" stroke-width="2">
+            <animate attributeName="x1" values="152;132;152" dur="2.5s" repeatCount="indefinite"/>
+          </line>
+          <!-- Charge labels -->
+          <text x="50" y="160" text-anchor="middle" font-family="Space Mono, monospace" font-size="22" fill="#00d4ff" opacity="0.9">+</text>
+          <text x="190" y="160" text-anchor="middle" font-family="Space Mono, monospace" font-size="22" fill="#c77dff" opacity="0.9">−</text>
+        </svg>
+      </div>
+
+      <!-- Col 3: Table -->
+      <div>
+        <table class="matter-table" style="font-size:14px;">
+          <thead>
+            <tr>
+              <th style="padding:8px 12px;font-size:11px;">PARTICLE</th>
+              <th style="padding:8px 12px;font-size:11px;">TYPE</th>
+              <th style="padding:8px 12px;font-size:11px;">CHARGE</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="matter-row">
+              <td style="padding:11px 12px;">Proton</td>
+              <td style="padding:11px 12px;color:var(--accent1);">MATTER</td>
+              <td style="padding:11px 12px;" class="charge-pos">＋</td>
+            </tr>
+            <tr class="matter-row">
+              <td style="padding:11px 12px;">Neutron</td>
+              <td style="padding:11px 12px;color:var(--accent1);">MATTER</td>
+              <td style="padding:11px 12px;" class="charge-neu">0</td>
+            </tr>
+            <tr class="matter-row">
+              <td style="padding:11px 12px;">Electron</td>
+              <td style="padding:11px 12px;color:var(--accent1);">MATTER</td>
+              <td style="padding:11px 12px;" class="charge-neg">−</td>
+            </tr>
+            <tr style="height:6px;"><td colspan="3"></td></tr>
+            <tr class="anti-row">
+              <td style="padding:11px 12px;">Antiproton</td>
+              <td style="padding:11px 12px;color:var(--accent3);">ANTIMATTER</td>
+              <td style="padding:11px 12px;" class="charge-neg">−</td>
+            </tr>
+            <tr class="anti-row">
+              <td style="padding:11px 12px;">Antineutron</td>
+              <td style="padding:11px 12px;color:var(--accent3);">ANTIMATTER</td>
+              <td style="padding:11px 12px;" class="charge-neu">0</td>
+            </tr>
+            <tr class="anti-row">
+              <td style="padding:11px 12px;">Positron</td>
+              <td style="padding:11px 12px;color:var(--accent3);">ANTIMATTER</td>
+              <td style="padding:11px 12px;" class="charge-pos">＋</td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="margin-top:12px;font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:1px;line-height:1.6;">
+          ↑ Notice: charges are always<br>opposite for each particle pair
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== SLIDE 6: ERA OF RECOMBINATION ====== -->
+  <div class="slide" id="slide-6">
+    <div class="stars-bg">
+      <div class="nebula-blob" style="width:500px;height:300px;background:radial-gradient(ellipse, #002050, transparent);top:0%;right:0%;--dur:17s;"></div>
+    </div>
+
+    <div class="slide-label" style="position:relative;z-index:2;align-self:flex-start;">Slide 06 · Era of Recombination</div>
+    <div style="position:relative;z-index:2;width:100%;margin-bottom:20px;">
+      <div class="section-title"><span style="color:var(--accent4);">380,000</span> YEARS<br>AFTER THE BIG BANG</div>
+    </div>
+
+    <!-- Timeline bar -->
+    <div class="timeline-slide">
+      <div class="timeline-bar">
+        <div class="timeline-fill" style="width:100%;"></div>
+        <!-- Marker: Big Bang -->
+        <div class="timeline-marker" style="left:5%;">
+          <div class="marker-dot" style="border-color:var(--accent2);background:var(--accent2);"></div>
+          <div class="marker-label" style="color:var(--accent2);">BIG BANG<br>0 yrs</div>
+        </div>
+        <!-- Marker: quarks -->
+        <div class="timeline-marker" style="left:22%;">
+          <div class="marker-dot" style="border-color:var(--accent3);"></div>
+          <div class="marker-label">QUARKS<br>10⁻⁶ sec</div>
+        </div>
+        <!-- Marker: recombination -->
+        <div class="timeline-marker" style="left:55%;">
+          <div class="marker-dot" style="border-color:var(--accent4);background:var(--accent4);box-shadow:0 0 16px var(--accent4);"></div>
+          <div class="marker-label" style="color:var(--accent4);">RECOMBINATION<br>380,000 yrs</div>
+        </div>
+        <!-- Marker: stars -->
+        <div class="timeline-marker" style="left:78%;">
+          <div class="marker-dot" style="border-color:var(--accent5);"></div>
+          <div class="marker-label">FIRST STARS<br>~200M yrs</div>
+        </div>
+        <!-- Marker: today -->
+        <div class="timeline-marker" style="left:96%;">
+          <div class="marker-dot" style="border-color:white;background:white;"></div>
+          <div class="marker-label" style="color:white;">TODAY<br>13.7B yrs</div>
+        </div>
+      </div>
+
+      <div class="before-after">
+        <div class="ba-card" style="border-color:rgba(255,107,53,0.3);">
+          <div style="font-size:36px;">🔥</div>
+          <div class="ba-title" style="color:var(--accent2);">BEFORE<br>RECOMBINATION</div>
+          <div class="ba-text">Temperature <span class="hl-orange">&gt; 3000 K</span><br>Photons ionize everything. Protons &amp; electrons <span class="hl-orange">cannot bind.</span> Universe is <strong style="color:white;">opaque</strong> — like a dense fog.</div>
+        </div>
+        <div class="ba-card" style="border-color:rgba(0,212,255,0.3);">
+          <div style="font-size:36px;">✨</div>
+          <div class="ba-title" style="color:var(--accent1);">AFTER<br>RECOMBINATION</div>
+          <div class="ba-text">Temperature drops <span class="highlight">&lt; 3000 K</span><br>Hydrogen atoms <span class="highlight">finally form!</span> Photons flow freely. Universe becomes <strong style="color:white;">transparent.</strong></div>
+        </div>
+      </div>
+
+      <div style="position:relative;z-index:2;text-align:center;font-family:'Syne',sans-serif;font-size:20px;color:var(--text);">
+        Result: <span class="highlight">74% Hydrogen</span> · <span class="hl-yellow">25% Helium</span> · Same ratio we see in stars today!
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== SLIDE 7: BIRTH OF HEAVY ELEMENTS ====== -->
+  <div class="slide" id="slide-7">
+    <div class="stars-bg">
+      <div class="nebula-blob" style="width:550px;height:550px;background:radial-gradient(circle, #200040, transparent);center;--dur:22s;"></div>
+      <div class="nebula-blob" style="width:400px;height:300px;background:radial-gradient(ellipse, #002040, transparent);bottom:0%;right:0%;--dur:18s;--del:-6s;"></div>
+    </div>
+
+    <div class="slide-label" style="position:relative;z-index:2;align-self:flex-start;">Slide 07 · Birth of the Elements</div>
+
+    <div class="elements-layout">
+      <div class="left-col" style="gap:10px;">
+        <div class="section-title">FROM <span style="color:var(--accent4);">H</span> TO <span style="color:var(--accent2);">FE</span><br>&amp; BEYOND</div>
+        <div style="font-family:'Syne',sans-serif;font-size:18px;color:var(--muted);margin-bottom:10px;">How 118 elements came to exist</div>
+
+        <div class="element-chain">
+          <div class="chain-step" style="--step-color: var(--accent4);">
+            <div class="step-icon">💥</div>
+            <div class="step-text"><strong>Big Bang</strong><br>Creates H, He, trace Li &amp; Be</div>
+          </div>
+          <div class="chain-step" style="--step-color: var(--accent1);">
+            <div class="step-icon">☁️</div>
+            <div class="step-text"><strong>Gas Clouds Cool</strong><br>Gravity pulls matter together</div>
+          </div>
+          <div class="chain-step" style="--step-color: var(--accent5);">
+            <div class="step-icon">⭐</div>
+            <div class="step-text"><strong>Stars Form</strong><br>Nuclear fusion begins in cores<br><span style="font-size:16px;color:var(--muted);">74% H + 25% He → heavier atoms</span></div>
+          </div>
+          <div class="chain-step" style="--step-color: var(--accent3);">
+            <div class="step-icon">🌌</div>
+            <div class="step-text"><strong>Primordial Nucleosynthesis</strong><br>Elements heavier than Li (Z &gt; 3)</div>
+          </div>
+          <div class="chain-step" style="--step-color: var(--accent2);">
+            <div class="step-icon">🔴</div>
+            <div class="step-text"><strong>Supernova Explosions</strong><br>The remaining <span class="hl-orange">86 elements</span> scattered across the universe</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-col">
+        <!-- Element abundance donut -->
+        <svg width="340" height="340" viewBox="0 0 340 340">
+          <defs>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+              <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <!-- Background circle -->
+          <circle cx="170" cy="170" r="130" fill="rgba(5,15,40,0.7)" stroke="rgba(0,212,255,0.1)" stroke-width="1"/>
+          <!-- Hydrogen arc: 74% = 266.4 degrees -->
+          <path d="M 170 170 L 170 40 A 130 130 0 1 1 68 224 Z" fill="rgba(0,212,255,0.25)" stroke="#00d4ff" stroke-width="2.5" filter="url(#glow)"/>
+          <!-- Helium arc: 25% = 90 degrees -->
+          <path d="M 170 170 L 68 224 A 130 130 0 0 1 168 40 Z" fill="rgba(255,190,11,0.25)" stroke="#ffbe0b" stroke-width="2.5" filter="url(#glow)"/>
+          <!-- Other: 1% -->
+          <path d="M 170 170 L 168 40 A 130 130 0 0 1 170 40 Z" fill="rgba(255,107,53,0.5)" stroke="#ff6b35" stroke-width="2"/>
+          <!-- Center -->
+          <circle cx="170" cy="170" r="75" fill="var(--void)"/>
+          <text x="170" y="162" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="14" fill="var(--muted)" letter-spacing="2">UNIVERSE</text>
+          <text x="170" y="180" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="14" fill="var(--muted)" letter-spacing="2">COMPOSITION</text>
+          <!-- Labels -->
+          <text x="230" y="120" font-family="Bebas Neue, sans-serif" font-size="28" fill="#00d4ff">74%</text>
+          <text x="228" y="140" font-family="Space Mono, monospace" font-size="11" fill="rgba(0,212,255,0.8)" letter-spacing="1">HYDROGEN</text>
+          <text x="60" y="270" font-family="Bebas Neue, sans-serif" font-size="28" fill="#ffbe0b">25%</text>
+          <text x="58" y="290" font-family="Space Mono, monospace" font-size="11" fill="rgba(255,190,11,0.8)" letter-spacing="1">HELIUM</text>
+          <text x="230" y="200" font-family="Bebas Neue, sans-serif" font-size="18" fill="#ff6b35">1%</text>
+          <text x="228" y="215" font-family="Space Mono, monospace" font-size="10" fill="rgba(255,107,53,0.8)">OTHER</text>
+        </svg>
+        <div style="text-align:center;font-family:'Space Mono',monospace;font-size:13px;color:var(--muted);letter-spacing:1px;margin-top:10px;">OLDEST STARS MATCH THIS RATIO TODAY</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== SLIDE 8: KEY TERMS RECAP ====== -->
+  <div class="slide" id="slide-8">
+    <div class="stars-bg">
+      <div class="nebula-blob" style="width:600px;height:400px;background:radial-gradient(ellipse, #001a40, transparent);center;--dur:20s;"></div>
+    </div>
+
+    <div class="slide-label" style="position:relative;z-index:2;align-self:flex-start;">Slide 08 · Key Terms</div>
+    <div style="position:relative;z-index:2;width:100%;margin-bottom:24px;display:flex;align-items:center;gap:30px;">
+      <div class="section-title">KNOW <span style="color:var(--accent1);">THESE</span><br>TERMS</div>
+      <div style="font-family:'Syne',sans-serif;font-size:18px;color:var(--muted);max-width:300px;line-height:1.5;">Define each in your guided notes — fold to test yourself!</div>
+    </div>
+
+    <div class="terms-grid">
+      <div class="term-card" style="--card-color:var(--accent4);">
+        <div class="term-word" style="color:var(--accent4);">OLBERS' PARADOX</div>
+        <div class="term-def">The contradiction between a dark night sky and the idea that an infinite universe should appear uniformly bright.</div>
+      </div>
+      <div class="term-card" style="--card-color:var(--accent2);">
+        <div class="term-word" style="color:var(--accent2);">STEADY STATE THEORY</div>
+        <div class="term-def">A now-obsolete theory proposing the universe expands but remains unchanged in density as new matter is created.</div>
+      </div>
+      <div class="term-card" style="--card-color:var(--accent1);">
+        <div class="term-word" style="color:var(--accent1);">COSMIC HORIZON</div>
+        <div class="term-def">The boundary beyond which light has not had enough time to reach us since the Big Bang.</div>
+      </div>
+      <div class="term-card" style="--card-color:var(--accent3);">
+        <div class="term-word" style="color:var(--accent3);">ANTIMATTER</div>
+        <div class="term-def">A mirror-opposite of ordinary matter; when matter and antimatter meet, both are annihilated into energy.</div>
+      </div>
+      <div class="term-card" style="--card-color:var(--accent5);">
+        <div class="term-word" style="color:var(--accent5);">ERA OF RECOMBINATION</div>
+        <div class="term-def">The period ~380,000 yrs after the Big Bang when protons and electrons first combined to form hydrogen atoms.</div>
+      </div>
+      <div class="term-card" style="--card-color:var(--accent4);">
+        <div class="term-word" style="color:var(--accent4);">PRIMORDIAL NUCLEOSYNTHESIS</div>
+        <div class="term-def">The production of elements heavier than hydrogen and helium in stellar cores and supernova explosions.</div>
+      </div>
+    </div>
+
+    <div style="position:relative;z-index:2;margin-top:20px;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:28px;color:rgba(0,212,255,0.4);letter-spacing:4px;">
+      ✦ THE UNIVERSE IS STILL TELLING ITS STORY ✦
+    </div>
+  </div>
+
+</div><!-- /slides-container -->
+
+<!-- Navigation -->
+<div class="nav-arrow hidden" id="prev">←</div>
+<div class="nav-arrow" id="next">→</div>
+
+<!-- Dots -->
+<div class="slide-counter" id="dots"></div>
+
+<div class="key-hint">← → ARROW KEYS</div>
+
+<script>
+  // Cursor
+  const cursor = document.getElementById('cursor');
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+  });
+
+  // Slides
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  // Build dots
+  const dotsEl = document.getElementById('dots');
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  }
+
+  function goTo(n) {
+    if (n < 0 || n >= total) return;
+    const prev = slides[current];
+    prev.classList.remove('active');
+    prev.classList.add('exit-left');
+    setTimeout(() => prev.classList.remove('exit-left'), 700);
+
+    current = n;
+    slides[current].classList.add('active');
+
+    // Dots
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === current));
+
+    // Arrows
+    document.getElementById('prev').classList.toggle('hidden', current === 0);
+    document.getElementById('next').classList.toggle('hidden', current === total - 1);
+  }
+
+  document.getElementById('prev').onclick = () => goTo(current - 1);
+  document.getElementById('next').onclick = () => goTo(current + 1);
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+  });
+
+  // Touch/swipe
+  let touchX = null;
+  document.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    if (!touchX) return;
+    const dx = touchX - e.changedTouches[0].clientX;
+    if (Math.abs(dx) > 60) dx > 0 ? goTo(current + 1) : goTo(current - 1);
+    touchX = null;
+  });
+
+  // Generate stars in night sky
+  const sky = document.getElementById('nightSky');
+  if (sky) {
+    for (let i = 0; i < 80; i++) {
+      const s = document.createElement('div');
+      s.className = 'sky-star';
+      const size = Math.random() * 3 + 1;
+      s.style.cssText = `
+        width:${size}px;height:${size}px;
+        top:${Math.random()*100}%;
+        left:${Math.random()*100}%;
+        opacity:${Math.random()*0.8+0.2};
+        --dur:${Math.random()*3+1.5}s;
+        animation-delay:${Math.random()*3}s;
+      `;
+      sky.appendChild(s);
+    }
+  }
+
+  // Add floating particles to each slide
+  document.querySelectorAll('.stars-bg').forEach(bg => {
+    for (let i = 0; i < 30; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = Math.random() * 2.5 + 0.5;
+      p.style.cssText = `
+        width:${size}px;height:${size}px;
+        background:white;
+        top:${Math.random()*100}%;
+        left:${Math.random()*100}%;
+        --dur:${Math.random()*10+5}s;
+        --del:-${Math.random()*10}s;
+        opacity:${Math.random()*0.5+0.1};
+      `;
+      bg.appendChild(p);
+    }
+  });
+</script>
+</body>
+</html>
