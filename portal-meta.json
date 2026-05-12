@@ -1,5 +1,16 @@
 [
   {
+    "id": "pg_1778566093184_596",
+    "platform": "is",
+    "subject": "Physics",
+    "topic": "Thermodynamics",
+    "title": "Temperature, Energy & Heat",
+    "desc": "Temperature, thermal energy and heat",
+    "accent": "#2dd4bf",
+    "date": "2026-05-12",
+    "filename": "heat_energy_slides.html"
+  },
+  {
     "id": "pg_1778225854432_vy5",
     "platform": "is",
     "subject": "Science",
