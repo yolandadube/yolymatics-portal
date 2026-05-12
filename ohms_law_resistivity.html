@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Ohm's Law & Resistivity</title>
+<style>
+/* ── System fonts — no CDN needed ── */
+@font-face{font-family:'Bebas';src:local('Impact'),local('Arial Black'),local('Franklin Gothic Heavy');}
+@font-face{font-family:'Mserrat';src:local('Arial'),local('Helvetica Neue'),local('Helvetica');}
+@font-face{font-family:'Nunit';src:local('Arial'),local('Helvetica Neue'),local('Helvetica');}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;}
+.deck{width:100%;height:100vh;position:relative;}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.7s ease;overflow:hidden;}
+.slide.active{opacity:1;pointer-events:all;}
+
+/* Grid background */
+.gb{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);background-size:55px 55px;pointer-events:none;}
+
+/* NAV */
+.nav{position:fixed;bottom:1.4rem;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:1rem;z-index:9999;}
+.nav button{background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.22);color:#fff;font-family:'Bebas',Impact,sans-serif;font-size:1rem;letter-spacing:2px;padding:0.4rem 1.5rem;border-radius:50px;cursor:pointer;backdrop-filter:blur(8px);transition:all 0.2s;}
+.nav button:hover{background:rgba(255,255,255,0.22);}
+.dots{display:flex;gap:0.35rem;}
+.dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.22);cursor:pointer;transition:all 0.3s;}
+.dot.active{background:#f59e0b;transform:scale(1.45);}
+.snum{font-family:'Mserrat',Arial,sans-serif;font-weight:700;font-size:0.72rem;letter-spacing:3px;color:rgba(255,255,255,0.32);}
+
+/* SHARED LAYOUT */
+.inner{display:flex;align-items:center;justify-content:center;gap:4vw;width:90%;max-width:1300px;z-index:2;}
+.tc{flex:1;} .vc{flex:0 0 auto;display:flex;align-items:center;justify-content:center;}
+.tag{font-family:'Mserrat',Arial,sans-serif;font-weight:900;font-size:clamp(0.6rem,1vw,0.78rem);letter-spacing:6px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:0.6rem;}
+.sh{font-family:'Bebas',Impact,sans-serif;font-size:clamp(3rem,6vw,6.5rem);line-height:0.88;color:#fff;margin-bottom:1rem;letter-spacing:2px;}
+.sb{font-family:'Nunit',Arial,sans-serif;font-weight:600;font-size:clamp(0.92rem,1.55vw,1.25rem);color:rgba(225,225,235,0.88);line-height:1.72;max-width:520px;}
+.sb strong{color:#fff;}
+
+/* Colour accents */
+.ay{color:#f59e0b;} .ab{color:#3b82f6;} .ag{color:#10b981;} .ar{color:#ef4444;} .ap{color:#a855f7;} .ac{color:#06b6d4;} .aw{color:#fff;}
+
+/* Bullet list */
+.blist{display:flex;flex-direction:column;gap:0.5rem;margin-top:0.8rem;max-width:520px;}
+.bi{display:flex;align-items:flex-start;gap:0.6rem;font-family:'Nunit',Arial,sans-serif;font-weight:600;font-size:clamp(0.88rem,1.45vw,1.1rem);color:rgba(220,225,230,0.85);line-height:1.5;}
+.bd{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:0.4rem;}
+
+/* ════════════ S1 TITLE ════════════ */
+#s1{background:radial-gradient(ellipse at 50% 50%,#0c0600 0%,#060410 60%,#000 100%);}
+.s1-glow{position:absolute;border-radius:50%;pointer-events:none;}
+.s1-wrap{position:relative;z-index:2;text-align:center;}
+.s1-chip{font-family:'Mserrat',Arial,sans-serif;font-weight:900;font-size:clamp(0.65rem,1.2vw,0.9rem);letter-spacing:9px;text-transform:uppercase;color:rgba(245,158,11,0.55);margin-bottom:0.9rem;}
+.s1-h{font-family:'Bebas',Impact,sans-serif;font-size:clamp(4rem,11vw,12rem);line-height:0.82;letter-spacing:4px;color:#fff;text-shadow:0 0 80px rgba(245,158,11,0.9),0 0 180px rgba(220,100,0,0.4);}
+.s1-h .ohm{color:#f59e0b;} .s1-h .law{color:#fff;}
+.s1-rule{width:180px;height:2px;background:linear-gradient(90deg,transparent,#f59e0b,#3b82f6,transparent);margin:1rem auto;}
+.s1-sub{font-family:'Mserrat',Arial,sans-serif;font-weight:700;font-size:clamp(0.8rem,1.5vw,1.15rem);letter-spacing:5px;color:rgba(220,195,140,0.65);text-transform:uppercase;}
+.s1-by{margin-top:1.6rem;display:inline-flex;align-items:center;gap:0.5rem;padding:0.5rem 2rem;border:1.5px solid rgba(245,158,11,0.3);border-radius:50px;background:rgba(245,158,11,0.07);backdrop-filter:blur(8px);}
+.s1-bolt{position:absolute;animation:boltPop ease-in-out infinite;font-size:2rem;pointer-events:none;}
+@keyframes boltPop{0%,80%{opacity:0;}85%,90%{opacity:0.7;}95%,100%{opacity:0;}}
+
+/* ════════════ S2 RESISTANCE INTRO ════════════ */
+#s2{background:linear-gradient(145deg,#020814 0%,#030a1a 55%,#080204 100%);}
+.resistance-viz{width:min(44vw,400px);display:flex;flex-direction:column;gap:1rem;align-items:center;}
+.river-analogy{display:flex;flex-direction:column;gap:0.6rem;width:100%;}
+.ra-card{border-radius:12px;padding:0.85rem 1rem;display:flex;align-items:flex-start;gap:0.7rem;}
+.ra-water{background:rgba(59,130,246,0.1);border:1.5px solid rgba(59,130,246,0.3);}
+.ra-elec{background:rgba(245,158,11,0.1);border:1.5px solid rgba(245,158,11,0.3);}
+.ra-icon{font-size:1.8rem;flex-shrink:0;}
+.ra-title{font-family:'Bebas',Impact,sans-serif;font-size:1.1rem;letter-spacing:2px;margin-bottom:0.15rem;}
+.ra-water .ra-title{color:#60a5fa;} .ra-elec .ra-title{color:#f59e0b;}
+.ra-body{font-family:'Nunit',Arial,sans-serif;font-weight:600;font-size:0.82rem;color:rgba(210,220,230,0.72);line-height:1.4;}
+.ohm-unit{background:rgba(245,158,11,0.1);border:2px solid rgba(245,158,11,0.35);border-radius:12px;padding:0.85rem 1.1rem;width:100%;text-align:center;}
+.ou-sym{font-family:'Bebas',Impact,sans-serif;font-size:3rem;color:#f59e0b;text-shadow:0 0 20px rgba(245,158,11,0.5);line-height:1;}
+.ou-name{font-family:'Mserrat',Arial,sans-serif;font-weight:900;font-size:0.8rem;letter-spacing:3px;color:rgba(245,158,11,0.7);margin-top:0.15rem;}
+.ou-def{font-family:'Nunit',Arial,sans-serif;font-weight:600;font-size:0.78rem;color:rgba(255,220,160,0.65);margin-top:0.3rem;line-height:1.4;}
+
+/* ════════════ S3 RESISTIVITY CONCEPT ════════════ */
+#s3{background:linear-gradient(145deg,#06030e 0%,#0a0518 55%,#030a06 100%);}
+.rho-viz{width:min(44vw,400px);display:flex;flex-direction:column;gap:0.9rem;align-items:center;}
+.rho-sym-box{background:rgba(168,85,247,0.1);border:2px solid rgba(168,85,247,0.35);border-radius:14px;padding:1rem;text-align:center;width:100%;}
+.rho-sym{font-family:'Bebas',Impact,sans-serif;font-size:4rem;color:#a855f7;text-shadow:0 0 25px rgba(168,85,247,0.6);line-height:1;}
+.rho-name{font-family:'Mserrat',Arial,sans-serif;font-weight:900;font-size:0.82rem;letter-spacing:3px;color:rgba(168,85,247,0.7);}
+.rho-def{font-family:'Nunit',Arial,sans-serif;font-weight:600;font-size:0.8rem;color:rgba(210,190,255,0.65);margin-top:0.25rem;line-height:1.4;}
+.material-rho{display:flex;flex-direction:column;gap:0.35rem;width:100%;}
+.mr-row{display:flex;align-items:center;justify-content:space-between;padding:0.4rem 0.8rem;border-radius:7px;background:rgba(255,255,255,0.04);}
+.mr-mat{font-family:'Mserrat',Arial,sans-serif;font-weight:700;font-size:0.82rem;color:rgba(220,220,230,0.8);}
+.mr-val{font-family:'Bebas',Impact,sans-serif;font-size:0.95rem;letter-spacing:1px;}
+.mr-bar{height:5px;border-radius:3px;margin-top:0.2rem;}
+
+/* ════════════ S4 RESISTIVITY FORMULA ════════════ */
+#s4{background:linear-gradient(145deg,#040010 0%,#070018 55%,#030a06 100%);}
+.formula-mega{text-align:center;z-index:2;width:90%;max-width:1100px;}
+.formula-title{font-family:'Bebas',Impact,sans-serif;font-size:clamp(2.5rem,5vw,4.5rem);letter-spacing:5px;color:#fff;text-shadow:0 0 50px rgba(168,85,247,0.4);}
+.formula-display{display:flex;align-items:center;justify-content:center;gap:1rem;margin:1.2rem 0;flex-wrap:wrap;}
+.fd-box{border-radius:14px;padding:0.8rem 1.5rem;text-align:center;min-width:100px;}
+.fd-R{background:rgba(245,158,11,0.12);border:2.5px solid rgba(245,158,11,0.45);}
+.fd-eq{background:none;border:none;padding:0.8rem 0.3rem;}
+.fd-rho{background:rgba(168,85,247,0.12);border:2.5px solid rgba(168,85,247,0.45);}
+.fd-L{background:rgba(59,130,246,0.12);border:2.5px solid rgba(59,130,246,0.45);}
+.fd-A{background:rgba(16,185,129,0.12);border:2.5px solid rgba(16,185,129,0.45);}
+.fd-symbol{font-family:'Bebas',Impact,sans-serif;font-size:clamp(2.5rem,5vw,5rem);line-height:1;letter-spacing:2px;}
+.fd-R .fd-symbol{color:#f59e0b;} .fd-eq .fd-symbol{color:rgba(255,255,255,0.4);font-size:clamp(2rem,4vw,4rem);}
+.fd-rho .fd-symbol{color:#a855f7;} .fd-L .fd-symbol{color:#3b82f6;} .fd-A .fd-symbol{color:#10b981;}
+.fd-label{font-family:'Mserrat',Arial,sans-serif;font-weight:900;font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;margin-top:0.2rem;}
+.fd-unit{font-family:'Nunit',Arial,sans-serif;font-weight:700;font-size:0.75rem;opacity:0.6;margin-top:0.1rem;}
+.fd-R .fd-label{color:rgba(245,158,11,0.7);} .fd-rho .fd-label{color:rgba(168,85,247,0.7);}
+.fd-L .fd-label{color:rgba(59,130,246,0.7);} .fd-A .fd-label{color:rgba(16,185,129,0.7);}
+.rearranged{display:flex;gap:0.8rem;justify-content:center;flex-wrap:wrap;margin-top:0.6rem;}
+.rear-box{padding:0.45rem 1rem;border-radius:8px;font-family:'Bebas',Impact,sans-serif;font-size:1.3rem;letter-spacing:2px;border:1.5px solid;}
+.rb-rho{color:#a855f7;background:rgba(168,85,247,0.08);border-color:rgba(168,85,247,0.3);}
+.rb-L{color:#3b82f6;background:rgba(59,130,246,0.08);border-color:rgba(59,130,246,0.3);}
+.rb-A{color:#10b981;background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.3);}
+.wire-diagram{display:flex;align-items:center;justify-content:center;margin:0.8rem 0;}
+
+/* ════════════ S5 FACTORS ════════════ */
+#s5{background:linear-gradient(145deg,#060400 0%,#0a0600 55%,#030810 100%);}
+.factors-layout{width:90%;max-width:1200px;z-index:2;display:flex;flex-direction:column;gap:0.9rem;}
+.factors-title{font-family:'Bebas',Impact,sans-serif;font-size:clamp(2.5rem,5vw,4.5rem);letter-spacing:5px;color:#fff;text-shadow:0 0 50px rgba(245,158,11,0.4);text-align:center;}
+.factors-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0.9rem;}
+.fac-card{border-radius:14px;padding:1rem 0.9rem;display:flex;flex-direction:column;align-items:center;gap:0.5rem;text-align:center;}
+.fc1{background:rgba(59,130,246,0.09);border:2px solid rgba(59,130,246,0.3);}
+.fc2{background:rgba(16,185,129,0.09);border:2px solid rgba(16,185,129,0.3);}
+.fc3{background:rgba(168,85,247,0.09);border:2px solid rgba(168,85,247,0.3);}
+.fc4{background:rgba(245,158,11,0.09);border:2px solid rgba(245,158,11,0.3);}
+.fac-icon{font-size:2.2rem;}
+.fac-name{font-family:'Bebas',Impact,sans-serif;font-size:1.4rem;letter-spacing:2px;}
+.fc1 .fac-name{color:#60a5fa;} .fc2 .fac-name{color:#34d399;} .fc3 .fac-name{color:#c084fc;} .fc4 .fac-name{color:#fbbf24;}
+.fac-rel{font-family:'Bebas',Impact,sans-serif;font-size:1rem;letter-spacing:2px;padding:0.2rem 0.6rem;border-radius:6px;margin:0.2rem 0;}
+.fc1 .fac-rel{color:#93c5fd;background:rgba(59,130,246,0.15);}
+.fc2 .fac-rel{color:#6ee7b7;background:rgba(16,185,129,0.15);}
+.fc3 .fac-rel{color:#d8b4fe;background:rgba(168,85,247,0.15);}
+.fc4 .fac-rel{color:#fde68a;background:rgba(245,158,11,0.15);}
+.fac-desc{font-family:'Nunit',Arial,sans-serif;font-weight:600;font-size:0.8rem;color:rgba(210,220,225,0.7);line-height:1.4;}
+.fac-canvas{border-radius:8px;}
+
+/* ════════════ S6 OHM'S LAW ════════════ */
+#s6{background:radial-gradient(ellipse at 50% 45%,#0c0600 0%,#060412 60%,#000 100%);}
+.ohms-mega{z-index:2;width:90%;max-width:1100px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:1rem;}
+.ohms-focus{font-family:'Mserrat',Arial,sans-serif;font-weight:900;font-size:clamp(0.65rem,1.1vw,0.82rem);letter-spacing:6px;text-transform:uppercase;color:rgba(245,158,11,0.5);}
+.ohms-h{font-family:'Bebas',Impact,sans-serif;font-size:clamp(3rem,7vw,7rem);letter-spacing:4px;color:#fff;line-height:0.9;text-shadow:0 0 80px rgba(245,158,11,0.7);}
+.ohms-h span{color:#f59e0b;}
+.ohms-formula{display:flex;align-items:center;justify-content:center;gap:0.8rem;flex-wrap:wrap;}
+.of-box{border-radius:16px;padding:1rem 1.8rem;text-align:center;}
+.of-V{background:rgba(245,158,11,0.12);border:3px solid rgba(245,158,11,0.5);}
+.of-eq{background:none;border:none;}
+.of-I{background:rgba(59,130,246,0.12);border:3px solid rgba(59,130,246,0.5);}
+.of-x{background:none;border:none;}
+.of-R{background:rgba(239,68,68,0.12);border:3px solid rgba(239,68,68,0.5);}
+.of-sym{font-family:'Bebas',Impact,sans-serif;font-size:clamp(3.5rem,7vw,7rem);line-height:1;letter-spacing:3px;}
+.of-V .of-sym{color:#f59e0b;} .of-eq .of-sym{color:rgba(255,255,255,0.3);font-size:clamp(2.5rem,5vw,5rem);}
+.of-I .of-sym{color:#3b82f6;} .of-x .of-sym{color:rgba(255,255,255,0.25);font-size:clamp(2rem,4vw,4rem);}
+.of-R .of-sym{color:#ef4444;}
+.of-lbl{font-family:'Mserrat',Arial,sans-serif;font-weight:900;font-size:0.72rem;letter-spacing:3px;text-transform:uppercase;margin-top:0.2rem;}
+.of-V .of-lbl{color:rgba(245,158,11,0.7);} .of-I .of-lbl{color:rgba(59,130,246,0.7);} .of-R .of-lbl{color:rgba(239,68,68,0.7);}
+.of-unit{font-family:'Nunit',Arial,sans-serif;font-weight:700;font-size:0.75rem;opacity:0.5;margin-top:0.05rem;}
+.ohms-desc{font-family:'Nunit',Arial,sans-serif;font-weight:600;font-size:clamp(0.9rem,1.5vw,1.15rem);color:rgba(220,220,230,0.82);line-height:1.6;max-width:700px;}
+.person-box{background:rgba(245,158,11,0.07);border:1.5px solid rgba(245,158,11,0.22);border-radius:10px;padding:0.6rem 1rem;font-family:'Nunit',Arial,sans-serif;font-weight:600;font-size:0.85rem;color:rgba(255,220,140,0.72);line-height:1.5;}
+
+/* ════════════ S7 TRIANGLE ════════════ */
+#s7{background:linear-gradient(145deg,#060400 0%,#0c0600 55%,#030a10 100%);}
+.triangle-layout{z-index:2;width:90%;max-width:1200px;display:flex;align-items:center;gap:3rem;}
+.triangle-section{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:1rem;}
+.rearranged-section{flex:1;display:flex;flex-direction:column;gap:0.8rem;}
+.tri-canvas-wrap{position:relative;width:280px;height:240px;}
+.tri-caption{font-family:'Mserrat',Arial,sans-serif;font-weight:900;font-size:0.72rem;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,0.35);text-align:center;}
+.rearr-title{font-family:'Bebas',Impact,sans-serif;font-size:clamp(2rem,3.5vw,3rem);letter-spacing:4px;color:#fff;}
+.rearr-card{border-radius:13px;padding:0.9rem 1.1rem;display:flex;align-items:center;gap:1rem;}
+.rc-V{background:rgba(245,158,11,0.09);border:2px solid rgba(245,158,11,0.3);}
+.rc-I{background:rgba(59,130,246,0.09);border:2px solid rgba(59,130,246,0.3);}
+.rc-R{background:rgba(239,68,68,0.09);border:2px solid rgba(239,68,68,0.3);}
+.rearr-formula{font-family:'Bebas',Impact,sans-serif;font-size:clamp(1.8rem,2.8vw,2.4rem);letter-spacing:3px;flex-shrink:0;min-width:120px;}
+.rc-V .rearr-formula{color:#f59e0b;} .rc-I .rearr-formula{color:#3b82f6;} .rc-R .rearr-formula{color:#ef4444;}
+.rearr-use{font-family:'Nunit',Arial,sans-serif;font-weight:600;font-size:0.85rem;color:rgba(215,215,225,0.75);line-height:1.4;}
+
+/* ════════════ S8 V-I GRAPH ════════════ */
+#s8{background:linear-gradient(145deg,#030a10 0%,#040818 55%,#060302 100%);}
+.graph-layout{z-index:2;width:90%;max-width:1200px;display:flex;align-items:center;gap:3rem;}
+.graph-info{flex:1;}
+.graph-canvas-wrap{flex:0 0 auto;}
+
+/* ════════════ WORKED EXAMPLES SHARED ════════════ */
+.worked-layout{width:90%;max-width:1200px;z-index:2;display:flex;flex-direction:column;gap:0.8rem;}
+.worked-title{font-family:'Bebas',Impact,sans-serif;font-size:clamp(2.3rem,4.8vw,4rem);letter-spacing:5px;color:#fff;text-align:center;}
+.worked-grid{display:grid;gap:0.9rem;}
+.w2{grid-template-columns:1fr 1fr;}
+.w3{grid-template-columns:1fr 1fr 1fr;}
+.wex{border-radius:14px;padding:1.1rem 1.2rem;position:relative;overflow:hidden;}
+.wex::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.wx1{background:rgba(245,158,11,0.07);border:1.5px solid rgba(245,158,11,0.25);} .wx1::before{background:linear-gradient(90deg,#f59e0b,#f97316);}
+.wx2{background:rgba(59,130,246,0.07);border:1.5px solid rgba(59,130,246,0.25);} .wx2::before{background:linear-gradient(90deg,#3b82f6,#06b6d4);}
+.wx3{background:rgba(16,185,129,0.07);border:1.5px solid rgba(16,185,129,0.25);} .wx3::before{background:linear-gradient(90deg,#10b981,#84cc16);}
+.wx4{background:rgba(168,85,247,0.07);border:1.5px solid rgba(168,85,247,0.25);} .wx4::before{background:linear-gradient(90deg,#a855f7,#ec4899);}
+.wex-num{font-family:'Mserrat',Arial,sans-serif;font-weight:900;font-size:0.65rem;letter-spacing:5px;text-transform:uppercase;margin-bottom:0.3rem;}
+.wx1 .wex-num{color:rgba(245,158,11,0.6);} .wx2 .wex-num{color:rgba(59,130,246,0.6);}
+.wx3 .wex-num{color:rgba(16,185,129,0.6);} .wx4 .wex-num{color:rgba(168,85,247,0.6);}
+.wex-q{font-family:'Nunit',Arial,sans-serif;font-weight:700;font-size:clamp(0.88rem,1.4vw,1rem);color:#fff;line-height:1.45;margin-bottom:0.6rem;}
+.wex-given{font-family:'Nunit',Arial,sans-serif;font-weight:600;font-size:0.82rem;color:rgba(200,210,220,0.7);margin-bottom:0.5rem;line-height:1.5;}
+.step{font-family:'Nunit',Arial,sans-serif;font-weight:600;font-size:0.85rem;color:rgba(210,218,225,0.82);line-height:1.55;margin-bottom:0.12rem;}
+.ans{display:inline-block;margin-top:0.5rem;padding:0.3rem 1rem;border-radius:8px;font-family:'Bebas',Impact,sans-serif;font-size:1.4rem;letter-spacing:2px;}
+.ans-y{color:#f59e0b;background:rgba(245,158,11,0.12);border:1.5px solid rgba(245,158,11,0.3);}
+.ans-b{color:#60a5fa;background:rgba(59,130,246,0.12);border:1.5px solid rgba(59,130,246,0.3);}
+.ans-g{color:#34d399;background:rgba(16,185,129,0.1);border:1.5px solid rgba(16,185,129,0.25);}
+.ans-p{color:#c084fc;background:rgba(168,85,247,0.1);border:1.5px solid rgba(168,85,247,0.25);}
+
+/* ════════════ S9 OHM WORKED ════════════ */
+#s9{background:linear-gradient(145deg,#060400 0%,#090500 55%,#030810 100%);}
+#s9 .worked-title{text-shadow:0 0 40px rgba(245,158,11,0.4);}
+
+/* ════════════ S10 RESISTIVITY WORKED ════════════ */
+#s10{background:linear-gradient(145deg,#040010 0%,#060018 55%,#030a06 100%);}
+#s10 .worked-title{text-shadow:0 0 40px rgba(168,85,247,0.4);}
+
+/* ════════════ S11 & S12 PRACTICE ════════════ */
+#s11{background:linear-gradient(145deg,#030a06 0%,#040818 55%,#080304 100%);}
+#s12{background:linear-gradient(145deg,#060308 0%,#040818 55%,#030a06 100%);}
+.prac-layout{width:90%;max-width:1200px;z-index:2;display:flex;flex-direction:column;gap:0.8rem;}
+.prac-title{font-family:'Bebas',Impact,sans-serif;font-size:clamp(2.3rem,4.8vw,4rem);letter-spacing:5px;color:#fff;text-align:center;}
+.prac-grid{display:grid;gap:0.85rem;}
+.prac-card{border-radius:13px;padding:1rem 1.1rem;border:1.5px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);}
+.prac-card::before{display:none;}
+.pc-num{font-family:'Bebas',Impact,sans-serif;font-size:1.1rem;letter-spacing:3px;margin-bottom:0.3rem;}
+.pc-q{font-family:'Nunit',Arial,sans-serif;font-weight:700;font-size:clamp(0.9rem,1.45vw,1.05rem);color:#fff;line-height:1.45;margin-bottom:0.4rem;}
+.pc-given{font-family:'Nunit',Arial,sans-serif;font-weight:600;font-size:0.82rem;color:rgba(200,215,220,0.65);line-height:1.5;}
+.pc-hint{font-family:'Mserrat',Arial,sans-serif;font-weight:700;font-size:0.7rem;letter-spacing:2px;padding:0.2rem 0.6rem;border-radius:5px;display:inline-block;margin-top:0.3rem;}
+.hint-y{background:rgba(245,158,11,0.12);color:rgba(245,158,11,0.7);}
+.hint-b{background:rgba(59,130,246,0.12);color:rgba(96,165,250,0.7);}
+.hint-g{background:rgba(16,185,129,0.12);color:rgba(52,211,153,0.7);}
+.hint-p{background:rgba(168,85,247,0.12);color:rgba(192,132,252,0.7);}
+.hint-r{background:rgba(239,68,68,0.12);color:rgba(248,113,113,0.7);}
+.prac-star{grid-column:1/-1;background:rgba(245,158,11,0.06);border-color:rgba(245,158,11,0.2);}
+.prac-tip{background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.18);border-radius:9px;padding:0.55rem 1rem;font-family:'Nunit',Arial,sans-serif;font-weight:600;font-size:0.83rem;color:rgba(180,255,200,0.65);line-height:1.5;text-align:center;}
+
+/* ════════════ S13 SUMMARY ════════════ */
+#s13{background:linear-gradient(135deg,#060400 0%,#060818 50%,#040a06 100%);}
+.sum-layout{width:88%;max-width:1200px;z-index:2;display:flex;flex-direction:column;gap:0.8rem;}
+.sum-title{font-family:'Bebas',Impact,sans-serif;font-size:clamp(2.3rem,4.5vw,4rem);letter-spacing:5px;color:#fff;text-shadow:0 0 50px rgba(245,158,11,0.4);text-align:center;}
+.sum-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.85rem;}
+.sum-card{background:rgba(255,255,255,0.04);border-radius:13px;border:1.5px solid rgba(255,255,255,0.09);padding:1rem;transition:transform 0.3s;}
+.sum-card:hover{transform:translateY(-4px);}
+.si{font-size:1.7rem;margin-bottom:0.4rem;}
+.st{font-family:'Bebas',Impact,sans-serif;font-size:1.4rem;letter-spacing:2px;margin-bottom:0.3rem;}
+.sd{font-family:'Nunit',Arial,sans-serif;font-weight:600;font-size:0.82rem;color:rgba(210,218,225,0.68);line-height:1.5;}
+.sum-card:nth-child(1){border-top:3px solid #f59e0b;} .sum-card:nth-child(1) .st{color:#f59e0b;}
+.sum-card:nth-child(2){border-top:3px solid #3b82f6;} .sum-card:nth-child(2) .st{color:#60a5fa;}
+.sum-card:nth-child(3){border-top:3px solid #10b981;} .sum-card:nth-child(3) .st{color:#34d399;}
+.sum-card:nth-child(4){border-top:3px solid #a855f7;} .sum-card:nth-child(4) .st{color:#c084fc;}
+.sum-card:nth-child(5){border-top:3px solid #ef4444;} .sum-card:nth-child(5) .st{color:#f87171;}
+.sum-card:nth-child(6){border-top:3px solid #06b6d4;} .sum-card:nth-child(6) .st{color:#67e8f9;}
+.formula-strip{display:flex;gap:0.8rem;flex-wrap:wrap;justify-content:center;}
+.fs-pill{padding:0.4rem 1rem;border-radius:8px;font-family:'Bebas',Impact,sans-serif;font-size:1.3rem;letter-spacing:3px;}
+.fp1{color:#f59e0b;background:rgba(245,158,11,0.1);border:1.5px solid rgba(245,158,11,0.25);}
+.fp2{color:#a855f7;background:rgba(168,85,247,0.1);border:1.5px solid rgba(168,85,247,0.25);}
+.fp3{color:#60a5fa;background:rgba(59,130,246,0.1);border:1.5px solid rgba(59,130,246,0.25);}
+.fp4{color:#ef4444;background:rgba(239,68,68,0.1);border:1.5px solid rgba(239,68,68,0.25);}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- ════ S1 TITLE ════ -->
+<div class="slide active" id="s1">
+  <div class="gb" style="opacity:0.4;"></div>
+  <div class="s1-glow" style="width:600px;height:600px;background:radial-gradient(circle,rgba(245,158,11,0.16),transparent 70%);top:25%;left:15%;position:absolute;animation:gp 5s ease-in-out infinite;"></div>
+  <div class="s1-glow" style="width:450px;height:450px;background:radial-gradient(circle,rgba(59,130,246,0.12),transparent 70%);top:40%;right:10%;position:absolute;animation:gp 7s ease-in-out infinite;animation-delay:-3s;"></div>
+  <style>@keyframes gp{0%,100%{transform:scale(1);}50%{transform:scale(1.12);}}</style>
+  <div id="bolts"></div>
+  <canvas id="s1Canvas" style="position:absolute;inset:0;width:100%;height:100%;opacity:0.4;"></canvas>
+  <div class="s1-wrap">
+    <div class="s1-chip">Grade 10–12 Physics · Electricity</div>
+    <h1 class="s1-h"><span class="ohm">OHM'S</span><br/><span class="law">LAW &</span><br/><span style="color:#3b82f6;">RESISTIVITY</span></h1>
+    <div class="s1-rule"></div>
+    <p class="s1-sub">V = IR &nbsp;·&nbsp; R = ρL/A &nbsp;·&nbsp; Worked Examples &nbsp;·&nbsp; Practice</p>
+    <div class="s1-by">
+      <span style="font-size:1rem;color:rgba(245,158,11,0.6);">⚡</span>
+      <span style="font-family:'Mserrat',Arial,sans-serif;font-weight:400;font-size:clamp(0.7rem,1.1vw,0.85rem);letter-spacing:3px;color:rgba(220,200,150,0.5);text-transform:uppercase;">Prepared by &nbsp;</span>
+      <span style="font-family:'Mserrat',Arial,sans-serif;font-weight:900;font-size:clamp(0.75rem,1.2vw,0.9rem);letter-spacing:4px;color:#fff;text-transform:uppercase;">Yolanda Dube</span>
+    </div>
+  </div>
+</div>
+
+<!-- ════ S2 WHAT IS RESISTANCE ════ -->
+<div class="slide" id="s2">
+  <div class="gb"></div>
+  <div class="inner">
+    <div class="tc">
+      <div class="tag">Concept 01</div>
+      <h2 class="sh">WHAT IS<br/><span class="ay">RESISTANCE?</span></h2>
+      <p class="sb">
+        Electrical <span class="ay"><strong>resistance</strong></span> is the opposition that a material offers to the flow of electric current.<br/><br/>
+        Think of it like friction — just as friction slows down a moving object, resistance <strong>slows down the flow of electrons</strong> through a conductor.<br/><br/>
+        The more resistance, the <span class="ar"><strong>harder it is</strong></span> for current to flow — and the more energy is lost as <strong>heat.</strong>
+      </p>
+      <div class="blist">
+        <div class="bi"><div class="bd" style="background:#f59e0b;"></div><span>Symbol: <strong style="color:#fff;">R</strong></span></div>
+        <div class="bi"><div class="bd" style="background:#f59e0b;"></div><span>Unit: <strong style="color:#fff;">Ohm (Ω)</strong> — named after Georg Simon Ohm</span></div>
+        <div class="bi"><div class="bd" style="background:#f59e0b;"></div><span>1 Ω = 1 volt per ampere (V/A)</span></div>
+        <div class="bi"><div class="bd" style="background:#f59e0b;"></div><span>Conductors (metals) have <strong style="color:#fff;">low resistance</strong></span></div>
+        <div class="bi"><div class="bd" style="background:#f59e0b;"></div><span>Insulators (rubber, wood) have <strong style="color:#fff;">very high resistance</strong></span></div>
+      </div>
+    </div>
+    <div class="vc">
+      <div class="resistance-viz">
+        <canvas id="resistCanvas" width="380" height="160" style="border-radius:12px;border:1.5px solid rgba(245,158,11,0.2);"></canvas>
+        <div class="river-analogy">
+          <div class="ra-card ra-water">
+            <div class="ra-icon">🌊</div>
+            <div><div class="ra-title">WATER ANALOGY</div><div class="ra-body">Water pipes with <strong style="color:#fff;">narrow passages</strong> resist flow. Wider pipe → less resistance → more flow. A partially blocked pipe = resistor.</div></div>
+          </div>
+          <div class="ra-card ra-elec">
+            <div class="ra-icon">⚡</div>
+            <div><div class="ra-title">ELECTRIC CIRCUIT</div><div class="ra-body">Electrons collide with atoms as they flow through a wire. More collisions = <strong style="color:#fff;">more resistance</strong>. A thin wire resists more than a thick wire.</div></div>
+          </div>
+        </div>
+        <div class="ohm-unit">
+          <div class="ou-sym">Ω</div>
+          <div class="ou-name">THE OHM</div>
+          <div class="ou-def">Named after Georg Simon Ohm (1789–1854). The unit of resistance. 1 Ω means a voltage of 1V drives a current of 1A through the component.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ S3 RESISTIVITY ════ -->
+<div class="slide" id="s3">
+  <div class="gb"></div>
+  <div class="inner">
+    <div class="vc">
+      <div class="rho-viz">
+        <div class="rho-sym-box">
+          <div class="rho-sym">ρ</div>
+          <div class="rho-name">RESISTIVITY (rho)</div>
+          <div class="rho-def">An <strong style="color:#fff;">intrinsic property</strong> of a material — it describes how strongly that material opposes current flow, regardless of its size or shape.</div>
+        </div>
+        <div style="font-family:'Mserrat',Arial,sans-serif;font-weight:900;font-size:0.7rem;letter-spacing:4px;color:rgba(255,255,255,0.3);margin-bottom:0.2rem;text-align:center;">RESISTIVITY VALUES AT 20°C</div>
+        <div class="material-rho">
+          <div class="mr-row"><span class="mr-mat">🥈 Silver</span><span class="mr-val" style="color:#c0c0c0;">1.59 × 10⁻⁸ Ω·m</span><span style="font-family:'Mserrat',Arial,sans-serif;font-weight:700;font-size:0.72rem;color:rgba(192,192,192,0.6);">Best conductor</span></div>
+          <div class="mr-row"><span class="mr-mat">🟠 Copper</span><span class="mr-val" style="color:#f97316;">1.72 × 10⁻⁸ Ω·m</span><span style="font-family:'Mserrat',Arial,sans-serif;font-weight:700;font-size:0.72rem;color:rgba(249,115,22,0.6);">Wiring standard</span></div>
+          <div class="mr-row"><span class="mr-mat">⚪ Aluminium</span><span class="mr-val" style="color:#94a3b8;">2.82 × 10⁻⁸ Ω·m</span><span style="font-family:'Mserrat',Arial,sans-serif;font-weight:700;font-size:0.72rem;color:rgba(148,163,184,0.6);">Power lines</span></div>
+          <div class="mr-row"><span class="mr-mat">⚫ Nichrome</span><span class="mr-val" style="color:#a3a3a3;">1.10 × 10⁻⁶ Ω·m</span><span style="font-family:'Mserrat',Arial,sans-serif;font-weight:700;font-size:0.72rem;color:rgba(163,163,163,0.6);">Heating elements</span></div>
+          <div class="mr-row"><span class="mr-mat">🔮 Silicon</span><span class="mr-val" style="color:#a855f7;">6.40 × 10² Ω·m</span><span style="font-family:'Mserrat',Arial,sans-serif;font-weight:700;font-size:0.72rem;color:rgba(168,85,247,0.6);">Semiconductor</span></div>
+          <div class="mr-row"><span class="mr-mat">⬛ Glass</span><span class="mr-val" style="color:#64748b;">~10¹² Ω·m</span><span style="font-family:'Mserrat',Arial,sans-serif;font-weight:700;font-size:0.72rem;color:rgba(100,116,139,0.6);">Insulator</span></div>
+        </div>
+        <div style="padding:0.5rem 0.8rem;background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.22);border-radius:8px;font-family:'Nunit',Arial,sans-serif;font-weight:600;font-size:0.8rem;color:rgba(210,190,255,0.65);line-height:1.4;text-align:center;">
+          Unit of resistivity: <strong style="color:#c084fc;">Ω·m (ohm·metres)</strong>
+        </div>
+      </div>
+    </div>
+    <div class="tc">
+      <div class="tag">Concept 02</div>
+      <h2 class="sh">RESISTIVITY<br/><span class="ap">ρ (RHO)</span></h2>
+      <p class="sb">
+        <span class="ap"><strong>Resistivity</strong></span> is a property of the <em>material itself</em> — not the shape or size of the object.<br/><br/>
+        Two wires made of the same material have the <strong>same resistivity</strong> — even if one is long and thin, and the other is short and fat.<br/><br/>
+        Resistivity depends on <span class="ay"><strong>temperature</strong></span> — for most metals, resistivity <strong>increases</strong> with temperature (more atomic vibrations = more collisions).
+      </p>
+      <div class="blist">
+        <div class="bi"><div class="bd" style="background:#a855f7;"></div><span>Good conductors have <strong style="color:#fff;">very low</strong> resistivity (10⁻⁸ range)</span></div>
+        <div class="bi"><div class="bd" style="background:#a855f7;"></div><span>Insulators have <strong style="color:#fff;">very high</strong> resistivity (10¹⁰ to 10¹⁶)</span></div>
+        <div class="bi"><div class="bd" style="background:#a855f7;"></div><span>Semiconductors fall <strong style="color:#fff;">in between</strong> — their resistivity can be controlled</span></div>
+        <div class="bi"><div class="bd" style="background:#a855f7;"></div><span>Resistivity is an <strong style="color:#fff;">intrinsic property</strong> — like density or melting point</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ S4 RESISTIVITY FORMULA ════ -->
+<div class="slide" id="s4">
+  <div class="gb"></div>
+  <div class="formula-mega">
+    <div style="font-family:'Mserrat',Arial,sans-serif;font-weight:900;font-size:0.72rem;letter-spacing:6px;text-transform:uppercase;color:rgba(255,255,255,0.35);">Concept 03 — The Resistivity Equation</div>
+    <div class="formula-title" style="margin:0.4rem 0;">THE RESISTIVITY <span style="color:#a855f7;">FORMULA</span></div>
+    <div class="formula-display">
+      <div class="fd-box fd-R">
+        <div class="fd-symbol">R</div>
+        <div class="fd-label">Resistance</div>
+        <div class="fd-unit">Ohms (Ω)</div>
+      </div>
+      <div class="fd-box fd-eq"><div class="fd-symbol">=</div></div>
+      <div class="fd-box fd-rho">
+        <div class="fd-symbol">ρ</div>
+        <div class="fd-label">Resistivity</div>
+        <div class="fd-unit">Ω·m</div>
+      </div>
+      <div class="fd-box fd-eq"><div class="fd-symbol" style="font-size:clamp(2rem,4vw,4rem);">×</div></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0;">
+        <div class="fd-box fd-L" style="border-bottom:none;border-radius:12px 12px 0 0;padding-bottom:0.3rem;">
+          <div class="fd-symbol">L</div>
+          <div class="fd-label">Length</div>
+          <div class="fd-unit">metres (m)</div>
+        </div>
+        <div style="width:100%;height:3px;background:rgba(255,255,255,0.35);margin:0;"></div>
+        <div class="fd-box fd-A" style="border-top:none;border-radius:0 0 12px 12px;padding-top:0.3rem;">
+          <div class="fd-symbol">A</div>
+          <div class="fd-label">Cross-section</div>
+          <div class="fd-unit">m²</div>
+        </div>
+      </div>
+    </div>
+    <!-- Wire diagram SVG -->
+    <svg width="560" height="80" viewBox="0 0 560 80" style="margin:0.3rem auto;display:block;">
+      <defs><marker id="ah" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="rgba(255,255,255,0.45)"/></marker></defs>
+      <!-- Wire body -->
+      <rect x="80" y="25" width="400" height="30" rx="5" fill="rgba(249,115,22,0.18)" stroke="rgba(249,115,22,0.5)" stroke-width="1.5"/>
+      <!-- Cross section circle on left -->
+      <ellipse cx="80" cy="40" rx="12" ry="15" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="2"/>
+      <text x="80" y="68" font-family="Impact,Arial Black" font-size="11" fill="rgba(16,185,129,0.7)" text-anchor="middle" letter-spacing="1">A (m²)</text>
+      <!-- Length arrow -->
+      <line x1="80" y1="10" x2="480" y2="10" stroke="rgba(59,130,246,0.6)" stroke-width="1.5" marker-end="url(#ah)"/>
+      <line x1="480" y1="10" x2="80" y2="10" stroke="rgba(59,130,246,0.6)" stroke-width="1.5" marker-end="url(#ah)"/>
+      <text x="280" y="8" font-family="Impact,Arial Black" font-size="11" fill="rgba(59,130,246,0.7)" text-anchor="middle" letter-spacing="1">L (length in metres)</text>
+      <!-- Resistivity label -->
+      <text x="280" y="44" font-family="Impact,Arial Black" font-size="13" fill="rgba(168,85,247,0.7)" text-anchor="middle" letter-spacing="2">ρ — depends on material</text>
+      <!-- Electrons -->
+      <circle cx="150" cy="40" r="4" fill="#60a5fa" opacity="0.7"><animate attributeName="cx" from="90" to="470" dur="2.5s" repeatCount="indefinite"/></circle>
+      <circle cx="250" cy="40" r="4" fill="#60a5fa" opacity="0.6"><animate attributeName="cx" from="90" to="470" dur="2.5s" repeatCount="indefinite" begin="-0.8s"/></circle>
+      <circle cx="350" cy="40" r="4" fill="#60a5fa" opacity="0.8"><animate attributeName="cx" from="90" to="470" dur="2.5s" repeatCount="indefinite" begin="-1.6s"/></circle>
+    </svg>
+    <div class="rearranged">
+      <div class="rear-box rb-rho">ρ = RA / L &nbsp;&nbsp;→&nbsp; find resistivity</div>
+      <div class="rear-box rb-L">L = RA / ρ &nbsp;&nbsp;→&nbsp; find length</div>
+      <div class="rear-box rb-A">A = ρL / R &nbsp;&nbsp;→&nbsp; find area</div>
+    </div>
+    <div style="margin-top:0.5rem;padding:0.5rem 1rem;background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.2);border-radius:8px;font-family:'Nunit',Arial,sans-serif;font-weight:600;font-size:0.85rem;color:rgba(255,220,140,0.72);line-height:1.5;text-align:center;">
+      💡 <strong style="color:#fff;">Key insight:</strong> Longer wire = more resistance &nbsp;|&nbsp; Thicker wire = less resistance &nbsp;|&nbsp; Different material = different ρ
+    </div>
+  </div>
+</div>
+
+<!-- ════ S5 FOUR FACTORS ════ -->
+<div class="slide" id="s5">
+  <div class="gb"></div>
+  <div class="factors-layout">
+    <div class="factors-title">4 FACTORS AFFECTING <span style="color:#f59e0b;">RESISTANCE</span></div>
+    <div class="factors-grid">
+      <div class="fac-card fc1">
+        <div class="fac-icon">📏</div>
+        <canvas id="lenCanvas" width="140" height="70" class="fac-canvas"></canvas>
+        <div class="fac-name">LENGTH</div>
+        <div class="fac-rel">R ∝ L</div>
+        <div class="fac-desc">Longer wire → more collisions between electrons and atoms → <strong style="color:#fff;">more resistance.</strong> Double the length = double the resistance.</div>
+      </div>
+      <div class="fac-card fc2">
+        <div class="fac-icon">⭕</div>
+        <canvas id="areaCanvas" width="140" height="70" class="fac-canvas"></canvas>
+        <div class="fac-name">AREA</div>
+        <div class="fac-rel">R ∝ 1/A</div>
+        <div class="fac-desc">Thicker wire → more pathways for electrons → <strong style="color:#fff;">less resistance.</strong> Double the area = half the resistance.</div>
+      </div>
+      <div class="fac-card fc3">
+        <div class="fac-icon">🔬</div>
+        <canvas id="matCanvas" width="140" height="70" class="fac-canvas"></canvas>
+        <div class="fac-name">MATERIAL</div>
+        <div class="fac-rel">R ∝ ρ</div>
+        <div class="fac-desc">Different materials have different atomic structures. Some (copper) let electrons flow freely. Others (nichrome) oppose flow much more — higher ρ.</div>
+      </div>
+      <div class="fac-card fc4">
+        <div class="fac-icon">🌡️</div>
+        <canvas id="tempCanvas" width="140" height="70" class="fac-canvas"></canvas>
+        <div class="fac-name">TEMPERATURE</div>
+        <div class="fac-rel">R ∝ T (metals)</div>
+        <div class="fac-desc">Higher temperature → atoms vibrate more → more electron collisions → <strong style="color:#fff;">more resistance</strong> in most metals. Opposite in semiconductors.</div>
+      </div>
+    </div>
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:9px;padding:0.5rem 1rem;font-family:'Nunit',Arial,sans-serif;font-weight:600;font-size:0.83rem;color:rgba(210,220,225,0.65);line-height:1.5;text-align:center;">
+      📐 The formula <strong style="color:#fff;">R = ρL/A</strong> captures three of these four factors. Temperature effects are accounted for by noting that ρ changes with temperature.
+    </div>
+  </div>
+</div>
+
+<!-- ════ S6 OHM'S LAW ════ -->
+<div class="slide" id="s6">
+  <div class="gb" style="opacity:0.3;"></div>
+  <div class="ohms-mega">
+    <div class="ohms-focus">Focus Question — How does voltage, current, and resistance relate?</div>
+    <div class="ohms-h"><span>OHM'S</span> LAW</div>
+    <div class="ohms-formula">
+      <div class="of-box of-V">
+        <div class="of-sym">V</div>
+        <div class="of-lbl">Voltage</div>
+        <div class="of-unit">Volts (V)</div>
+      </div>
+      <div class="of-box of-eq"><div class="of-sym">=</div></div>
+      <div class="of-box of-I">
+        <div class="of-sym">I</div>
+        <div class="of-lbl">Current</div>
+        <div class="of-unit">Amperes (A)</div>
+      </div>
+      <div class="of-box of-x"><div class="of-sym">×</div></div>
+      <div class="of-box of-R">
+        <div class="of-sym">R</div>
+        <div class="of-lbl">Resistance</div>
+        <div class="of-unit">Ohms (Ω)</div>
+      </div>
+    </div>
+    <div class="ohms-desc">
+      The voltage (potential difference) across a conductor is <strong>directly proportional</strong> to the current through it — <em>provided temperature and physical conditions remain constant.</em><br/>
+      Twice the voltage → twice the current. <strong>Simple. Powerful.</strong>
+    </div>
+    <div class="person-box">
+      👨‍🔬 <strong style="color:#fff;">Georg Simon Ohm</strong> (German physicist, 1789–1854) published this law in 1827, originally met with ridicule. He showed that <em>V / I = constant</em> for a given conductor at constant temperature. That constant IS the resistance.
+    </div>
+  </div>
+</div>
+
+<!-- ════ S7 TRIANGLE ════ -->
+<div class="slide" id="s7">
+  <div class="gb"></div>
+  <div class="triangle-layout" style="z-index:2;width:90%;max-width:1200px;">
+    <div class="triangle-section">
+      <div class="tri-caption">THE OHM'S LAW TRIANGLE</div>
+      <canvas id="triCanvas" width="280" height="240"></canvas>
+      <div style="font-family:'Nunit',Arial,sans-serif;font-weight:700;font-size:0.82rem;color:rgba(255,255,255,0.4);text-align:center;line-height:1.5;max-width:250px;">
+        Cover the variable you want to find — the remaining two show the formula!
+      </div>
+    </div>
+    <div class="rearranged-section">
+      <div class="rearr-title">THREE FORMS OF <span style="color:#f59e0b;">OHM'S LAW</span></div>
+      <div class="rearr-card rc-V">
+        <div class="rearr-formula">V = I × R</div>
+        <div class="rearr-use"><strong style="color:#fff;">Find Voltage</strong> — when current and resistance are known.<br/>Units: I in Amps × R in Ohms = V in Volts ✓</div>
+      </div>
+      <div class="rearr-card rc-I">
+        <div class="rearr-formula">I = V / R</div>
+        <div class="rearr-use"><strong style="color:#fff;">Find Current</strong> — when voltage and resistance are known.<br/>Units: V in Volts ÷ R in Ohms = I in Amps ✓</div>
+      </div>
+      <div class="rearr-card rc-R">
+        <div class="rearr-formula">R = V / I</div>
+        <div class="rearr-use"><strong style="color:#fff;">Find Resistance</strong> — when voltage and current are known.<br/>Units: V in Volts ÷ I in Amps = R in Ohms ✓</div>
+      </div>
+      <div style="background:rgba(245,158,11,0.07);border:1.5px solid rgba(245,158,11,0.22);border-radius:10px;padding:0.65rem 1rem;font-family:'Nunit',Arial,sans-serif;font-weight:600;font-size:0.85rem;color:rgba(255,220,140,0.75);line-height:1.5;">
+        ⚠️ <strong style="color:#fff;">Always check units first</strong> — convert kΩ to Ω, mA to A, before substituting into the formula!
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ S8 V-I GRAPH ════ -->
+<div class="slide" id="s8">
+  <div class="gb"></div>
+  <div class="graph-layout" style="z-index:2;width:90%;max-width:1200px;">
+    <div class="graph-info">
+      <div class="tag">Concept 04</div>
+      <h2 class="sh">THE <span class="ay">V–I</span><br/>GRAPH</h2>
+      <p class="sb">
+        For an <span class="ay"><strong>ohmic conductor</strong></span> — one that obeys Ohm's Law — the graph of voltage (V) against current (I) is a <strong>straight line through the origin.</strong><br/><br/>
+        The <span class="ag"><strong>gradient (slope)</strong></span> of this line equals the resistance R.<br/><br/>
+        A steeper line = <span class="ar"><strong>higher resistance.</strong></span><br/>A flatter line = <span class="ab"><strong>lower resistance.</strong></span>
+      </p>
+      <div class="blist" style="margin-top:0.8rem;">
+        <div class="bi"><div class="bd" style="background:#10b981;"></div><span>Gradient = <strong style="color:#fff;">ΔV / ΔI = R</strong></span></div>
+        <div class="bi"><div class="bd" style="background:#10b981;"></div><span>Line through origin → V = 0 when I = 0 ✓</span></div>
+        <div class="bi"><div class="bd" style="background:#10b981;"></div><span><strong style="color:#fff;">Non-ohmic</strong> devices (bulbs, diodes) give curved lines</span></div>
+        <div class="bi"><div class="bd" style="background:#10b981;"></div><span>Ohmic: resistors, metallic conductors at <strong style="color:#fff;">constant temperature</strong></span></div>
+      </div>
+    </div>
+    <div class="graph-canvas-wrap">
+      <canvas id="viGraph" width="420" height="340" style="border-radius:10px;"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ════ S9 WORKED — OHM'S LAW ════ -->
+<div class="slide" id="s9">
+  <div class="gb"></div>
+  <div class="worked-layout">
+    <div class="worked-title">WORKED EXAMPLES — <span style="color:#f59e0b;">OHM'S LAW</span></div>
+    <div class="worked-grid w2">
+      <div class="wex wx1">
+        <div class="wex-num">Example 1 — Find Voltage</div>
+        <div class="wex-q">A resistor has a resistance of 20 Ω. A current of 3 A flows through it. Calculate the voltage across it.</div>
+        <div class="wex-given">Given: R = 20 Ω &nbsp;·&nbsp; I = 3 A &nbsp;·&nbsp; Find: V = ?</div>
+        <div class="step">▶ Formula: <strong style="color:#fff;">V = I × R</strong></div>
+        <div class="step">▶ Substitute: V = 3 × 20</div>
+        <div class="ans ans-y">V = 60 V ✓</div>
+      </div>
+      <div class="wex wx2">
+        <div class="wex-num">Example 2 — Find Resistance</div>
+        <div class="wex-q">A voltage of 12 V is applied across a component. A current of 0.5 A flows. Calculate the resistance.</div>
+        <div class="wex-given">Given: V = 12 V &nbsp;·&nbsp; I = 0.5 A &nbsp;·&nbsp; Find: R = ?</div>
+        <div class="step">▶ Formula: <strong style="color:#fff;">R = V / I</strong></div>
+        <div class="step">▶ Substitute: R = 12 / 0.5</div>
+        <div class="ans ans-b">R = 24 Ω ✓</div>
+      </div>
+      <div class="wex wx3">
+        <div class="wex-num">Example 3 — Find Current</div>
+        <div class="wex-q">A lamp has a resistance of 880 Ω and is connected to a 220 V supply. What current flows through it?</div>
+        <div class="wex-given">Given: R = 880 Ω &nbsp;·&nbsp; V = 220 V &nbsp;·&nbsp; Find: I = ?</div>
+        <div class="step">▶ Formula: <strong style="color:#fff;">I = V / R</strong></div>
+        <div class="step">▶ Substitute: I = 220 / 880</div>
+        <div class="ans ans-g">I = 0.25 A ✓</div>
+      </div>
+      <div class="wex wx4">
+        <div class="wex-num">Example 4 — Unit Conversion</div>
+        <div class="wex-q">A 9 V battery powers a circuit with resistance 1.5 kΩ. Find the current in milliamperes.</div>
+        <div class="wex-given">Given: V = 9 V &nbsp;·&nbsp; R = 1.5 kΩ = <strong style="color:#fff;">1 500 Ω</strong> &nbsp;·&nbsp; Find: I in mA</div>
+        <div class="step">▶ Convert: 1.5 kΩ = 1 500 Ω</div>
+        <div class="step">▶ I = V/R = 9 / 1 500 = 0.006 A</div>
+        <div class="step">▶ Convert: 0.006 A × 1000 = <strong style="color:#fff;">6 mA</strong></div>
+        <div class="ans ans-p">I = 6 mA ✓</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ S10 WORKED — RESISTIVITY ════ -->
+<div class="slide" id="s10">
+  <div class="gb"></div>
+  <div class="worked-layout">
+    <div class="worked-title">WORKED EXAMPLES — <span style="color:#a855f7;">RESISTIVITY</span></div>
+    <div class="worked-grid w3">
+      <div class="wex wx4">
+        <div class="wex-num">Example 5 — Find Resistance</div>
+        <div class="wex-q">A copper wire is 2 m long with cross-section 1.0 × 10⁻⁶ m². (ρ_copper = 1.72 × 10⁻⁸ Ω·m). Find R.</div>
+        <div class="wex-given">ρ = 1.72 × 10⁻⁸ &nbsp;·&nbsp; L = 2 m &nbsp;·&nbsp; A = 1.0 × 10⁻⁶ m²</div>
+        <div class="step">▶ <strong style="color:#fff;">R = ρL / A</strong></div>
+        <div class="step">▶ R = (1.72 × 10⁻⁸ × 2) / (1.0 × 10⁻⁶)</div>
+        <div class="step">▶ R = 3.44 × 10⁻⁸ / 1.0 × 10⁻⁶</div>
+        <div class="ans ans-p">R = 0.0344 Ω ✓</div>
+      </div>
+      <div class="wex wx1">
+        <div class="wex-num">Example 6 — Find Length</div>
+        <div class="wex-q">A nichrome wire has R = 10 Ω and A = 5.0 × 10⁻⁷ m². (ρ_nichrome = 1.10 × 10⁻⁶ Ω·m). Find L.</div>
+        <div class="wex-given">R = 10 Ω &nbsp;·&nbsp; A = 5.0 × 10⁻⁷ m² &nbsp;·&nbsp; ρ = 1.10 × 10⁻⁶ Ω·m</div>
+        <div class="step">▶ Rearrange: <strong style="color:#fff;">L = RA / ρ</strong></div>
+        <div class="step">▶ L = (10 × 5.0 × 10⁻⁷) / (1.10 × 10⁻⁶)</div>
+        <div class="step">▶ L = 5.0 × 10⁻⁶ / 1.10 × 10⁻⁶</div>
+        <div class="ans ans-y">L = 4.55 m ✓</div>
+      </div>
+      <div class="wex wx2">
+        <div class="wex-num">Example 7 — Find Resistivity</div>
+        <div class="wex-q">A 3 m wire with A = 2.0 × 10⁻⁶ m² has R = 0.45 Ω. Calculate the resistivity of the material.</div>
+        <div class="wex-given">L = 3 m &nbsp;·&nbsp; A = 2.0 × 10⁻⁶ m² &nbsp;·&nbsp; R = 0.45 Ω</div>
+        <div class="step">▶ Rearrange: <strong style="color:#fff;">ρ = RA / L</strong></div>
+        <div class="step">▶ ρ = (0.45 × 2.0 × 10⁻⁶) / 3</div>
+        <div class="step">▶ ρ = 9.0 × 10⁻⁷ / 3</div>
+        <div class="ans ans-b">ρ = 3.0 × 10⁻⁷ Ω·m ✓</div>
+      </div>
+    </div>
+    <div style="background:rgba(168,85,247,0.07);border:1px solid rgba(168,85,247,0.2);border-radius:9px;padding:0.55rem 1rem;font-family:'Nunit',Arial,sans-serif;font-weight:700;font-size:0.83rem;color:rgba(210,190,255,0.7);line-height:1.55;text-align:center;">
+      🔑 <strong style="color:#fff;">3-Step Method:</strong> &nbsp;① Write the formula &nbsp;→&nbsp; ② Rearrange for the unknown &nbsp;→&nbsp; ③ Substitute values + check units
+    </div>
+  </div>
+</div>
+
+<!-- ════ S11 PRACTICE — OHM'S LAW ════ -->
+<div class="slide" id="s11">
+  <div class="gb"></div>
+  <div class="prac-layout">
+    <div class="prac-title">PRACTICE PROBLEMS — <span style="color:#10b981;">OHM'S LAW</span></div>
+    <div style="font-family:'Mserrat',Arial,sans-serif;font-weight:700;font-size:0.74rem;letter-spacing:5px;color:rgba(255,255,255,0.28);text-align:center;text-transform:uppercase;">Try these on your own first — then check your answer</div>
+    <div class="prac-grid w2">
+      <div class="prac-card">
+        <div class="pc-num" style="color:#f59e0b;">P1 — Find Voltage</div>
+        <div class="pc-q">A resistor of 15 Ω has a current of 4 A flowing through it. Calculate the voltage across the resistor.</div>
+        <div class="pc-given">Given: R = 15 Ω &nbsp;·&nbsp; I = 4 A</div>
+        <div class="pc-hint hint-y">HINT: Use V = I × R</div>
+        <div style="font-family:'Mserrat',Arial,sans-serif;font-weight:700;font-size:0.72rem;letter-spacing:2px;color:rgba(74,222,128,0.55);margin-top:0.5rem;">Answer: 60 V</div>
+      </div>
+      <div class="prac-card">
+        <div class="pc-num" style="color:#60a5fa;">P2 — Find Current</div>
+        <div class="pc-q">A 230 V mains supply is connected to a heater of resistance 1 150 Ω. Calculate the current through the heater.</div>
+        <div class="pc-given">Given: V = 230 V &nbsp;·&nbsp; R = 1 150 Ω</div>
+        <div class="pc-hint hint-b">HINT: Use I = V / R</div>
+        <div style="font-family:'Mserrat',Arial,sans-serif;font-weight:700;font-size:0.72rem;letter-spacing:2px;color:rgba(74,222,128,0.55);margin-top:0.5rem;">Answer: 0.2 A</div>
+      </div>
+      <div class="prac-card">
+        <div class="pc-num" style="color:#34d399;">P3 — Find Resistance</div>
+        <div class="pc-q">A 6 V battery drives a current of 30 mA (0.030 A) through a resistor. What is the resistance?</div>
+        <div class="pc-given">Given: V = 6 V &nbsp;·&nbsp; I = 0.030 A</div>
+        <div class="pc-hint hint-g">HINT: Use R = V / I</div>
+        <div style="font-family:'Mserrat',Arial,sans-serif;font-weight:700;font-size:0.72rem;letter-spacing:2px;color:rgba(74,222,128,0.55);margin-top:0.5rem;">Answer: 200 Ω</div>
+      </div>
+      <div class="prac-card">
+        <div class="pc-num" style="color:#c084fc;">P4 — Unit Conversion</div>
+        <div class="pc-q">A resistor has 15 V across it and draws a current of 50 mA. Find its resistance. Express in kΩ.</div>
+        <div class="pc-given">Given: V = 15 V &nbsp;·&nbsp; I = 50 mA = 0.050 A</div>
+        <div class="pc-hint hint-p">HINT: Find R in Ω, then convert to kΩ (÷ 1000)</div>
+        <div style="font-family:'Mserrat',Arial,sans-serif;font-weight:700;font-size:0.72rem;letter-spacing:2px;color:rgba(74,222,128,0.55);margin-top:0.5rem;">Answer: 300 Ω = 0.3 kΩ</div>
+      </div>
+      <div class="prac-card prac-star">
+        <div class="pc-num" style="color:#fbbf24;">★ P5 — CHALLENGE</div>
+        <div class="pc-q">A circuit has two resistors in series: R₁ = 120 Ω and R₂ = 80 Ω. The supply voltage is 24 V. (a) Find the total resistance. (b) Find the current. (c) Find the voltage across each resistor.</div>
+        <div class="pc-given">Remember: In series, R_total = R₁ + R₂ &nbsp;·&nbsp; same current flows through both</div>
+        <div class="pc-hint hint-r">HINT: (a) R_total = 200 Ω &nbsp;·&nbsp; (b) I = 24/200 &nbsp;·&nbsp; (c) V₁ = IR₁, V₂ = IR₂</div>
+        <div style="font-family:'Mserrat',Arial,sans-serif;font-weight:700;font-size:0.72rem;letter-spacing:2px;color:rgba(74,222,128,0.55);margin-top:0.5rem;">Answers: (a) 200 Ω &nbsp;(b) 0.12 A &nbsp;(c) V₁ = 14.4 V, V₂ = 9.6 V</div>
+      </div>
+    </div>
+    <div class="prac-tip">📝 <strong style="color:#fff;">Exam strategy:</strong> Always write ① What is given ② The formula ③ Substitution ④ Answer + unit. Never skip steps — marks are awarded for method!</div>
+  </div>
+</div>
+
+<!-- ════ S12 PRACTICE — RESISTIVITY ════ -->
+<div class="slide" id="s12">
+  <div class="gb"></div>
+  <div class="prac-layout">
+    <div class="prac-title">PRACTICE PROBLEMS — <span style="color:#a855f7;">RESISTIVITY</span></div>
+    <div style="font-family:'Mserrat',Arial,sans-serif;font-weight:700;font-size:0.74rem;letter-spacing:5px;color:rgba(255,255,255,0.28);text-align:center;text-transform:uppercase;">R = ρL / A &nbsp;·&nbsp; remember: check all units first!</div>
+    <div class="prac-grid w2">
+      <div class="prac-card">
+        <div class="pc-num" style="color:#c084fc;">R1 — Copper Wire</div>
+        <div class="pc-q">An aluminium wire (ρ = 2.82 × 10⁻⁸ Ω·m) is 5 m long with a circular cross-section of diameter 1 mm. Find its resistance.</div>
+        <div class="pc-given">d = 1 mm = 0.001 m &nbsp;→&nbsp; r = 0.0005 m &nbsp;→&nbsp; A = πr² = π(0.0005)² = 7.85 × 10⁻⁷ m²</div>
+        <div class="pc-hint hint-p">HINT: R = ρL/A = (2.82 × 10⁻⁸ × 5) / (7.85 × 10⁻⁷)</div>
+        <div style="font-family:'Mserrat',Arial,sans-serif;font-weight:700;font-size:0.72rem;letter-spacing:2px;color:rgba(74,222,128,0.55);margin-top:0.5rem;">Answer: R ≈ 0.179 Ω</div>
+      </div>
+      <div class="prac-card">
+        <div class="pc-num" style="color:#f59e0b;">R2 — Find Length</div>
+        <div class="pc-q">What length of copper wire (ρ = 1.72 × 10⁻⁸ Ω·m) with cross-section 4.0 × 10⁻⁷ m² is needed to make a resistance of 0.5 Ω?</div>
+        <div class="pc-given">R = 0.5 Ω &nbsp;·&nbsp; A = 4.0 × 10⁻⁷ m² &nbsp;·&nbsp; ρ = 1.72 × 10⁻⁸ Ω·m</div>
+        <div class="pc-hint hint-y">HINT: L = RA / ρ</div>
+        <div style="font-family:'Mserrat',Arial,sans-serif;font-weight:700;font-size:0.72rem;letter-spacing:2px;color:rgba(74,222,128,0.55);margin-top:0.5rem;">Answer: L ≈ 11.6 m</div>
+      </div>
+      <div class="prac-card">
+        <div class="pc-num" style="color:#60a5fa;">R3 — Find Resistivity</div>
+        <div class="pc-q">A wire 4 m long with cross-sectional area 2.5 × 10⁻⁶ m² has a measured resistance of 0.18 Ω. Identify the material by finding its resistivity.</div>
+        <div class="pc-given">L = 4 m &nbsp;·&nbsp; A = 2.5 × 10⁻⁶ m² &nbsp;·&nbsp; R = 0.18 Ω</div>
+        <div class="pc-hint hint-b">HINT: ρ = RA/L — compare your answer to the table on Slide 3</div>
+        <div style="font-family:'Mserrat',Arial,sans-serif;font-weight:700;font-size:0.72rem;letter-spacing:2px;color:rgba(74,222,128,0.55);margin-top:0.5rem;">Answer: ρ = 1.125 × 10⁻⁷ Ω·m (between Cu and Al)</div>
+      </div>
+      <div class="prac-card">
+        <div class="pc-num" style="color:#34d399;">R4 — Find Area</div>
+        <div class="pc-q">A nichrome heating element (ρ = 1.1 × 10⁻⁶ Ω·m) must have R = 55 Ω and be 2.5 m long. What cross-sectional area is required?</div>
+        <div class="pc-given">R = 55 Ω &nbsp;·&nbsp; L = 2.5 m &nbsp;·&nbsp; ρ = 1.1 × 10⁻⁶ Ω·m</div>
+        <div class="pc-hint hint-g">HINT: A = ρL / R</div>
+        <div style="font-family:'Mserrat',Arial,sans-serif;font-weight:700;font-size:0.72rem;letter-spacing:2px;color:rgba(74,222,128,0.55);margin-top:0.5rem;">Answer: A = 5.0 × 10⁻⁸ m²</div>
+      </div>
+      <div class="prac-card prac-star">
+        <div class="pc-num" style="color:#fbbf24;">★ R5 — CHALLENGE: Both Laws Together</div>
+        <div class="pc-q">A copper wire (ρ = 1.72 × 10⁻⁸ Ω·m) is 10 m long with A = 1.0 × 10⁻⁶ m². It is connected to a 6 V battery. (a) Find the resistance of the wire. (b) Find the current using Ohm's Law. (c) If the wire is replaced with one of double the length, what is the new current?</div>
+        <div class="pc-given">Use R = ρL/A first, then I = V/R</div>
+        <div class="pc-hint hint-r">HINT: (a) R = (1.72 × 10⁻⁸ × 10) / (1.0 × 10⁻⁶) &nbsp;·&nbsp; (b) I = 6/R &nbsp;·&nbsp; (c) New R = 2 × old R</div>
+        <div style="font-family:'Mserrat',Arial,sans-serif;font-weight:700;font-size:0.72rem;letter-spacing:2px;color:rgba(74,222,128,0.55);margin-top:0.5rem;">Answers: (a) R = 0.172 Ω &nbsp;(b) I ≈ 34.9 A &nbsp;(c) I ≈ 17.4 A</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ S13 SUMMARY ════ -->
+<div class="slide" id="s13">
+  <div class="gb"></div>
+  <div class="sum-layout">
+    <div class="sum-title">LESSON <span style="color:#f59e0b;">RECAP</span></div>
+    <div class="formula-strip">
+      <div class="fs-pill fp1">V = IR</div>
+      <div class="fs-pill fp2">R = ρL/A</div>
+      <div class="fs-pill fp3">I = V/R</div>
+      <div class="fs-pill fp4">R = V/I</div>
+    </div>
+    <div class="sum-grid">
+      <div class="sum-card">
+        <div class="si">⚡</div>
+        <div class="st">Resistance</div>
+        <div class="sd">Opposition to current flow. Symbol R, unit Ω. Depends on length, area, material, and temperature.</div>
+      </div>
+      <div class="sum-card">
+        <div class="si">🔮</div>
+        <div class="st">Resistivity ρ</div>
+        <div class="sd">Intrinsic material property (Ω·m). Low = good conductor (copper 1.72 × 10⁻⁸). High = insulator. Used in R = ρL/A.</div>
+      </div>
+      <div class="sum-card">
+        <div class="si">📐</div>
+        <div class="st">R = ρL/A</div>
+        <div class="sd">Resistance increases with length (R ∝ L) and decreases with cross-sectional area (R ∝ 1/A). Rearrange to find ρ, L, or A.</div>
+      </div>
+      <div class="sum-card">
+        <div class="si">⚖️</div>
+        <div class="st">Ohm's Law</div>
+        <div class="sd">V = IR at constant temperature. Voltage proportional to current. Use the triangle: cover the unknown to read the formula.</div>
+      </div>
+      <div class="sum-card">
+        <div class="si">📈</div>
+        <div class="st">V–I Graph</div>
+        <div class="sd">Ohmic conductor: straight line through origin. Gradient = R. Non-ohmic (bulb, diode) = curved line.</div>
+      </div>
+      <div class="sum-card">
+        <div class="si">🎯</div>
+        <div class="st">Exam Method</div>
+        <div class="sd">① Write given values ② State formula ③ Rearrange for unknown ④ Substitute ⑤ Calculate + write unit. Never skip steps!</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end deck -->
+
+<div class="nav">
+  <button onclick="go(-1)">◀ BACK</button>
+  <div class="dots" id="dots"></div>
+  <span class="snum" id="snum">1 / 13</span>
+  <button onclick="go(1)">NEXT ▶</button>
+</div>
+
+<script>
+/* ─── Navigation ─── */
+const slides=document.querySelectorAll('.slide');
+const dotsEl=document.getElementById('dots');
+const snEl=document.getElementById('snum');
+let cur=0; const tot=slides.length;
+slides.forEach((_,i)=>{
+  const d=document.createElement('div');
+  d.className='dot'+(i===0?' active':'');
+  d.onclick=()=>goTo(i);
+  dotsEl.appendChild(d);
+});
+function goTo(n){
+  slides[cur].classList.remove('active'); dotsEl.children[cur].classList.remove('active');
+  cur=(n+tot)%tot;
+  slides[cur].classList.add('active'); dotsEl.children[cur].classList.add('active');
+  snEl.textContent=(cur+1)+' / '+tot;
+}
+function go(d){goTo(cur+d);}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' ')go(1);if(e.key==='ArrowLeft')go(-1);});
+
+/* ─── S1: Flowing current on title canvas ─── */
+(function(){
+  const c=document.getElementById('s1Canvas'); if(!c)return;
+  const ctx=c.getContext('2d'); c.width=window.innerWidth; c.height=window.innerHeight;
+  const lines=[];
+  for(let i=0;i<18;i++){
+    lines.push({y:Math.random()*c.height,x:Math.random()*c.width,speed:40+Math.random()*80,len:60+Math.random()*120,col:`rgba(245,158,11,${0.12+Math.random()*0.2})`});
+  }
+  let last=null;
+  function draw(ts){
+    if(!last)last=ts;
+    const dt=(ts-last)/1000; last=ts;
+    ctx.clearRect(0,0,c.width,c.height);
+    lines.forEach(l=>{
+      l.x+=l.speed*dt;
+      if(l.x>c.width+l.len)l.x=-l.len;
+      const g=ctx.createLinearGradient(l.x-l.len,0,l.x,0);
+      g.addColorStop(0,'transparent'); g.addColorStop(1,l.col);
+      ctx.strokeStyle=g; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.moveTo(l.x-l.len,l.y); ctx.lineTo(l.x,l.y); ctx.stroke();
+    });
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+
+/* ─── S2: Resistance — current flow with resistor ─── */
+(function(){
+  const c=document.getElementById('resistCanvas'); if(!c)return;
+  const ctx=c.getContext('2d'); const W=380,H=160;
+  const path=[{x:30,y:80},{x:80,y:80},{x:110,y:50},{x:130,y:110},{x:150,y:50},{x:170,y:110},{x:190,y:50},{x:210,y:110},{x:230,y:80},{x:350,y:80}];
+  const dists=[0];
+  for(let i=1;i<path.length;i++){const dx=path[i].x-path[i-1].x,dy=path[i].y-path[i-1].y;dists.push(dists[i-1]+Math.sqrt(dx*dx+dy*dy));}
+  const total=dists[dists.length-1];
+  function getPt(d){
+    d=((d%total)+total)%total;
+    for(let i=1;i<path.length;i++){if(d<=dists[i]){const t=(d-dists[i-1])/(dists[i]-dists[i-1]);return{x:path[i-1].x+t*(path[i].x-path[i-1].x),y:path[i-1].y+t*(path[i].y-path[i-1].y)};}}
+    return path[0];
+  }
+  let offset=0,last=null;
+  function draw(ts){
+    if(!last)last=ts; const dt=Math.min((ts-last)/1000,0.05);last=ts;
+    offset=(offset+60*dt)%total;
+    ctx.clearRect(0,0,W,H);
+    // Draw wire
+    ctx.strokeStyle='rgba(245,158,11,0.4)'; ctx.lineWidth=2.5; ctx.lineCap='round'; ctx.lineJoin='round';
+    ctx.beginPath(); ctx.moveTo(30,80); ctx.lineTo(80,80);
+    // Zigzag resistor
+    for(let i=1;i<path.length-1;i++) ctx.lineTo(path[i].x,path[i].y);
+    ctx.lineTo(350,80); ctx.stroke();
+    // Battery on left
+    ctx.strokeStyle='#f59e0b'; ctx.lineWidth=3.5;
+    ctx.beginPath(); ctx.moveTo(15,60); ctx.lineTo(15,100); ctx.stroke();
+    ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(5,70); ctx.lineTo(25,70); ctx.stroke();
+    ctx.fillStyle='#f59e0b'; ctx.font='bold 12px Impact,Arial Black'; ctx.textAlign='center';
+    ctx.fillText('+',8,65);
+    // Labels
+    ctx.fillStyle='rgba(245,158,11,0.6)'; ctx.font='bold 9px Arial'; ctx.textAlign='center';
+    ctx.fillText('BATTERY',15,115); ctx.fillText('RESISTOR',155,130);
+    ctx.fillStyle='rgba(59,130,246,0.5)'; ctx.font='bold 9px Arial';
+    ctx.fillText('e⁻ →',190,68);
+    // Electrons
+    for(let i=0;i<4;i++){
+      const d=(offset+i*total/4)%total; const p=getPt(d);
+      const g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,7);
+      g.addColorStop(0,'rgba(147,197,253,0.9)'); g.addColorStop(1,'rgba(59,130,246,0)');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(p.x,p.y,7,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#93c5fd'; ctx.beginPath(); ctx.arc(p.x,p.y,3.5,0,Math.PI*2); ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+
+/* ─── S5: Factor canvases ─── */
+function drawLengthFactor(c){
+  const ctx=c.getContext('2d'); const W=140,H=70;
+  let t=0, last=null;
+  function draw(ts){
+    if(!last)last=ts; const dt=(ts-last)/1000;last=ts; t+=dt;
+    ctx.clearRect(0,0,W,H);
+    const pct=0.5+0.45*Math.sin(t*0.8); // wire length pulsing
+    const shortW=55, longW=115;
+    // Short wire (top)
+    const sw=shortW+(longW-shortW)*pct;
+    ctx.fillStyle='rgba(59,130,246,0.2)'; ctx.strokeStyle='#3b82f6'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.roundRect(5,12,sw,14,4); ctx.fill(); ctx.stroke();
+    ctx.fillStyle='rgba(59,130,246,0.5)'; ctx.font='bold 9px Arial'; ctx.textAlign='right';
+    ctx.fillText(`L=${(pct*2).toFixed(1)}m`,133,22);
+    // Resistance bar
+    ctx.fillStyle='rgba(245,158,11,0.15)'; ctx.strokeStyle='rgba(245,158,11,0.3)'; ctx.lineWidth=1;
+    const rw=20+(100*pct);
+    ctx.beginPath(); ctx.roundRect(5,40,rw,16,4); ctx.fill(); ctx.stroke();
+    ctx.fillStyle='rgba(245,158,11,0.6)'; ctx.font='bold 9px Arial'; ctx.textAlign='left';
+    ctx.fillText(`R=${(pct*5).toFixed(2)}Ω`,8,52);
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+}
+function drawAreaFactor(c){
+  const ctx=c.getContext('2d'); const W=140,H=70;
+  let t=0,last=null;
+  function draw(ts){
+    if(!last)last=ts; const dt=(ts-last)/1000;last=ts; t+=dt;
+    ctx.clearRect(0,0,W,H);
+    const pct=0.5+0.4*Math.sin(t*0.7);
+    // Wire cross section circles
+    const r1=6+pct*10;
+    ctx.fillStyle='rgba(16,185,129,0.2)'; ctx.strokeStyle='#10b981'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.arc(30,35,r1,0,Math.PI*2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle='rgba(16,185,129,0.5)'; ctx.font='bold 9px Arial'; ctx.textAlign='center';
+    ctx.fillText(`A↑`,30,60);
+    // Resistance
+    const rval=1/(pct+0.1)*0.8;
+    ctx.fillStyle='rgba(245,158,11,0.2)'; ctx.strokeStyle='rgba(245,158,11,0.4)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.roundRect(60,25,rval*50,20,4); ctx.fill(); ctx.stroke();
+    ctx.fillStyle='rgba(245,158,11,0.65)'; ctx.font='bold 9px Arial'; ctx.textAlign='left';
+    ctx.fillText(`R↓`,62,38);
+    ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='bold 8px Arial'; ctx.textAlign='center';
+    ctx.fillText('Thicker = Less R',105,58);
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+}
+function drawMaterialFactor(c){
+  const ctx=c.getContext('2d'); const W=140,H=70;
+  const mats=[{n:'Cu',r:0.05,col:'#f97316'},{n:'Al',r:0.14,col:'#94a3b8'},{n:'Ni',r:1.1,col:'#6b7280'}];
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    mats.forEach((m,i)=>{
+      const bw=Math.min(m.r*60+8,120);
+      ctx.fillStyle=m.col+'33'; ctx.strokeStyle=m.col+'88'; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.roundRect(5,8+i*20,bw,14,3); ctx.fill(); ctx.stroke();
+      ctx.fillStyle=m.col; ctx.font='bold 9px Arial'; ctx.textAlign='left';
+      ctx.fillText(m.n,8,20+i*20);
+    });
+    ctx.fillStyle='rgba(168,85,247,0.5)'; ctx.font='bold 8px Arial'; ctx.textAlign='right';
+    ctx.fillText('ρ increases →',133,65);
+  }
+  draw();
+}
+function drawTempFactor(c){
+  const ctx=c.getContext('2d'); const W=140,H=70;
+  let t=0,last=null;
+  function draw(ts){
+    if(!last)last=ts; const dt=(ts-last)/1000;last=ts; t+=dt;
+    ctx.clearRect(0,0,W,H);
+    const vibAmp=2+6*((Math.sin(t*1.2)+1)/2);
+    // Atoms vibrating
+    for(let i=0;i<5;i++){
+      const bx=12+i*24, by=30;
+      const vx=(Math.random()-0.5)*vibAmp, vy=(Math.random()-0.5)*vibAmp;
+      ctx.fillStyle='rgba(245,158,11,0.5)'; ctx.strokeStyle='rgba(245,158,11,0.6)'; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.arc(bx+vx,by+vy,7,0,Math.PI*2); ctx.fill(); ctx.stroke();
+    }
+    ctx.fillStyle='rgba(239,68,68,0.6)'; ctx.font='bold 9px Arial'; ctx.textAlign='center';
+    ctx.fillText(`T = ${Math.round(20+vibAmp*15)}°C`,70,58);
+    ctx.fillStyle='rgba(245,158,11,0.5)'; ctx.font='bold 8px Arial';
+    ctx.fillText('Vibration ↑  R ↑',70,70);
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+}
+
+drawLengthFactor(document.getElementById('lenCanvas'));
+drawAreaFactor(document.getElementById('areaCanvas'));
+drawMaterialFactor(document.getElementById('matCanvas'));
+drawTempFactor(document.getElementById('tempCanvas'));
+
+/* ─── S7: Ohm's Law Triangle ─── */
+(function(){
+  const c=document.getElementById('triCanvas'); if(!c)return;
+  const ctx=c.getContext('2d'); const W=280,H=240;
+  let hovered=-1; // 0=V, 1=I, 2=R
+
+  const regions=[
+    {x:140,y:55,label:'V',color:'#f59e0b',sub:'Voltage (Volts)'},
+    {x:75,y:165,label:'I',color:'#3b82f6',sub:'Current (Amps)'},
+    {x:205,y:165,label:'R',color:'#ef4444',sub:'Resistance (Ω)'}
+  ];
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // Triangle
+    ctx.beginPath(); ctx.moveTo(140,15); ctx.lineTo(20,210); ctx.lineTo(260,210); ctx.closePath();
+    ctx.fillStyle='rgba(255,255,255,0.04)';
+    ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=2;
+    ctx.fill(); ctx.stroke();
+    // Dividing lines
+    ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(140,15); ctx.lineTo(140,210); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(20,210); ctx.lineTo(260,210); ctx.stroke();
+    // Centre horizontal divider
+    ctx.beginPath(); ctx.moveTo(75,210); ctx.lineTo(205,210); ctx.stroke();
+    ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(75,125); ctx.lineTo(205,125); ctx.stroke();
+    ctx.setLineDash([]);
+    // Regions
+    regions.forEach((r,i)=>{
+      const isHov=(hovered===i);
+      ctx.fillStyle=r.color+(isHov?'40':'18');
+      if(i===0){ctx.beginPath();ctx.moveTo(140,15);ctx.lineTo(75,125);ctx.lineTo(205,125);ctx.closePath();}
+      else if(i===1){ctx.beginPath();ctx.moveTo(75,125);ctx.lineTo(20,210);ctx.lineTo(140,210);ctx.closePath();}
+      else{ctx.beginPath();ctx.moveTo(205,125);ctx.lineTo(140,210);ctx.lineTo(260,210);ctx.closePath();}
+      ctx.fill();
+      ctx.fillStyle=r.color; ctx.font=`bold ${isHov?42:36}px Impact,Arial Black`;
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(r.label,r.x,r.y);
+      if(isHov){
+        ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.font='bold 11px Arial'; ctx.textBaseline='alphabetic';
+        ctx.fillText(r.sub,r.x,r.y+28);
+      }
+    });
+    // Labels inside triangle
+    ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.font='bold 10px Arial'; ctx.textBaseline='middle';
+    ctx.textAlign='center'; ctx.fillText('cover to find:',140,108);
+  }
+  draw();
+  c.addEventListener('mousemove',function(e){
+    const rect=c.getBoundingClientRect();
+    const mx=(e.clientX-rect.left)*(W/rect.width);
+    const my=(e.clientY-rect.top)*(H/rect.height);
+    let found=-1;
+    if(my<125) found=0;
+    else if(mx<140) found=1;
+    else found=2;
+    if(found!==hovered){hovered=found; draw();}
+  });
+  c.addEventListener('mouseleave',()=>{hovered=-1;draw();});
+})();
+
+/* ─── S8: V-I Graph ─── */
+(function(){
+  const c=document.getElementById('viGraph'); if(!c)return;
+  const ctx=c.getContext('2d'); const W=420,H=340;
+  let phase=0,last=null;
+  const ox=60,oy=280,gw=330,gh=240;
+
+  function draw(ts){
+    if(!last)last=ts; const dt=(ts-last)/1000;last=ts; phase+=dt*0.5;
+    ctx.clearRect(0,0,W,H);
+    // Background
+    ctx.fillStyle='rgba(255,255,255,0.03)';
+    ctx.beginPath(); ctx.roundRect(5,5,W-10,H-10,10); ctx.fill();
+    // Grid lines
+    for(let i=1;i<=5;i++){
+      ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(ox,oy-i*gh/5); ctx.lineTo(ox+gw,oy-i*gh/5); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(ox+i*gw/5,oy); ctx.lineTo(ox+i*gw/5,oy-gh); ctx.stroke();
+    }
+    // Axes
+    ctx.strokeStyle='rgba(255,255,255,0.4)'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(ox,oy+10); ctx.lineTo(ox,oy-gh-10); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ox-10,oy); ctx.lineTo(ox+gw+10,oy); ctx.stroke();
+    // Axis labels
+    ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.font='bold 13px Impact,Arial Black';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('V (Volts)',ox+gw/2,oy+28);
+    ctx.save(); ctx.translate(18,oy-gh/2); ctx.rotate(-Math.PI/2);
+    ctx.fillText('I (Amps)',0,0); ctx.restore();
+    // Origin label
+    ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.font='bold 11px Arial'; ctx.textAlign='center';
+    ctx.fillText('0',ox,oy+15);
+    // Axis tick values
+    ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.font='10px Arial';
+    for(let i=1;i<=5;i++){
+      ctx.textAlign='right'; ctx.fillText((i*2)+'V',ox-5,oy-i*gh/5);
+      ctx.textAlign='center'; ctx.fillText((i*0.1).toFixed(1)+'A',ox+i*gw/5,oy+14);
+    }
+    // Graph line R=10Ω (high resistance = steeper)
+    ctx.strokeStyle='#f59e0b'; ctx.lineWidth=3; ctx.lineCap='round';
+    const maxV=10, maxI=1;
+    const sx=gw/maxV, sy=gh/maxI;
+    // Animated drawing
+    const drawUpTo=Math.min(1,(phase%4)/2);
+    ctx.beginPath();
+    ctx.moveTo(ox,oy);
+    for(let v=0;v<=maxV*drawUpTo;v+=0.1){
+      const i_val=v/20; // R=20Ω line
+      ctx.lineTo(ox+v*sx, oy-i_val*sy);
+    }
+    ctx.stroke();
+    // Glow on line
+    ctx.strokeStyle='rgba(245,158,11,0.2)'; ctx.lineWidth=8;
+    ctx.beginPath(); ctx.moveTo(ox,oy);
+    for(let v=0;v<=maxV*drawUpTo;v+=0.1){const i_val=v/20;ctx.lineTo(ox+v*sx,oy-i_val*sy);}
+    ctx.stroke();
+
+    // Second line (lower resistance = less steep) R=10Ω
+    ctx.strokeStyle='#3b82f6'; ctx.lineWidth=2.5; ctx.lineWidth=2.5;
+    const drawUpTo2=Math.min(1,(phase%4+0.5)/2);
+    ctx.beginPath(); ctx.moveTo(ox,oy);
+    for(let v=0;v<=maxV*drawUpTo2;v+=0.1){
+      const i_val=v/10;
+      if(i_val<=maxI) ctx.lineTo(ox+v*sx,oy-i_val*sy);
+    }
+    ctx.stroke();
+
+    // Legend
+    ctx.fillStyle='#f59e0b'; ctx.font='bold 11px Arial'; ctx.textAlign='left';
+    ctx.fillText('R = 20 Ω (steep = high R)',ox+10,35);
+    ctx.fillStyle='#3b82f6';
+    ctx.fillText('R = 10 Ω (less steep = low R)',ox+10,52);
+    // Gradient label
+    ctx.fillStyle='rgba(16,185,129,0.7)'; ctx.font='bold 11px Arial';
+    ctx.fillText('gradient = ΔV/ΔI = R',ox+gw-160,oy-gh+18);
+    // Moving dot on first line
+    const vd=maxV*drawUpTo*0.7;
+    const id_val=vd/20;
+    ctx.fillStyle='#fbbf24'; ctx.beginPath(); ctx.arc(ox+vd*sx,oy-id_val*sy,6,0,Math.PI*2); ctx.fill();
+
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>
