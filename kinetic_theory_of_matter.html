@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Kinetic Theory of Matter</title>
+<style>
+/* System font aliases — no external CDN needed */
+@font-face{font-family:'Bebas Neue';src:local('Impact'),local('Arial Black'),local('Arial Narrow Bold');}
+@font-face{font-family:'Montserrat';src:local('Arial'),local('Helvetica Neue'),local('Helvetica');}
+@font-face{font-family:'Nunito';src:local('Arial'),local('Helvetica Neue'),local('Helvetica');}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;}
+.deck{width:100%;height:100vh;position:relative;}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.7s ease;overflow:hidden;}
+.slide.active{opacity:1;pointer-events:all;}
+
+/* NAV */
+.nav{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:1rem;z-index:9999;}
+.nav button{background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.22);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;padding:0.42rem 1.6rem;border-radius:50px;cursor:pointer;backdrop-filter:blur(8px);transition:all 0.2s;}
+.nav button:hover{background:rgba(255,255,255,0.22);}
+.dots{display:flex;gap:0.35rem;}
+.dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.22);cursor:pointer;transition:all 0.3s;}
+.dot.active{background:#2dd4bf;transform:scale(1.45);}
+.snum{font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.72rem;letter-spacing:3px;color:rgba(255,255,255,0.32);}
+
+/* SHARED */
+.inner{display:flex;align-items:center;justify-content:center;gap:4vw;width:90%;max-width:1300px;z-index:2;}
+.tc{flex:1;} .vc{flex:0 0 auto;display:flex;align-items:center;justify-content:center;}
+.tag{font-family:'Montserrat',sans-serif;font-weight:900;font-size:clamp(0.6rem,1vw,0.78rem);letter-spacing:6px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:0.6rem;}
+.sh{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.8rem,5.8vw,6rem);line-height:0.9;color:#fff;margin-bottom:1rem;letter-spacing:2px;}
+.sb{font-family:'Nunito',sans-serif;font-size:clamp(0.88rem,1.5vw,1.22rem);color:rgba(220,225,230,0.85);line-height:1.72;max-width:520px;}
+.sb strong{color:#fff;}
+.at{color:#2dd4bf;} .ao{color:#f97316;} .ag{color:#4ade80;} .ap{color:#c084fc;} .ay{color:#facc15;} .ar{color:#f87171;} .ab{color:#60a5fa;}
+
+.blist{display:flex;flex-direction:column;gap:0.45rem;margin-top:0.8rem;max-width:510px;}
+.bi{display:flex;align-items:flex-start;gap:0.55rem;font-family:'Nunito',sans-serif;font-size:clamp(0.82rem,1.4vw,1.05rem);color:rgba(215,220,225,0.82);line-height:1.5;}
+.bd{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:0.35rem;}
+.ibox{border-radius:11px;padding:0.7rem 1rem;font-family:'Nunito',sans-serif;font-size:0.85rem;line-height:1.55;margin-top:0.8rem;max-width:510px;}
+
+/* GRID BG */
+.gb{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);background-size:55px 55px;pointer-events:none;}
+
+/* ══ S1 TITLE ══ */
+#s1{background:radial-gradient(ellipse at 50% 45%,#001a18 0%,#000d10 55%,#000 100%);}
+.s1-orb{position:absolute;border-radius:50%;filter:blur(60px);pointer-events:none;}
+.s1-wrap{position:relative;z-index:2;text-align:center;}
+.s1-chip{font-family:'Montserrat',sans-serif;font-weight:900;font-size:clamp(0.65rem,1.2vw,0.9rem);letter-spacing:9px;text-transform:uppercase;color:rgba(45,212,191,0.55);margin-bottom:0.9rem;}
+.s1-h{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,9vw,9.5rem);line-height:0.83;letter-spacing:4px;color:#fff;text-shadow:0 0 70px rgba(45,212,191,0.8),0 0 160px rgba(20,160,140,0.35);}
+.s1-h span{color:#2dd4bf;}
+.s1-rule{width:160px;height:2px;background:linear-gradient(90deg,transparent,#2dd4bf,#f97316,transparent);margin:1rem auto;}
+.s1-sub{font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(0.8rem,1.5vw,1.1rem);letter-spacing:5px;color:rgba(180,240,230,0.6);text-transform:uppercase;}
+.s1-by{margin-top:1.6rem;display:inline-flex;align-items:center;gap:0.5rem;padding:0.52rem 2rem;border:1.5px solid rgba(45,212,191,0.32);border-radius:50px;background:rgba(45,212,191,0.07);backdrop-filter:blur(8px);}
+
+/* Floating molecules on title */
+.mol-float{position:absolute;border-radius:50%;animation:mFloat ease-in-out infinite;}
+@keyframes mFloat{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(var(--fx),var(--fy)) scale(1.1);}66%{transform:translate(calc(var(--fx)*-0.5),var(--fy)) scale(0.9);}}
+
+/* ══ S2 INTRO / TIRE ══ */
+#s2{background:linear-gradient(145deg,#001212 0%,#001a18 55%,#04060a 100%);}
+.tire-viz{width:min(42vw,380px);display:flex;flex-direction:column;align-items:center;gap:0.9rem;}
+.scenario-card{border-radius:14px;padding:1rem 1.1rem;width:100%;}
+.sc-warm{background:rgba(249,115,22,0.09);border:1.5px solid rgba(249,115,22,0.3);}
+.sc-cold{background:rgba(96,165,250,0.09);border:1.5px solid rgba(96,165,250,0.3);}
+.sc-head{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;margin-bottom:0.3rem;}
+.sc-warm .sc-head{color:#fb923c;} .sc-cold .sc-head{color:#60a5fa;}
+.sc-body{font-family:'Nunito',sans-serif;font-size:0.82rem;color:rgba(210,225,220,0.72);line-height:1.4;}
+.arrow-between{font-size:1.8rem;color:rgba(45,212,191,0.5);text-align:center;}
+.key-insight{background:rgba(45,212,191,0.08);border:2px solid rgba(45,212,191,0.3);border-radius:12px;padding:0.8rem 1rem;text-align:center;}
+.ki-title{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;color:#2dd4bf;margin-bottom:0.2rem;}
+.ki-body{font-family:'Nunito',sans-serif;font-size:0.8rem;color:rgba(180,240,225,0.7);line-height:1.4;}
+
+/* ══ S3 KINETIC THEORY ASSUMPTIONS ══ */
+#s3{background:linear-gradient(145deg,#020d10 0%,#030e18 55%,#081008 100%);}
+.assump-cards{display:flex;flex-direction:column;gap:0.7rem;width:min(46vw,430px);}
+.ac{border-radius:13px;padding:0.9rem 1.1rem;display:flex;align-items:flex-start;gap:0.8rem;border:1.5px solid;}
+.ac:nth-child(1){background:rgba(45,212,191,0.08);border-color:rgba(45,212,191,0.3);}
+.ac:nth-child(2){background:rgba(249,115,22,0.08);border-color:rgba(249,115,22,0.3);}
+.ac:nth-child(3){background:rgba(74,222,128,0.08);border-color:rgba(74,222,128,0.3);}
+.ac-num{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;flex-shrink:0;min-width:30px;}
+.ac:nth-child(1) .ac-num{color:#2dd4bf;} .ac:nth-child(2) .ac-num{color:#f97316;} .ac:nth-child(3) .ac-num{color:#4ade80;}
+.ac-title{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;margin-bottom:0.2rem;}
+.ac:nth-child(1) .ac-title{color:#2dd4bf;} .ac:nth-child(2) .ac-title{color:#fb923c;} .ac:nth-child(3) .ac-title{color:#4ade80;}
+.ac-body{font-family:'Nunito',sans-serif;font-size:0.82rem;color:rgba(210,225,215,0.72);line-height:1.45;}
+
+/* ══ S4 KE & TEMPERATURE ══ */
+#s4{background:linear-gradient(145deg,#0a0800 0%,#120a00 55%,#020a0a 100%);}
+.ke-viz{width:min(44vw,400px);display:flex;flex-direction:column;gap:0.9rem;align-items:center;}
+.temp-compare{display:flex;gap:0.8rem;width:100%;}
+.tc-card{flex:1;border-radius:13px;padding:0.9rem 0.8rem;text-align:center;}
+.tc-hot{background:rgba(249,115,22,0.1);border:2px solid rgba(249,115,22,0.35);}
+.tc-cold{background:rgba(96,165,250,0.1);border:2px solid rgba(96,165,250,0.35);}
+.tc-label{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:2px;margin-bottom:0.4rem;}
+.tc-hot .tc-label{color:#f97316;} .tc-cold .tc-label{color:#60a5fa;}
+.tc-sub{font-family:'Nunito',sans-serif;font-size:0.78rem;opacity:0.65;line-height:1.4;}
+.thermometer-wrap{display:flex;gap:1.2rem;justify-content:center;align-items:flex-end;}
+.therm{display:flex;flex-direction:column;align-items:center;gap:0.3rem;}
+.therm-tube{width:18px;height:90px;border-radius:9px;border:2px solid rgba(255,255,255,0.2);overflow:hidden;position:relative;background:rgba(255,255,255,0.05);}
+.therm-fill{position:absolute;bottom:0;left:0;right:0;border-radius:0 0 9px 9px;}
+.tf-hot{height:80%;background:linear-gradient(180deg,#f97316,#ef4444);}
+.tf-cold{height:30%;background:linear-gradient(180deg,#60a5fa,#2563eb);}
+.therm-bulb-h{width:22px;height:22px;border-radius:50%;background:radial-gradient(circle,#f97316,#ef4444);box-shadow:0 0 12px rgba(249,115,22,0.6);}
+.therm-bulb-c{width:22px;height:22px;border-radius:50%;background:radial-gradient(circle,#60a5fa,#2563eb);box-shadow:0 0 12px rgba(96,165,250,0.5);}
+.therm-lbl{font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.72rem;letter-spacing:2px;text-align:center;}
+.avg-ke-box{width:100%;background:rgba(250,204,21,0.08);border:2px solid rgba(250,204,21,0.3);border-radius:12px;padding:0.8rem 1rem;text-align:center;}
+.akb-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:3px;color:#facc15;margin-bottom:0.2rem;}
+.akb-sub{font-family:'Nunito',sans-serif;font-size:0.8rem;color:rgba(255,240,160,0.65);line-height:1.5;}
+
+/* ══ S5 STATES OF MATTER ══ */
+#s5{background:linear-gradient(145deg,#040010 0%,#060020 55%,#030a08 100%);}
+.states-layout{width:90%;max-width:1200px;z-index:2;display:flex;flex-direction:column;gap:0.9rem;}
+.states-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,5vw,4.5rem);letter-spacing:5px;color:#fff;text-shadow:0 0 50px rgba(45,212,191,0.4);text-align:center;}
+.states-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;}
+.state-card{border-radius:16px;padding:1rem 0.9rem;display:flex;flex-direction:column;align-items:center;gap:0.6rem;text-align:center;}
+.s-solid{background:rgba(96,165,250,0.08);border:2px solid rgba(96,165,250,0.3);}
+.s-liquid{background:rgba(45,212,191,0.08);border:2px solid rgba(45,212,191,0.3);}
+.s-gas{background:rgba(249,115,22,0.08);border:2px solid rgba(249,115,22,0.3);}
+.s-plasma{background:rgba(192,132,252,0.08);border:2px solid rgba(192,132,252,0.3);}
+.state-canvas-wrap{width:110px;height:90px;display:flex;align-items:center;justify-content:center;}
+.state-name{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:3px;}
+.s-solid .state-name{color:#60a5fa;} .s-liquid .state-name{color:#2dd4bf;}
+.s-gas .state-name{color:#f97316;} .s-plasma .state-name{color:#c084fc;}
+.state-ke{font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.72rem;letter-spacing:2px;text-transform:uppercase;padding:0.2rem 0.6rem;border-radius:20px;}
+.sk-solid{background:rgba(96,165,250,0.15);color:#93c5fd;}
+.sk-liquid{background:rgba(45,212,191,0.15);color:#5eead4;}
+.sk-gas{background:rgba(249,115,22,0.15);color:#fb923c;}
+.sk-plasma{background:rgba(192,132,252,0.15);color:#d8b4fe;}
+.state-desc{font-family:'Nunito',sans-serif;font-size:0.78rem;color:rgba(210,215,225,0.65);line-height:1.45;}
+
+/* ══ S6 STATES DETAIL ══ */
+#s6{background:linear-gradient(145deg,#020a10 0%,#030814 55%,#080208 100%);}
+.detail-table{width:100%;border-collapse:collapse;border-radius:12px;overflow:hidden;}
+.dt-h{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:3px;padding:0.65rem 0.8rem;text-align:center;}
+.dt-hp{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.45);font-size:0.85rem;}
+.dt-hs{background:rgba(96,165,250,0.12);color:#60a5fa;}
+.dt-hl{background:rgba(45,212,191,0.12);color:#2dd4bf;}
+.dt-hg{background:rgba(249,115,22,0.12);color:#f97316;}
+.dt-hp2{background:rgba(192,132,252,0.12);color:#c084fc;}
+.dt-r td{padding:0.55rem 0.8rem;border-bottom:1px solid rgba(255,255,255,0.05);font-family:'Nunito',sans-serif;font-size:0.86rem;line-height:1.4;}
+.dt-r:last-child td{border-bottom:none;}
+.dt-r td:first-child{background:rgba(255,255,255,0.03);color:rgba(255,255,255,0.45);font-weight:700;font-family:'Montserrat',sans-serif;font-size:0.75rem;letter-spacing:2px;text-align:center;text-transform:uppercase;}
+.dt-r td:nth-child(2){background:rgba(96,165,250,0.05);color:rgba(180,215,255,0.85);}
+.dt-r td:nth-child(3){background:rgba(45,212,191,0.05);color:rgba(170,240,230,0.85);}
+.dt-r td:nth-child(4){background:rgba(249,115,22,0.05);color:rgba(255,200,160,0.85);}
+.dt-r td:nth-child(5){background:rgba(192,132,252,0.05);color:rgba(215,190,255,0.85);}
+
+/* ══ S7 GAS PROPERTIES ══ */
+#s7{background:linear-gradient(145deg,#060a00 0%,#0a0c00 55%,#020a10 100%);}
+.gp-layout{width:90%;max-width:1200px;z-index:2;display:flex;flex-direction:column;gap:0.8rem;}
+.gp-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.3rem,4.8vw,4.2rem);letter-spacing:5px;color:#fff;text-shadow:0 0 50px rgba(249,115,22,0.4);text-align:center;}
+.gp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.9rem;}
+.gp-card{border-radius:14px;padding:1rem 1rem;display:flex;flex-direction:column;align-items:flex-start;gap:0.4rem;position:relative;overflow:hidden;}
+.gp-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.gc1{background:rgba(45,212,191,0.07);border:1.5px solid rgba(45,212,191,0.22);} .gc1::before{background:#2dd4bf;}
+.gc2{background:rgba(249,115,22,0.07);border:1.5px solid rgba(249,115,22,0.22);} .gc2::before{background:#f97316;}
+.gc3{background:rgba(74,222,128,0.07);border:1.5px solid rgba(74,222,128,0.22);} .gc3::before{background:#4ade80;}
+.gc4{background:rgba(250,204,21,0.07);border:1.5px solid rgba(250,204,21,0.22);} .gc4::before{background:#facc15;}
+.gc5{background:rgba(192,132,252,0.07);border:1.5px solid rgba(192,132,252,0.22);} .gc5::before{background:#c084fc;}
+.gp-icon{font-size:2rem;}
+.gp-name{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:2px;}
+.gc1 .gp-name{color:#2dd4bf;} .gc2 .gp-name{color:#f97316;} .gc3 .gp-name{color:#4ade80;}
+.gc4 .gp-name{color:#facc15;} .gc5 .gp-name{color:#c084fc;}
+.gp-desc{font-family:'Nunito',sans-serif;font-size:0.82rem;color:rgba(210,220,215,0.7);line-height:1.45;}
+.gp-extra{grid-column:1/-1;background:rgba(45,212,191,0.05);border:1px solid rgba(45,212,191,0.15);border-radius:10px;padding:0.6rem 0.9rem;font-family:'Nunito',sans-serif;font-size:0.83rem;color:rgba(180,240,225,0.65);line-height:1.5;text-align:center;}
+
+/* ══ S8 GAS VARIABLES ══ */
+#s8{background:linear-gradient(145deg,#030a06 0%,#030818 55%,#0a0304 100%);}
+.var-layout{width:90%;max-width:1200px;z-index:2;display:flex;flex-direction:column;gap:0.9rem;}
+.var-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.3rem,4.8vw,4.2rem);letter-spacing:5px;color:#fff;text-shadow:0 0 50px rgba(74,222,128,0.4);text-align:center;}
+.var-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;}
+.var-card{border-radius:14px;padding:1.1rem 0.9rem;text-align:center;display:flex;flex-direction:column;align-items:center;gap:0.5rem;}
+.vc1{background:rgba(45,212,191,0.1);border:2px solid rgba(45,212,191,0.35);}
+.vc2{background:rgba(249,115,22,0.1);border:2px solid rgba(249,115,22,0.35);}
+.vc3{background:rgba(250,204,21,0.1);border:2px solid rgba(250,204,21,0.35);}
+.vc4{background:rgba(192,132,252,0.1);border:2px solid rgba(192,132,252,0.35);}
+.var-symbol{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;letter-spacing:3px;line-height:1;}
+.vc1 .var-symbol{color:#2dd4bf;text-shadow:0 0 20px rgba(45,212,191,0.5);}
+.vc2 .var-symbol{color:#f97316;text-shadow:0 0 20px rgba(249,115,22,0.5);}
+.vc3 .var-symbol{color:#facc15;text-shadow:0 0 20px rgba(250,204,21,0.5);}
+.vc4 .var-symbol{color:#c084fc;text-shadow:0 0 20px rgba(192,132,252,0.5);}
+.var-name{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:2px;color:#fff;}
+.var-unit{font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.82rem;letter-spacing:2px;padding:0.22rem 0.7rem;border-radius:20px;}
+.vc1 .var-unit{background:rgba(45,212,191,0.18);color:#5eead4;}
+.vc2 .var-unit{background:rgba(249,115,22,0.18);color:#fb923c;}
+.vc3 .var-unit{background:rgba(250,204,21,0.18);color:#fde047;}
+.vc4 .var-unit{background:rgba(192,132,252,0.18);color:#d8b4fe;}
+.var-desc{font-family:'Nunito',sans-serif;font-size:0.78rem;color:rgba(210,220,215,0.65);line-height:1.4;}
+.pressure-explainer{background:rgba(249,115,22,0.07);border:1.5px solid rgba(249,115,22,0.2);border-radius:11px;padding:0.7rem 1rem;grid-column:1/-1;font-family:'Nunito',sans-serif;font-size:0.85rem;color:rgba(255,210,180,0.75);line-height:1.55;text-align:center;}
+
+/* ══ S9 PRESSURE UNITS ══ */
+#s9{background:linear-gradient(145deg,#08040a 0%,#0a0318 55%,#030a08 100%);}
+.pu-layout{width:90%;max-width:1200px;z-index:2;display:flex;flex-direction:column;gap:0.9rem;}
+.pu-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.2rem,4.5vw,4rem);letter-spacing:5px;color:#fff;text-shadow:0 0 50px rgba(192,132,252,0.4);text-align:center;}
+.pu-inner{display:flex;gap:1.2rem;align-items:flex-start;}
+.pu-box{flex:1;background:rgba(192,132,252,0.08);border:2px solid rgba(192,132,252,0.3);border-radius:14px;padding:1.1rem 1.2rem;}
+.pu-box-title{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:3px;color:#c084fc;margin-bottom:0.6rem;}
+.pu-eqs{display:flex;flex-direction:column;gap:0.4rem;}
+.pu-eq{display:flex;align-items:center;gap:0.6rem;padding:0.45rem 0.7rem;border-radius:8px;background:rgba(192,132,252,0.06);font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:2px;}
+.pu-eq span{color:#c084fc;} .pu-eq .eq{color:rgba(255,255,255,0.35);font-size:1rem;} .pu-eq .val{color:#fff;}
+.pu-si{flex:0 0 auto;background:rgba(45,212,191,0.07);border:1.5px solid rgba(45,212,191,0.25);border-radius:12px;padding:1rem 1.1rem;display:flex;flex-direction:column;gap:0.5rem;max-width:260px;}
+.pu-si-title{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;color:#2dd4bf;margin-bottom:0.2rem;}
+.si-item{font-family:'Nunito',sans-serif;font-size:0.82rem;color:rgba(180,240,225,0.7);line-height:1.4;}
+.pascal-box{background:rgba(45,212,191,0.08);border:1.5px solid rgba(45,212,191,0.25);border-radius:10px;padding:0.6rem 0.9rem;text-align:center;}
+.pb-main{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:3px;color:#2dd4bf;}
+.pb-sub{font-family:'Nunito',sans-serif;font-size:0.78rem;color:rgba(180,240,225,0.6);line-height:1.4;}
+.toricelli{background:rgba(250,204,21,0.07);border:1.5px solid rgba(250,204,21,0.22);border-radius:10px;padding:0.6rem 0.9rem;font-family:'Nunito',sans-serif;font-size:0.8rem;color:rgba(255,240,160,0.7);line-height:1.45;text-align:center;}
+
+/* ══ S10 CONVERSION PRACTICE ══ */
+#s10{background:linear-gradient(145deg,#030c08 0%,#040a18 55%,#090304 100%);}
+.conv-layout{width:90%;max-width:1200px;z-index:2;display:flex;flex-direction:column;gap:0.9rem;}
+.conv-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.2rem,4.5vw,4rem);letter-spacing:5px;color:#fff;text-shadow:0 0 50px rgba(74,222,128,0.4);text-align:center;}
+.conv-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.conv-card{border-radius:13px;padding:1rem 1.1rem;position:relative;overflow:hidden;}
+.cc-worked{background:rgba(45,212,191,0.07);border:1.5px solid rgba(45,212,191,0.3);}
+.cc-practice{border:1.5px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);}
+.cc-label{font-family:'Montserrat',sans-serif;font-weight:900;font-size:0.68rem;letter-spacing:5px;text-transform:uppercase;margin-bottom:0.4rem;}
+.cc-worked .cc-label{color:rgba(45,212,191,0.6);}
+.cc-practice .cc-label{color:rgba(250,204,21,0.55);}
+.cc-q{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:2px;color:#fff;margin-bottom:0.5rem;}
+.conv-step{font-family:'Nunito',sans-serif;font-size:0.85rem;color:rgba(210,220,215,0.78);line-height:1.55;margin-bottom:0.15rem;}
+.conv-ans{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:2px;display:inline-block;margin-top:0.4rem;padding:0.25rem 0.8rem;border-radius:7px;}
+.ca-teal{color:#2dd4bf;background:rgba(45,212,191,0.12);border:1px solid rgba(45,212,191,0.3);}
+.ca-gold{color:#facc15;background:rgba(250,204,21,0.1);border:1px solid rgba(250,204,21,0.25);}
+.ca-orange{color:#f97316;background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.25);}
+.practice-q{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:2px;color:#fff;margin-bottom:0.3rem;}
+.hint{font-family:'Nunito',sans-serif;font-size:0.78rem;color:rgba(250,204,21,0.5);line-height:1.4;}
+.dim-analysis{background:rgba(255,255,255,0.04);border-radius:8px;padding:0.5rem 0.7rem;font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.82rem;color:rgba(45,212,191,0.8);letter-spacing:1px;margin:0.3rem 0;}
+
+/* ══ S11 KMT POSTULATES ══ */
+#s11{background:linear-gradient(145deg,#060308 0%,#0a0518 55%,#030a06 100%);}
+.kmt-layout{width:90%;max-width:1200px;z-index:2;display:flex;flex-direction:column;gap:0.9rem;}
+.kmt-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.2rem,4.5vw,4rem);letter-spacing:5px;color:#fff;text-shadow:0 0 50px rgba(192,132,252,0.4);text-align:center;}
+.kmt-sub{font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.75rem;letter-spacing:5px;color:rgba(255,255,255,0.28);text-align:center;text-transform:uppercase;margin-top:-0.4rem;}
+.kmt-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.85rem;}
+.kmt-card{border-radius:13px;padding:1rem 1.1rem;display:flex;align-items:flex-start;gap:0.8rem;position:relative;overflow:hidden;}
+.kmt-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;}
+.km1{background:rgba(45,212,191,0.07);border:1.5px solid rgba(45,212,191,0.2);} .km1::before{background:#2dd4bf;}
+.km2{background:rgba(74,222,128,0.07);border:1.5px solid rgba(74,222,128,0.2);} .km2::before{background:#4ade80;}
+.km3{background:rgba(249,115,22,0.07);border:1.5px solid rgba(249,115,22,0.2);} .km3::before{background:#f97316;}
+.km4{background:rgba(250,204,21,0.07);border:1.5px solid rgba(250,204,21,0.2);} .km4::before{background:#facc15;}
+.km5{background:rgba(192,132,252,0.07);border:1.5px solid rgba(192,132,252,0.2);grid-column:1/-1;} .km5::before{background:#c084fc;}
+.kmt-num{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;flex-shrink:0;min-width:28px;}
+.km1 .kmt-num{color:#2dd4bf;} .km2 .kmt-num{color:#4ade80;} .km3 .kmt-num{color:#f97316;} .km4 .kmt-num{color:#facc15;} .km5 .kmt-num{color:#c084fc;}
+.kmt-card-title{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;margin-bottom:0.2rem;}
+.km1 .kmt-card-title{color:#2dd4bf;} .km2 .kmt-card-title{color:#4ade80;} .km3 .kmt-card-title{color:#f97316;} .km4 .kmt-card-title{color:#facc15;} .km5 .kmt-card-title{color:#c084fc;}
+.kmt-card-body{font-family:'Nunito',sans-serif;font-size:0.83rem;color:rgba(210,220,215,0.75);line-height:1.5;}
+.ideal-badge{background:rgba(192,132,252,0.12);border:1.5px solid rgba(192,132,252,0.3);border-radius:9px;padding:0.55rem 0.9rem;font-family:'Nunito',sans-serif;font-size:0.82rem;color:rgba(210,190,255,0.7);line-height:1.5;text-align:center;}
+
+/* ══ S12 SUMMARY ══ */
+#s12{background:linear-gradient(135deg,#030a0a 0%,#050818 50%,#080410 100%);}
+.sum-layout{width:88%;max-width:1200px;z-index:2;display:flex;flex-direction:column;gap:0.8rem;}
+.sum-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.3rem,4.8vw,4rem);letter-spacing:5px;color:#fff;text-shadow:0 0 50px rgba(45,212,191,0.4);text-align:center;}
+.sum-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.85rem;}
+.sum-card{background:rgba(255,255,255,0.04);border-radius:13px;border:1.5px solid rgba(255,255,255,0.09);padding:1rem;transition:transform 0.3s,border-color 0.3s;}
+.sum-card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,0.28);}
+.si{font-size:1.7rem;margin-bottom:0.4rem;}
+.st{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:2px;margin-bottom:0.35rem;}
+.sd{font-family:'Nunito',sans-serif;font-size:0.8rem;color:rgba(210,220,215,0.68);line-height:1.5;}
+.sum-card:nth-child(1){border-top:3px solid #2dd4bf;} .sum-card:nth-child(1) .st{color:#2dd4bf;}
+.sum-card:nth-child(2){border-top:3px solid #f97316;} .sum-card:nth-child(2) .st{color:#f97316;}
+.sum-card:nth-child(3){border-top:3px solid #4ade80;} .sum-card:nth-child(3) .st{color:#4ade80;}
+.sum-card:nth-child(4){border-top:3px solid #facc15;} .sum-card:nth-child(4) .st{color:#facc15;}
+.sum-card:nth-child(5){border-top:3px solid #f87171;} .sum-card:nth-child(5) .st{color:#f87171;}
+.sum-card:nth-child(6){border-top:3px solid #c084fc;} .sum-card:nth-child(6) .st{color:#c084fc;}
+.focus-strip{background:rgba(45,212,191,0.06);border:1px solid rgba(45,212,191,0.18);border-radius:10px;padding:0.6rem 1rem;font-family:'Nunito',sans-serif;font-size:0.82rem;color:rgba(180,240,225,0.65);line-height:1.5;text-align:center;}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- ════ S1 TITLE ════ -->
+<div class="slide active" id="s1">
+  <div class="gb" style="opacity:0.3;"></div>
+  <div id="molBg"></div>
+  <div class="s1-orb" style="width:500px;height:500px;background:radial-gradient(circle,rgba(45,212,191,0.14),transparent 70%);top:15%;left:10%;position:absolute;animation:orbP 7s ease-in-out infinite;"></div>
+  <div class="s1-orb" style="width:400px;height:400px;background:radial-gradient(circle,rgba(249,115,22,0.1),transparent 70%);top:40%;right:10%;position:absolute;animation:orbP 9s ease-in-out infinite;animation-delay:-3s;"></div>
+  <div class="s1-orb" style="width:300px;height:300px;background:radial-gradient(circle,rgba(192,132,252,0.09),transparent 70%);bottom:10%;left:35%;position:absolute;animation:orbP 8s ease-in-out infinite;animation-delay:-5s;"></div>
+  <style>@keyframes orbP{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(20px,-15px) scale(1.1);}}</style>
+  <div class="s1-wrap">
+    <div class="s1-chip">Chemistry &amp; Physics · Matter</div>
+    <h1 class="s1-h">KINETIC<br/><span>THEORY</span><br/>OF MATTER</h1>
+    <div class="s1-rule"></div>
+    <p class="s1-sub">Energy · Motion · Particles · States · Gases</p>
+    <div class="s1-by">
+      <span style="font-size:1rem;color:rgba(45,212,191,0.6);">✦</span>
+      <span style="font-family:'Montserrat',sans-serif;font-weight:400;font-size:clamp(0.7rem,1.1vw,0.85rem);letter-spacing:3px;color:rgba(200,240,230,0.5);text-transform:uppercase;">Prepared by &nbsp;</span>
+      <span style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:clamp(0.75rem,1.2vw,0.9rem);letter-spacing:4px;color:#fff;text-transform:uppercase;">Yolanda Dube</span>
+    </div>
+  </div>
+</div>
+
+<!-- ════ S2 INTRO — TIRE ANALOGY ════ -->
+<div class="slide" id="s2">
+  <div class="gb"></div>
+  <div class="inner">
+    <div class="tc">
+      <div class="tag">Focus Question</div>
+      <h2 class="sh">ENERGY,<br/>MOTION &amp;<br/><span class="at">TEMPERATURE</span></h2>
+      <p class="sb">
+        What is the interaction between <span class="at"><strong>kinetic energy</strong></span>, motion, and the temperature of particles?<br/><br/>
+        Moving from a warm climate to a cold one changes the pressure inside your car tyres — even though the amount of gas stays the same. The <strong>molecules</strong> inside simply changed how they move and interact.<br/><br/>
+        To understand how particles behave under different conditions, we use the <span class="ao"><strong>Kinetic Theory of Matter.</strong></span>
+      </p>
+      <div class="ibox" style="background:rgba(45,212,191,0.07);border:1.5px solid rgba(45,212,191,0.22);">
+        🔑 <strong style="color:#2dd4bf;">Key idea:</strong> Temperature is a measure of how fast particles are moving. Faster particles = higher temperature = more kinetic energy.
+      </div>
+    </div>
+    <div class="vc">
+      <div class="tire-viz">
+        <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:0.7rem;letter-spacing:4px;color:rgba(255,255,255,0.3);margin-bottom:0.3rem;text-align:center;">THE TYRE PRESSURE ANALOGY</div>
+        <div class="scenario-card sc-warm">
+          <div class="sc-head">🌞 WARM CLIMATE</div>
+          <div class="sc-body">Gas molecules inside the tyre have <strong style="color:#fff;">high kinetic energy</strong> — they move fast and collide with the tyre walls frequently and forcefully → <strong style="color:#fb923c;">higher pressure.</strong></div>
+        </div>
+        <div class="arrow-between">↓</div>
+        <div class="scenario-card sc-cold">
+          <div class="sc-head">❄ COLD CLIMATE</div>
+          <div class="sc-body">Same gas, but molecules now have <strong style="color:#fff;">less kinetic energy</strong> — they move more slowly and collide less forcefully with the walls → <strong style="color:#60a5fa;">lower pressure. Warning light!</strong></div>
+        </div>
+        <div class="key-insight">
+          <div class="ki-title">💡 KEY INSIGHT</div>
+          <div class="ki-body">The <strong style="color:#fff;">amount of gas didn't change</strong> — but the <strong style="color:#fff;">motion of molecules</strong> (kinetic energy) changed with temperature. This is exactly what kinetic theory explains.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ S3 KINETIC THEORY ASSUMPTIONS ════ -->
+<div class="slide" id="s3">
+  <div class="gb"></div>
+  <div class="inner">
+    <div class="tc">
+      <div class="tag">Concept 01</div>
+      <h2 class="sh">KINETIC<br/>THEORY<br/><span class="at">FOUNDATIONS</span></h2>
+      <p class="sb">
+        The <span class="at"><strong>kinetic theory of matter</strong></span> is built on a set of foundational assumptions — ideas we accept as true — that help explain how all matter behaves at the particle level.<br/><br/>
+        These assumptions connect the <strong>microscopic world</strong> (individual particles) to <strong>macroscopic observations</strong> (temperature, pressure, volume) that we can measure.
+      </p>
+      <div class="ibox" style="background:rgba(249,115,22,0.07);border:1.5px solid rgba(249,115,22,0.22);margin-top:0.8rem;">
+        🔍 <strong style="color:#f97316;">Remember:</strong> "Kinetic" comes from the Greek word <em>kinesis</em> meaning <strong>motion</strong>. Kinetic energy is the energy of movement.
+      </div>
+    </div>
+    <div class="vc">
+      <div class="assump-cards">
+        <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:0.7rem;letter-spacing:4px;color:rgba(255,255,255,0.3);margin-bottom:0.2rem;text-align:center;">THE THREE CORE ASSUMPTIONS</div>
+        <div class="ac">
+          <div class="ac-num">1</div>
+          <div>
+            <div class="ac-title">MATTER IS MADE OF TINY PARTICLES</div>
+            <div class="ac-body">All matter is composed of very small particles such as <strong style="color:#fff;">ions, atoms, and molecules</strong> — too small to see with the naked eye, but responsible for all the properties we observe.</div>
+          </div>
+        </div>
+        <div class="ac">
+          <div class="ac-num">2</div>
+          <div>
+            <div class="ac-title">PARTICLES ARE ARRANGED BY STATE</div>
+            <div class="ac-body">The particles in matter are <strong style="color:#fff;">organised in different arrangements</strong> depending on the state of matter: solid, liquid, gas, or plasma. Arrangement determines the material's properties.</div>
+          </div>
+        </div>
+        <div class="ac">
+          <div class="ac-num">3</div>
+          <div>
+            <div class="ac-title">PARTICLES ARE IN CONSTANT MOTION</div>
+            <div class="ac-body">Particles are <strong style="color:#fff;">always moving</strong>. They have different amounts of kinetic energy and move in various ways — vibrating, rotating, or translating — depending on the state of matter.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ S4 KE & TEMPERATURE ════ -->
+<div class="slide" id="s4">
+  <div class="gb"></div>
+  <div class="inner">
+    <div class="vc">
+      <div class="ke-viz">
+        <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:0.7rem;letter-spacing:4px;color:rgba(255,255,255,0.3);margin-bottom:0.3rem;text-align:center;">TEMPERATURE = AVERAGE KINETIC ENERGY</div>
+        <div class="temp-compare">
+          <div class="tc-card tc-hot">
+            <div class="tc-label">🔥 HOT</div>
+            <canvas id="hotParticles" width="120" height="90"></canvas>
+            <div class="tc-sub">Particles move <strong style="color:#fff;">FAST</strong><br/>High average KE<br/>High temperature</div>
+          </div>
+          <div class="tc-card tc-cold">
+            <div class="tc-label">❄ COLD</div>
+            <canvas id="coldParticles" width="120" height="90"></canvas>
+            <div class="tc-sub">Particles move <strong style="color:#fff;">SLOW</strong><br/>Low average KE<br/>Low temperature</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:1.2rem;justify-content:center;padding:0.5rem 0;">
+          <div class="therm">
+            <div class="therm-tube"><div class="therm-fill tf-hot"></div></div>
+            <div class="therm-bulb-h"></div>
+            <div class="therm-lbl" style="color:#f97316;">HOT<br/>HIGH T</div>
+          </div>
+          <div class="therm">
+            <div class="therm-tube"><div class="therm-fill tf-cold"></div></div>
+            <div class="therm-bulb-c"></div>
+            <div class="therm-lbl" style="color:#60a5fa;">COLD<br/>LOW T</div>
+          </div>
+        </div>
+        <div class="avg-ke-box">
+          <div class="akb-title">TEMPERATURE = AVERAGE KE</div>
+          <div class="akb-sub">At any moment, individual particles have <strong style="color:#fff;">different amounts</strong> of kinetic energy. Temperature is always the <strong style="color:#fff;">average</strong> kinetic energy of all particles in the system.</div>
+        </div>
+      </div>
+    </div>
+    <div class="tc">
+      <div class="tag">Concept 02</div>
+      <h2 class="sh">KE, MOTION<br/>&amp; <span class="ay">TEMPERATURE</span></h2>
+      <p class="sb">
+        The temperature of any substance is determined by the <span class="ay"><strong>average kinetic energy</strong></span> of its particles.<br/><br/>
+        <span class="ao"><strong>Hotter objects</strong></span> have faster-moving particles — more KE.<br/>
+        <span class="ab"><strong>Cooler objects</strong></span> have slower-moving particles — less KE.<br/><br/>
+        Individual particles within the same substance can have <strong>more or less energy</strong> than their neighbours — temperature is always the average of all.
+      </p>
+      <div class="blist">
+        <div class="bi"><div class="bd" style="background:#facc15;"></div><span>Temperature measures <strong style="color:#fff;">average</strong> KE — not total, not individual</span></div>
+        <div class="bi"><div class="bd" style="background:#facc15;"></div><span>A <strong style="color:#fff;">thermometer</strong> works by absorbing heat energy from surroundings — warm molecules transfer KE to the fluid, which expands and rises in the tube</span></div>
+        <div class="bi"><div class="bd" style="background:#facc15;"></div><span>Heat flows from <strong style="color:#fff;">hot (high KE)</strong> to <strong style="color:#fff;">cold (low KE)</strong> until equilibrium</span></div>
+        <div class="bi"><div class="bd" style="background:#facc15;"></div><span>At <strong style="color:#fff;">absolute zero (0 K / −273°C)</strong> particle motion stops completely — minimum possible KE</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ S5 STATES OF MATTER ════ -->
+<div class="slide" id="s5">
+  <div class="gb"></div>
+  <div class="states-layout">
+    <div class="states-title">THE FOUR <span style="color:#2dd4bf;">STATES</span> OF MATTER</div>
+    <div style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.75rem;letter-spacing:5px;color:rgba(255,255,255,0.28);text-align:center;text-transform:uppercase;margin-top:-0.4rem;">Particle arrangement and motion change with kinetic energy</div>
+    <div class="states-grid">
+      <div class="state-card s-solid">
+        <div class="state-canvas-wrap"><canvas id="solidCanvas" width="110" height="90"></canvas></div>
+        <div class="state-name">SOLID</div>
+        <div class="state-ke sk-solid">LOW KE</div>
+        <div class="state-desc"><strong style="color:#fff;">Tightly packed</strong> in fixed positions. Particles only vibrate in place. Definite shape &amp; volume. Strong intermolecular forces.</div>
+      </div>
+      <div class="state-card s-liquid">
+        <div class="state-canvas-wrap"><canvas id="liquidCanvas" width="110" height="90"></canvas></div>
+        <div class="state-name">LIQUID</div>
+        <div class="state-ke sk-liquid">MEDIUM KE</div>
+        <div class="state-desc"><strong style="color:#fff;">Close but mobile</strong> — particles flow past each other. Definite volume, no fixed shape. Weaker forces than solids.</div>
+      </div>
+      <div class="state-card s-gas">
+        <div class="state-canvas-wrap"><canvas id="gasCanvas" width="110" height="90"></canvas></div>
+        <div class="state-name">GAS</div>
+        <div class="state-ke sk-gas">HIGH KE</div>
+        <div class="state-desc"><strong style="color:#fff;">Far apart, fast moving</strong> — particles fly freely in all directions. No fixed shape or volume. Very weak forces.</div>
+      </div>
+      <div class="state-card s-plasma">
+        <div class="state-canvas-wrap"><canvas id="plasmaCanvas" width="110" height="90"></canvas></div>
+        <div class="state-name">PLASMA</div>
+        <div class="state-ke sk-plasma">VERY HIGH KE</div>
+        <div class="state-desc"><strong style="color:#fff;">Ionised gas</strong> — atoms stripped of electrons. Found in stars, lightning, and neon signs. Most common state in the universe.</div>
+      </div>
+    </div>
+    <div style="background:rgba(45,212,191,0.05);border:1px solid rgba(45,212,191,0.15);border-radius:9px;padding:0.55rem 1rem;font-family:'Nunito',sans-serif;font-size:0.82rem;color:rgba(180,240,225,0.65);line-height:1.5;text-align:center;">
+      ⬆️ Moving from solid → liquid → gas → plasma: kinetic energy <strong style="color:#fff;">increases</strong>, particle spacing increases, intermolecular forces weaken.
+    </div>
+  </div>
+</div>
+
+<!-- ════ S6 STATES COMPARISON TABLE ════ -->
+<div class="slide" id="s6">
+  <div class="gb"></div>
+  <div style="width:90%;max-width:1200px;z-index:2;display:flex;flex-direction:column;gap:0.9rem;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(2.2rem,4.5vw,3.8rem);letter-spacing:5px;color:#fff;text-shadow:0 0 40px rgba(45,212,191,0.3);text-align:center;">STATES OF MATTER — <span style="color:#2dd4bf;">COMPARISON</span></div>
+    <table class="detail-table">
+      <thead>
+        <tr>
+          <th class="dt-h dt-hp">PROPERTY</th>
+          <th class="dt-h dt-hs">⬛ SOLID</th>
+          <th class="dt-h dt-hl">💧 LIQUID</th>
+          <th class="dt-h dt-hg">💨 GAS</th>
+          <th class="dt-h dt-hp2">⚡ PLASMA</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="dt-r"><td>Particle Arrangement</td><td>Fixed, tightly packed lattice</td><td>Close, random, mobile</td><td>Far apart, random</td><td>Ionised, very spread out</td></tr>
+        <tr class="dt-r"><td>Particle Motion</td><td>Vibrate only (in place)</td><td>Slide &amp; flow past each other</td><td>Move rapidly in all directions</td><td>Extremely rapid, chaotic</td></tr>
+        <tr class="dt-r"><td>Kinetic Energy</td><td>Low</td><td>Medium</td><td>High</td><td>Extremely high</td></tr>
+        <tr class="dt-r"><td>Intermolecular Forces</td><td>Very strong</td><td>Moderate</td><td>Very weak / negligible</td><td>None (electrons separated)</td></tr>
+        <tr class="dt-r"><td>Shape</td><td>Definite, rigid</td><td>Takes shape of container</td><td>No fixed shape</td><td>No fixed shape</td></tr>
+        <tr class="dt-r"><td>Volume</td><td>Definite, incompressible</td><td>Definite, nearly incompressible</td><td>No fixed volume, compressible</td><td>No fixed volume</td></tr>
+        <tr class="dt-r"><td>Density</td><td>Highest</td><td>Medium</td><td>Very low</td><td>Very low</td></tr>
+        <tr class="dt-r"><td>Real Examples</td><td>Ice, iron, rock, wood</td><td>Water, oil, mercury</td><td>Air, steam, helium</td><td>Lightning, stars, sun</td></tr>
+      </tbody>
+    </table>
+    <div style="background:rgba(249,115,22,0.06);border:1px solid rgba(249,115,22,0.18);border-radius:9px;padding:0.55rem 1rem;font-family:'Nunito',sans-serif;font-size:0.82rem;color:rgba(255,200,160,0.65);line-height:1.5;text-align:center;">
+      🔥 <strong style="color:#fff;">Phase transitions</strong> occur when enough energy is added/removed to break or form intermolecular bonds: melting, boiling, condensing, freezing, sublimation.
+    </div>
+  </div>
+</div>
+
+<!-- ════ S7 GAS PROPERTIES ════ -->
+<div class="slide" id="s7">
+  <div class="gb"></div>
+  <div class="gp-layout">
+    <div class="gp-title">PROPERTIES OF <span style="color:#f97316;">GASES</span></div>
+    <div style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.74rem;letter-spacing:5px;color:rgba(255,255,255,0.27);text-align:center;text-transform:uppercase;margin-top:-0.4rem;">Basic characteristics under normal conditions</div>
+    <div class="gp-grid">
+      <div class="gp-card gc1">
+        <div class="gp-icon">🫧</div>
+        <div class="gp-name">LOW DENSITY</div>
+        <div class="gp-desc">Gas particles are <strong style="color:#fff;">far apart from one another</strong>, so the density of a gas is very low compared to the same substance as a liquid or solid. The same mass occupies far more volume in the gas phase.</div>
+      </div>
+      <div class="gp-card gc2">
+        <div class="gp-icon">🗜️</div>
+        <div class="gp-name">COMPRESSIBILITY</div>
+        <div class="gp-desc">Gases can be <strong style="color:#fff;">compressed into a smaller volume</strong> because there is so much empty space between the particles. Liquids and solids resist compression because particles are already close together.</div>
+      </div>
+      <div class="gp-card gc3">
+        <div class="gp-icon">↔️</div>
+        <div class="gp-name">EXPANSION</div>
+        <div class="gp-desc">Gases <strong style="color:#fff;">expand to fill their container completely</strong> — they have no fixed shape or volume. This is because gas particles are in constant rapid random motion with little attraction to each other.</div>
+      </div>
+      <div class="gp-card gc4">
+        <div class="gp-icon">🌫️</div>
+        <div class="gp-name">DIFFUSION</div>
+        <div class="gp-desc">Gases <strong style="color:#fff;">spread out and mix spontaneously</strong> from high to low concentration — this is why you can smell food cooking from across the room. Faster (hotter) molecules diffuse more quickly.</div>
+      </div>
+      <div class="gp-card gc5">
+        <div class="gp-icon">🌊</div>
+        <div class="gp-name">FLUIDITY</div>
+        <div class="gp-desc">Like liquids, gases can <strong style="color:#fff;">flow freely</strong> — they are fluids. Gas particles can move past each other easily because intermolecular forces are negligible. This is why wind blows and fans work.</div>
+      </div>
+      <div class="gp-extra">
+        💡 <strong style="color:#fff;">Under extremely high pressures or very low temperatures</strong>, gases may deviate from these normal properties and begin to behave more like liquids — this is where the ideal gas model breaks down.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ S8 GAS VARIABLES ════ -->
+<div class="slide" id="s8">
+  <div class="gb"></div>
+  <div class="var-layout">
+    <div class="var-title">MEASURING <span style="color:#4ade80;">GASES</span></div>
+    <div style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.74rem;letter-spacing:5px;color:rgba(255,255,255,0.27);text-align:center;text-transform:uppercase;margin-top:-0.4rem;">Four variables needed to fully describe a gas sample</div>
+    <div class="var-grid">
+      <div class="var-card vc1">
+        <div class="var-symbol">V</div>
+        <div class="var-name">VOLUME</div>
+        <div class="var-unit">Litres (L)</div>
+        <div class="var-desc">The space the gas occupies. Gas fills its entire container, so V = container volume. Also measured in mL, dm³, or m³.</div>
+      </div>
+      <div class="var-card vc2">
+        <div class="var-symbol">P</div>
+        <div class="var-name">PRESSURE</div>
+        <div class="var-unit">Atmospheres (atm)</div>
+        <div class="var-desc">Force per unit area exerted by gas particles colliding with container walls. SI unit is the Pascal (Pa = N/m²).</div>
+      </div>
+      <div class="var-card vc3">
+        <div class="var-symbol">T</div>
+        <div class="var-name">TEMPERATURE</div>
+        <div class="var-unit">Kelvin (K)</div>
+        <div class="var-desc">Always use Kelvin in gas calculations! K = °C + 273. At 0 K (absolute zero), all particle motion stops.</div>
+      </div>
+      <div class="var-card vc4">
+        <div class="var-symbol">n</div>
+        <div class="var-name">AMOUNT</div>
+        <div class="var-unit">Moles (mol)</div>
+        <div class="var-desc">The number of particles in the gas sample, expressed in moles. 1 mole = 6.022 × 10²³ particles (Avogadro's number).</div>
+      </div>
+      <div class="pressure-explainer">
+        ⚡ <strong style="color:#fff;">What is gas pressure?</strong> When gas particles move randomly and collide with the walls of their container, each collision exerts a tiny force. The sum of billions of these collisions per second creates what we measure as <strong style="color:#fb923c;">pressure</strong>. More particles, higher temperature, or smaller volume = more collisions = higher pressure.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ S9 PRESSURE UNITS ════ -->
+<div class="slide" id="s9">
+  <div class="gb"></div>
+  <div class="pu-layout">
+    <div class="pu-title">UNITS OF <span style="color:#c084fc;">PRESSURE</span></div>
+    <div class="pu-inner">
+      <div style="display:flex;flex-direction:column;gap:0.9rem;flex:1;">
+        <div class="pu-box">
+          <div class="pu-box-title">1 atm IS EQUAL TO ...</div>
+          <div class="pu-eqs">
+            <div class="pu-eq"><span>1 atm</span><div class="eq">=</div><div class="val">760 mm Hg</div></div>
+            <div class="pu-eq"><span>1 atm</span><div class="eq">=</div><div class="val">760 torr</div></div>
+            <div class="pu-eq"><span>1 atm</span><div class="eq">=</div><div class="val">101.3 kPa</div></div>
+            <div class="pu-eq"><span>1 atm</span><div class="eq">=</div><div class="val">101 325 Pa</div></div>
+          </div>
+        </div>
+        <div class="toricelli">
+          🧪 <strong style="color:#fff;">Evangelista Torricelli</strong> (Italian physicist, 1608–1647) invented the mercury barometer. The unit <strong style="color:#facc15;">"torr"</strong> is named in his honour. 1 torr = 1 mm Hg exactly.
+        </div>
+        <div style="background:rgba(249,115,22,0.07);border:1.5px solid rgba(249,115,22,0.22);border-radius:10px;padding:0.7rem 0.9rem;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;color:#f97316;margin-bottom:0.3rem;">WORKED CONVERSION EXAMPLE</div>
+          <div style="font-family:'Nunito',sans-serif;font-size:0.88rem;color:rgba(255,200,160,0.8);line-height:1.6;">
+            <strong style="color:#fff;">Convert 10 atm → mm Hg:</strong><br/>
+            10 atm × (760 mm Hg / 1 atm) = <strong style="color:#f97316;">7 600 mm Hg</strong>
+          </div>
+        </div>
+      </div>
+      <div class="pu-si">
+        <div class="pu-si-title">PRESSURE UNITS</div>
+        <div class="pascal-box">
+          <div class="pb-main">Pa = N/m²</div>
+          <div class="pb-sub">The Pascal is the <strong style="color:#fff;">SI unit</strong> of pressure. Named after Blaise Pascal.</div>
+        </div>
+        <div class="si-item">🔬 <strong style="color:#fff;">Pa (Pascal)</strong> — used in physics and SI calculations</div>
+        <div class="si-item">🧪 <strong style="color:#fff;">atm (atmosphere)</strong> — most common in chemistry, based on Earth's atmospheric pressure at sea level</div>
+        <div class="si-item">🌡️ <strong style="color:#fff;">mm Hg (torr)</strong> — used in medicine (blood pressure) and meteorology</div>
+        <div class="si-item">🌍 <strong style="color:#fff;">kPa (kilopascal)</strong> — used in meteorology and engineering</div>
+        <div style="background:rgba(192,132,252,0.08);border:1px solid rgba(192,132,252,0.2);border-radius:8px;padding:0.5rem 0.7rem;font-family:'Nunito',sans-serif;font-size:0.78rem;color:rgba(215,190,255,0.65);line-height:1.4;">
+          Standard atmospheric pressure (STP) = 1 atm = 760 mm Hg = 101.3 kPa
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ S10 CONVERSION PRACTICE ════ -->
+<div class="slide" id="s10">
+  <div class="gb"></div>
+  <div class="conv-layout">
+    <div class="conv-title">PRESSURE <span style="color:#4ade80;">CONVERSIONS</span></div>
+    <div style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.74rem;letter-spacing:5px;color:rgba(255,255,255,0.27);text-align:center;text-transform:uppercase;margin-top:-0.4rem;">Using dimensional analysis — always show the conversion factor</div>
+    <div class="conv-grid">
+      <!-- Worked -->
+      <div class="conv-card cc-worked">
+        <div class="cc-label">Worked Example</div>
+        <div class="cc-q">785 mm Hg → atm</div>
+        <div class="dim-analysis">785 mm Hg × (1 atm / 760 mm Hg)</div>
+        <div class="conv-step">= 785 ÷ 760 atm</div>
+        <div class="conv-ans ca-teal">= 1.03 atm ✓</div>
+      </div>
+      <div class="conv-card cc-worked">
+        <div class="cc-label">Worked Example</div>
+        <div class="cc-q">654 torr → atm</div>
+        <div class="dim-analysis">654 torr × (1 atm / 760 torr)</div>
+        <div class="conv-step">= 654 ÷ 760 atm</div>
+        <div class="conv-ans ca-gold">= 0.861 atm ✓</div>
+      </div>
+      <div class="conv-card cc-worked">
+        <div class="cc-label">Worked Example</div>
+        <div class="cc-q">111 kPa → atm</div>
+        <div class="dim-analysis">111 kPa × (1 atm / 101.3 kPa)</div>
+        <div class="conv-step">= 111 ÷ 101.3 atm</div>
+        <div class="conv-ans ca-orange">= 1.10 atm ✓</div>
+      </div>
+      <div class="conv-card cc-practice">
+        <div class="cc-label" style="color:rgba(45,212,191,0.55);">Key Method — Dimensional Analysis</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;color:#2dd4bf;margin-bottom:0.5rem;">GENERAL RULE</div>
+        <div style="font-family:'Nunito',sans-serif;font-size:0.85rem;color:rgba(180,240,225,0.8);line-height:1.6;">
+          <strong style="color:#fff;">To convert TO atm:</strong> divide by the unit factor<br/>
+          <strong style="color:#fff;">To convert FROM atm:</strong> multiply by the unit factor<br/><br/>
+          <strong style="color:#fff;">Unit factors:</strong><br/>
+          mm Hg ↔ atm: <span style="color:#2dd4bf;">÷ 760</span> or <span style="color:#2dd4bf;">× 760</span><br/>
+          torr ↔ atm: <span style="color:#2dd4bf;">÷ 760</span> or <span style="color:#2dd4bf;">× 760</span><br/>
+          kPa ↔ atm: <span style="color:#f97316;">÷ 101.3</span> or <span style="color:#f97316;">× 101.3</span>
+        </div>
+      </div>
+    </div>
+    <div style="background:rgba(74,222,128,0.06);border:1px solid rgba(74,222,128,0.18);border-radius:9px;padding:0.55rem 1rem;font-family:'Nunito',sans-serif;font-size:0.82rem;color:rgba(180,255,200,0.65);line-height:1.5;text-align:center;">
+      📝 <strong style="color:#fff;">Exam tip:</strong> Always write out your conversion factor as a fraction. The unit you're converting FROM must appear in the denominator so it cancels out, leaving only the unit you want.
+    </div>
+  </div>
+</div>
+
+<!-- ════ S11 KMT POSTULATES ════ -->
+<div class="slide" id="s11">
+  <div class="gb"></div>
+  <div class="kmt-layout">
+    <div class="kmt-title">KINETIC MOLECULAR <span style="color:#c084fc;">THEORY</span> OF GASES</div>
+    <div class="kmt-sub">5 Postulates for the Ideal Gas Model</div>
+    <div class="kmt-grid">
+      <div class="kmt-card km1">
+        <div class="kmt-num">1</div>
+        <div>
+          <div class="kmt-card-title">CONSTANT RANDOM MOTION</div>
+          <div class="kmt-card-body">The particles of a gas are in <strong style="color:#fff;">constant, rapid, random motion</strong> — they move in straight lines until they collide with something. There is no preferred direction.</div>
+        </div>
+      </div>
+      <div class="kmt-card km2">
+        <div class="kmt-num">2</div>
+        <div>
+          <div class="kmt-card-title">LARGE NUMBERS OF TINY PARTICLES</div>
+          <div class="kmt-card-body">Gases consist of <strong style="color:#fff;">enormous numbers of extremely tiny particles</strong> (atoms or molecules) with negligible volume compared to the overall volume of the gas.</div>
+        </div>
+      </div>
+      <div class="kmt-card km3">
+        <div class="kmt-num">3</div>
+        <div>
+          <div class="kmt-card-title">ELASTIC COLLISIONS</div>
+          <div class="kmt-card-body">Collisions between gas particles (and with container walls) are <strong style="color:#fff;">perfectly elastic</strong> — total kinetic energy is conserved. No energy is lost to heat during a collision.</div>
+        </div>
+      </div>
+      <div class="kmt-card km4">
+        <div class="kmt-num">4</div>
+        <div>
+          <div class="kmt-card-title">NO INTERMOLECULAR FORCES</div>
+          <div class="kmt-card-body">There are <strong style="color:#fff;">no forces of attraction or repulsion</strong> between gas particles except during the brief moment of collision. Particles are completely independent of each other.</div>
+        </div>
+      </div>
+      <div class="kmt-card km5">
+        <div class="kmt-num">5</div>
+        <div>
+          <div class="kmt-card-title">KE IS PROPORTIONAL TO TEMPERATURE</div>
+          <div class="kmt-card-body">The <strong style="color:#fff;">average kinetic energy of gas particles is directly proportional to their absolute temperature</strong> (in Kelvin). Double the temperature → double the average KE. KE_avg ∝ T</div>
+        </div>
+      </div>
+    </div>
+    <div class="ideal-badge">
+      🔬 <strong style="color:#fff;">Ideal Gas Model:</strong> A gas that follows ALL five postulates exactly. In reality, most real gases deviate slightly (especially at high pressures or low temperatures) — but the ideal model is an excellent starting point for predictions and calculations.
+    </div>
+  </div>
+</div>
+
+<!-- ════ S12 SUMMARY ════ -->
+<div class="slide" id="s12">
+  <div class="gb"></div>
+  <div class="sum-layout">
+    <div class="sum-title">LESSON <span style="color:#2dd4bf;">RECAP</span></div>
+    <div class="sum-grid">
+      <div class="sum-card">
+        <div class="si">⚛️</div>
+        <div class="st">Kinetic Theory</div>
+        <div class="sd">Matter = tiny particles in constant motion. Arrangement and motion differ by state. Kinetic energy determines temperature.</div>
+      </div>
+      <div class="sum-card">
+        <div class="si">🌡️</div>
+        <div class="st">Temperature &amp; KE</div>
+        <div class="sd">Temperature = average kinetic energy of ALL particles. Hot = fast. Cold = slow. Thermometers measure heat transfer from surroundings.</div>
+      </div>
+      <div class="sum-card">
+        <div class="si">🧊</div>
+        <div class="st">States of Matter</div>
+        <div class="sd">Solid (vibrate, fixed) → Liquid (flow, close) → Gas (fast, far apart) → Plasma (ionised). Each state has distinct particle arrangement and KE.</div>
+      </div>
+      <div class="sum-card">
+        <div class="si">💨</div>
+        <div class="st">Gas Properties</div>
+        <div class="sd">Low density · Compressible · Expands to fill container · Diffuses · Flows. Described by V (L), P (atm), T (K), n (mol).</div>
+      </div>
+      <div class="sum-card">
+        <div class="si">📐</div>
+        <div class="st">Pressure Units</div>
+        <div class="sd">1 atm = 760 mm Hg = 760 torr = 101.3 kPa = 101 325 Pa. Use dimensional analysis to convert. Always show the conversion factor.</div>
+      </div>
+      <div class="sum-card">
+        <div class="si">🔬</div>
+        <div class="st">KMT — 5 Postulates</div>
+        <div class="sd">① Random motion ② Tiny particles ③ Elastic collisions ④ No intermolecular forces ⑤ KE ∝ Temperature. Describes the ideal gas.</div>
+      </div>
+    </div>
+    <div class="focus-strip">
+      <strong style="color:#fff;">Focus Questions Answered:</strong> &nbsp;KE, motion &amp; temperature interact through average particle speed · States differ by particle arrangement &amp; KE · Gases have low density, compressibility, diffusion, expansion &amp; fluidity · Gases measured by V, P, T, n · KMT has 5 postulates for ideal gas behaviour.
+    </div>
+  </div>
+</div>
+
+</div><!-- end deck -->
+
+<div class="nav">
+  <button onclick="go(-1)">◀ BACK</button>
+  <div class="dots" id="dots"></div>
+  <span class="snum" id="snum">1 / 12</span>
+  <button onclick="go(1)">NEXT ▶</button>
+</div>
+
+<script>
+/* ─── Navigation ─── */
+const slides=document.querySelectorAll('.slide');
+const dotsEl=document.getElementById('dots');
+const snumEl=document.getElementById('snum');
+let cur=0; const tot=slides.length;
+slides.forEach((_,i)=>{
+  const d=document.createElement('div');
+  d.className='dot'+(i===0?' active':'');
+  d.onclick=()=>goTo(i);
+  dotsEl.appendChild(d);
+});
+function goTo(n){
+  slides[cur].classList.remove('active'); dotsEl.children[cur].classList.remove('active');
+  cur=(n+tot)%tot;
+  slides[cur].classList.add('active'); dotsEl.children[cur].classList.add('active');
+  snumEl.textContent=(cur+1)+' / '+tot;
+}
+function go(d){goTo(cur+d);}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' ')go(1);
+  if(e.key==='ArrowLeft')go(-1);
+});
+
+/* ─── S1: Floating molecule particles ─── */
+const molBg=document.getElementById('molBg');
+const mCols=['rgba(45,212,191,0.35)','rgba(249,115,22,0.3)','rgba(192,132,252,0.28)','rgba(74,222,128,0.25)'];
+for(let i=0;i<22;i++){
+  const m=document.createElement('div'); m.className='mol-float';
+  const sz=6+Math.random()*14;
+  const fx=(Math.random()-0.5)*60, fy=(Math.random()-0.5)*60;
+  m.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;
+    background:${mCols[Math.floor(Math.random()*mCols.length)]};
+    box-shadow:0 0 ${sz}px ${mCols[Math.floor(Math.random()*mCols.length)]};
+    position:absolute;--fx:${fx}px;--fy:${fy}px;
+    animation-duration:${4+Math.random()*7}s;animation-delay:-${Math.random()*8}s;`;
+  molBg.appendChild(m);
+}
+
+/* ─── PARTICLE CANVAS UTILITY ─── */
+function makeParticles(canvas, config){
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height;
+  const particles=[];
+
+  if(config.type==='solid'){
+    // Grid arrangement — particles vibrate in place
+    const cols=5, rows=4;
+    for(let r=0;r<rows;r++) for(let c=0;c<cols;c++){
+      particles.push({
+        bx:12+c*(W-24)/(cols-1), by:12+r*(H-24)/(rows-1),
+        x:0,y:0,vx:(Math.random()-0.5)*0.5,vy:(Math.random()-0.5)*0.5,
+        r:5, col:'rgba(96,165,250,0.85)', glow:'rgba(96,165,250,0.4)'
+      });
+    }
+  } else if(config.type==='liquid'){
+    for(let i=0;i<14;i++){
+      particles.push({
+        x:8+Math.random()*(W-16), y:8+Math.random()*(H-16),
+        vx:(Math.random()-0.5)*1.2, vy:(Math.random()-0.5)*1.2,
+        r:5, col:'rgba(45,212,191,0.85)', glow:'rgba(45,212,191,0.4)'
+      });
+    }
+  } else if(config.type==='gas'){
+    for(let i=0;i<10;i++){
+      particles.push({
+        x:6+Math.random()*(W-12), y:6+Math.random()*(H-12),
+        vx:(Math.random()-0.5)*3.5, vy:(Math.random()-0.5)*3.5,
+        r:4, col:'rgba(249,115,22,0.85)', glow:'rgba(249,115,22,0.4)'
+      });
+    }
+  } else if(config.type==='plasma'){
+    for(let i=0;i<12;i++){
+      particles.push({
+        x:6+Math.random()*(W-12), y:6+Math.random()*(H-12),
+        vx:(Math.random()-0.5)*5, vy:(Math.random()-0.5)*5,
+        r:4, col:i%2===0?'rgba(192,132,252,0.9)':'rgba(250,204,21,0.85)',
+        glow:i%2===0?'rgba(192,132,252,0.5)':'rgba(250,204,21,0.4)',
+        isIon:true
+      });
+    }
+  } else if(config.type==='hot'){
+    for(let i=0;i<8;i++){
+      particles.push({
+        x:6+Math.random()*(W-12), y:6+Math.random()*(H-12),
+        vx:(Math.random()-0.5)*4.5, vy:(Math.random()-0.5)*4.5,
+        r:5, col:'rgba(249,115,22,0.9)', glow:'rgba(249,115,22,0.5)'
+      });
+    }
+  } else if(config.type==='cold'){
+    for(let i=0;i<8;i++){
+      particles.push({
+        x:6+Math.random()*(W-12), y:6+Math.random()*(H-12),
+        vx:(Math.random()-0.5)*0.8, vy:(Math.random()-0.5)*0.8,
+        r:5, col:'rgba(96,165,250,0.85)', glow:'rgba(96,165,250,0.4)'
+      });
+    }
+  }
+
+  let frame=0;
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // Background
+    ctx.fillStyle=config.bgColor||'rgba(0,0,0,0)';
+    ctx.fillRect(0,0,W,H);
+
+    particles.forEach(p=>{
+      if(config.type==='solid'){
+        // Vibrate around base position
+        p.vx+=(Math.random()-0.5)*0.08;
+        p.vy+=(Math.random()-0.5)*0.08;
+        p.vx*=0.92; p.vy*=0.92;
+        p.x=p.bx+p.vx*3; p.y=p.by+p.vy*3;
+      } else if(config.type==='liquid'){
+        p.x+=p.vx; p.y+=p.vy;
+        p.vx+=(Math.random()-0.5)*0.08; p.vy+=(Math.random()-0.5)*0.08;
+        p.vx*=0.98; p.vy*=0.98;
+        // Soft boundary
+        if(p.x<p.r){p.vx=Math.abs(p.vx);} if(p.x>W-p.r){p.vx=-Math.abs(p.vx);}
+        if(p.y<p.r){p.vy=Math.abs(p.vy);} if(p.y>H-p.r){p.vy=-Math.abs(p.vy);}
+      } else {
+        p.x+=p.vx; p.y+=p.vy;
+        if(p.x<p.r){p.vx=Math.abs(p.vx);} if(p.x>W-p.r){p.vx=-Math.abs(p.vx);}
+        if(p.y<p.r){p.vy=Math.abs(p.vy);} if(p.y>H-p.r){p.vy=-Math.abs(p.vy);}
+        if(config.type==='plasma'&&p.isIon&&frame%40===0){
+          p.vx=(Math.random()-0.5)*5; p.vy=(Math.random()-0.5)*5;
+        }
+      }
+
+      // Draw bond lines for solid
+      if(config.type==='solid'){
+        particles.forEach(q=>{
+          const dx=p.bx-q.bx, dy=p.by-q.by;
+          const dist=Math.sqrt(dx*dx+dy*dy);
+          if(dist>0&&dist<26){
+            ctx.strokeStyle='rgba(96,165,250,0.2)'; ctx.lineWidth=1;
+            ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y); ctx.stroke();
+          }
+        });
+      }
+
+      // Glow
+      const g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*2.2);
+      g.addColorStop(0,p.glow); g.addColorStop(1,'transparent');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(p.x,p.y,p.r*2.2,0,Math.PI*2); ctx.fill();
+      // Dot
+      ctx.fillStyle=p.col; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
+
+      // Plasma ion glow flash
+      if(config.type==='plasma'&&p.isIon&&Math.random()<0.02){
+        ctx.fillStyle='rgba(255,255,255,0.6)';
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.r*1.5,0,Math.PI*2); ctx.fill();
+      }
+    });
+
+    // Liquid bond lines (between close particles)
+    if(config.type==='liquid'){
+      particles.forEach((p,i)=>{
+        particles.slice(i+1).forEach(q=>{
+          const dx=p.x-q.x, dy=p.y-q.y;
+          const d=Math.sqrt(dx*dx+dy*dy);
+          if(d<28){
+            ctx.strokeStyle=`rgba(45,212,191,${0.25*(1-d/28)})`; ctx.lineWidth=1.2;
+            ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y); ctx.stroke();
+          }
+        });
+      });
+    }
+
+    frame++;
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+}
+
+// Initialise all particle canvases
+makeParticles(document.getElementById('solidCanvas'), {type:'solid'});
+makeParticles(document.getElementById('liquidCanvas'), {type:'liquid'});
+makeParticles(document.getElementById('gasCanvas'), {type:'gas'});
+makeParticles(document.getElementById('plasmaCanvas'), {type:'plasma'});
+makeParticles(document.getElementById('hotParticles'), {type:'hot'});
+makeParticles(document.getElementById('coldParticles'), {type:'cold'});
+</script>
+</body>
+</html>
