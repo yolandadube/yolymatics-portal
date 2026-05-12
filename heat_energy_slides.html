@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Temperature, Energy & Heat</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;700;900&family=Nunito:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;}
+
+.deck{width:100%;height:100vh;position:relative;}
+
+.slide{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.7s ease;
+  overflow:hidden;
+}
+.slide.active{opacity:1;pointer-events:all;}
+
+/* ── NAV ── */
+.nav{
+  position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:1.2rem;z-index:999;
+}
+.nav button{
+  background:rgba(255,255,255,0.15);border:2px solid rgba(255,255,255,0.4);
+  color:#fff;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;
+  letter-spacing:2px;padding:0.5rem 1.8rem;border-radius:50px;cursor:pointer;
+  backdrop-filter:blur(6px);transition:all 0.2s;
+}
+.nav button:hover{background:rgba(255,255,255,0.3);}
+.dots{display:flex;gap:0.5rem;}
+.dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.35);cursor:pointer;transition:all 0.3s;}
+.dot.active{background:#fff;transform:scale(1.3);}
+
+/* ────────────────────────────────
+   SLIDE 1 — TITLE
+──────────────────────────────── */
+#s1{background:linear-gradient(135deg,#0a0010 0%,#1a0530 40%,#2d0808 100%);}
+#s1 .particles{position:absolute;inset:0;overflow:hidden;}
+#s1 .p{
+  position:absolute;bottom:-20px;border-radius:50%;
+  animation:rise linear infinite;
+  background:radial-gradient(circle,rgba(255,160,30,0.9),rgba(255,60,0,0.3));
+}
+@keyframes rise{
+  0%{transform:translateY(0) scale(1);opacity:0.8;}
+  80%{opacity:0.5;}
+  100%{transform:translateY(-110vh) scale(0.3);opacity:0;}
+}
+#s1 .title-block{position:relative;z-index:2;text-align:center;}
+#s1 h1{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(4rem,10vw,10rem);
+  line-height:0.9;
+  color:#fff;
+  text-shadow:0 0 80px rgba(255,130,0,0.9),0 0 160px rgba(255,60,0,0.5);
+  letter-spacing:4px;
+}
+#s1 h1 span{color:#ff9a00;}
+#s1 .sub{
+  font-family:'Montserrat',sans-serif;font-weight:700;
+  font-size:clamp(1rem,2.5vw,1.8rem);
+  letter-spacing:8px;color:rgba(255,200,120,0.85);
+  margin-top:1rem;text-transform:uppercase;
+}
+#s1 .glow-orb{
+  position:absolute;width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,100,0,0.18),transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  animation:pulse 3s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{transform:translate(-50%,-50%) scale(1);}50%{transform:translate(-50%,-50%) scale(1.15);}}
+
+/* ────────────────────────────────
+   SLIDE 2 — TEMPERATURE
+──────────────────────────────── */
+#s2{background:linear-gradient(160deg,#050520 0%,#0d1a4a 50%,#1a0830 100%);}
+.slide-inner{
+  display:flex;align-items:center;justify-content:center;
+  gap:5vw;width:90%;max-width:1300px;z-index:2;
+}
+.text-col{flex:1;}
+.slide-tag{
+  font-family:'Montserrat',sans-serif;font-weight:900;
+  font-size:clamp(0.7rem,1.2vw,0.9rem);letter-spacing:6px;
+  text-transform:uppercase;color:rgba(255,255,255,0.45);
+  margin-bottom:0.8rem;
+}
+.slide-h{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(3.5rem,7vw,7rem);
+  line-height:0.95;color:#fff;
+  text-shadow:0 0 40px rgba(100,180,255,0.6);
+  margin-bottom:1.2rem;
+}
+.slide-h span{color:#4db8ff;}
+.slide-body{
+  font-family:'Nunito',sans-serif;font-size:clamp(1rem,2vw,1.5rem);
+  color:rgba(220,235,255,0.85);line-height:1.7;max-width:520px;
+}
+.slide-body strong{color:#fff;}
+
+/* Thermometer SVG area */
+.visual-col{flex:0 0 auto;display:flex;align-items:center;justify-content:center;}
+
+/* Molecule animation */
+.molecule-box{
+  width:min(40vw,380px);height:min(40vw,380px);
+  position:relative;border:2px solid rgba(100,180,255,0.2);
+  border-radius:20px;background:rgba(255,255,255,0.04);overflow:hidden;
+}
+.mol{
+  position:absolute;border-radius:50%;
+  background:radial-gradient(circle,#4db8ff,#0050aa);
+  box-shadow:0 0 15px #4db8ff88;
+}
+.mol.fast{animation:moveFast linear infinite;}
+.mol.slow{animation:moveSlow linear infinite;}
+@keyframes moveFast{
+  0%{transform:translate(0,0);}25%{transform:translate(calc(var(--rx)*1px),calc(var(--ry)*1px));}
+  50%{transform:translate(calc(var(--rx)*-0.6px),calc(var(--ry)*0.8px));}
+  75%{transform:translate(calc(var(--rx)*0.4px),calc(var(--ry)*-1px));}100%{transform:translate(0,0);}
+}
+@keyframes moveSlow{
+  0%{transform:translate(0,0);}33%{transform:translate(calc(var(--rx)*0.5px),calc(var(--ry)*0.5px));}
+  66%{transform:translate(calc(var(--rx)*-0.3px),calc(var(--ry)*-0.5px));}100%{transform:translate(0,0);}
+}
+.mol-label{
+  position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+  font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.85rem;
+  letter-spacing:3px;text-transform:uppercase;
+  color:rgba(100,180,255,0.7);
+}
+
+/* ────────────────────────────────
+   SLIDES: UNITS / CONVERSIONS / EXAMPLES
+──────────────────────────────── */
+#s_units{background:linear-gradient(150deg,#04001a 0%,#090430 55%,#050020 100%);}
+#s_conv{background:linear-gradient(145deg,#080018 0%,#160830 55%,#000d20 100%);}
+#s_ex{background:linear-gradient(140deg,#030015 0%,#0a1800 45%,#0d0025 100%);}
+
+/* Thermometer columns */
+.therm-section{
+  display:flex;align-items:flex-start;justify-content:center;
+  gap:4vw;z-index:2;padding:0 2rem 3.5rem;
+  height:76vh;width:90%;max-width:1200px;
+}
+.therm-col{display:flex;flex-direction:column;align-items:center;gap:0.4rem;}
+.therm-name{
+  font-family:'Bebas Neue',sans-serif;font-size:clamp(1.2rem,2.5vw,2rem);
+  letter-spacing:3px;
+}
+.therm-symbol{
+  font-family:'Montserrat',sans-serif;font-weight:900;
+  font-size:clamp(2rem,3.5vw,3rem);line-height:1;
+}
+.therm-track{
+  width:52px;flex:1;position:relative;border-radius:26px;border:3px solid;overflow:visible;
+}
+.therm-fill{
+  position:absolute;bottom:0;left:0;right:0;
+  border-radius:0 0 24px 24px;
+}
+.therm-tick{
+  position:absolute;right:-88px;transform:translateY(50%);
+  font-family:'Montserrat',sans-serif;font-weight:700;
+  font-size:clamp(0.6rem,0.9vw,0.78rem);white-space:nowrap;line-height:1.3;
+}
+.therm-tick::before{
+  content:'';position:absolute;right:calc(100% + 5px);top:30%;
+  width:22px;height:1.5px;background:currentColor;opacity:0.45;
+}
+.therm-bulb{
+  width:60px;height:60px;border-radius:50%;margin-top:-8px;flex-shrink:0;
+}
+.therm-desc{
+  font-family:'Nunito',sans-serif;font-size:clamp(0.7rem,0.95vw,0.82rem);
+  opacity:0.6;margin-top:0.4rem;text-align:center;max-width:110px;line-height:1.4;
+}
+
+/* Conversion cards */
+.conv-layout{
+  display:flex;flex-direction:column;align-items:center;
+  gap:1.2rem;z-index:2;width:90%;max-width:1100px;
+}
+.conv-big-title{
+  font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,5vw,5rem);
+  letter-spacing:5px;color:#fff;text-shadow:0 0 50px rgba(180,100,255,0.7);
+  text-align:center;
+}
+.conv-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.1rem;width:100%;}
+.conv-card{
+  border-radius:16px;padding:1.1rem 1.4rem;
+  display:flex;align-items:center;gap:0.9rem;
+}
+.conv-from{
+  font-family:'Bebas Neue',sans-serif;font-size:clamp(1.6rem,2.8vw,2.5rem);
+  letter-spacing:1px;flex-shrink:0;min-width:90px;
+}
+.conv-arrow-big{font-size:1.8rem;opacity:0.55;flex-shrink:0;}
+.conv-formula{
+  font-family:'Montserrat',sans-serif;font-weight:700;
+  font-size:clamp(1rem,1.7vw,1.4rem);line-height:1.4;
+}
+.conv-step{
+  font-family:'Nunito',sans-serif;font-size:clamp(0.72rem,1vw,0.88rem);
+  opacity:0.65;margin-top:0.25rem;
+}
+.card-cf{background:rgba(255,150,30,0.1);border:2px solid rgba(255,150,30,0.38);}
+.card-cf .conv-from,.card-cf .conv-formula{color:#ffaa44;}
+.card-fc{background:rgba(80,170,255,0.09);border:2px solid rgba(80,170,255,0.38);}
+.card-fc .conv-from,.card-fc .conv-formula{color:#66bbff;}
+.card-ck{background:rgba(168,100,255,0.09);border:2px solid rgba(168,100,255,0.38);}
+.card-ck .conv-from,.card-ck .conv-formula{color:#cc88ff;}
+.card-kc{background:rgba(0,200,160,0.09);border:2px solid rgba(0,200,160,0.38);}
+.card-kc .conv-from,.card-kc .conv-formula{color:#00ddaa;}
+
+/* Worked examples */
+.ex-layout{
+  display:flex;flex-direction:column;align-items:center;
+  gap:0.9rem;z-index:2;width:90%;max-width:1150px;
+}
+.ex-big-title{
+  font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,4vw,3.5rem);
+  letter-spacing:5px;color:#fff;
+}
+.ex-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0.9rem;width:100%;}
+.ex-card{
+  border-radius:14px;padding:1rem 1.3rem;
+  border:1.5px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.04);position:relative;overflow:hidden;
+}
+.ex-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+}
+.ex-card:nth-child(1)::before{background:#4db8ff;}
+.ex-card:nth-child(2)::before{background:#ff8844;}
+.ex-card:nth-child(3)::before{background:#cc88ff;}
+.ex-card:nth-child(4)::before{background:#a8e63d;}
+.ex-label{
+  font-family:'Montserrat',sans-serif;font-weight:900;
+  font-size:clamp(0.62rem,0.9vw,0.75rem);letter-spacing:4px;
+  text-transform:uppercase;opacity:0.5;margin-bottom:0.3rem;
+}
+.ex-scenario{
+  font-family:'Bebas Neue',sans-serif;font-size:clamp(1.3rem,2.2vw,1.8rem);
+  letter-spacing:2px;color:#fff;margin-bottom:0.6rem;
+}
+.ex-steps{display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;}
+.ex-val{
+  font-family:'Bebas Neue',sans-serif;font-size:clamp(1.4rem,2.5vw,2.1rem);
+  padding:0.2rem 0.7rem;border-radius:9px;
+  animation:exPop 0.5s ease var(--pd,0s) both;
+}
+@keyframes exPop{from{opacity:0;transform:scale(0.65);}to{opacity:1;transform:scale(1);}}
+.ex-eq{font-size:1.4rem;color:rgba(255,255,255,0.35);}
+.ex-val-c{background:rgba(77,184,255,0.18);color:#4db8ff;border:1.5px solid #4db8ff44;}
+.ex-val-f{background:rgba(255,150,50,0.18);color:#ff9944;border:1.5px solid #ff994444;}
+.ex-val-k{background:rgba(180,100,255,0.18);color:#cc88ff;border:1.5px solid #cc88ff44;}
+.ex-calc{
+  font-family:'Nunito',sans-serif;font-size:clamp(0.72rem,1vw,0.88rem);
+  color:rgba(255,255,255,0.4);margin-top:0.45rem;line-height:1.5;
+}
+.ex-calc strong{opacity:1;}
+
+/* ────────────────────────────────
+   SLIDE 3 — THERMAL ENERGY
+──────────────────────────────── */
+#s3{background:linear-gradient(140deg,#080a00 0%,#1a2000 50%,#0a1500 100%);}
+#s3 .slide-h span{color:#a8e63d;}
+#s3 .slide-body{color:rgba(210,240,180,0.85);}
+
+.energy-viz{
+  width:min(42vw,400px);height:min(42vw,400px);
+  position:relative;display:flex;align-items:center;justify-content:center;
+}
+.atom-core{
+  width:80px;height:80px;border-radius:50%;
+  background:radial-gradient(circle,#c8ff40,#5a9900);
+  box-shadow:0 0 30px #a8e63d, 0 0 80px #5a990055;
+  animation:throb 2s ease-in-out infinite;position:relative;z-index:2;
+}
+@keyframes throb{0%,100%{box-shadow:0 0 30px #a8e63d,0 0 80px #5a990055;}50%{box-shadow:0 0 60px #c8ff40,0 0 140px #a8e63d88;}}
+.orbit{
+  position:absolute;border-radius:50%;
+  border:1.5px solid rgba(168,230,61,0.25);
+}
+.electron{
+  position:absolute;width:16px;height:16px;border-radius:50%;
+  background:radial-gradient(circle,#c8ff40,#78be20);
+  box-shadow:0 0 12px #a8e63d;
+  top:-8px;left:calc(50% - 8px);
+  transform-origin:50% calc(50% + var(--r));
+  animation:orbit var(--speed) linear infinite;
+}
+@keyframes orbit{from{rotate:0deg;}to{rotate:360deg;}}
+
+/* ────────────────────────────────
+   SLIDE 4 — CONDUCTION
+──────────────────────────────── */
+#s4{background:linear-gradient(150deg,#100300 0%,#2a0800 50%,#1a0500 100%);}
+#s4 .slide-h span{color:#ff6b2b;}
+#s4 .slide-body{color:rgba(255,210,180,0.85);}
+
+.conduction-viz{
+  width:min(45vw,420px);display:flex;flex-direction:column;align-items:center;gap:0.5rem;
+}
+.rods{display:flex;align-items:center;width:100%;height:80px;}
+.rod{
+  height:60px;border-radius:8px;position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.rod-hot{
+  flex:1;background:linear-gradient(90deg,#ff2200,#ff6b2b);
+  box-shadow:0 0 25px #ff440066;
+  border-radius:8px 0 0 8px;
+}
+.rod-cold{
+  flex:1;
+  border-radius:0 8px 8px 0;
+  position:relative;overflow:hidden;
+}
+.rod-cold::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,#ff6b2b,#5588ff);
+  animation:heatFlow 2s ease-in-out infinite;
+}
+@keyframes heatFlow{
+  0%{background:linear-gradient(90deg,#ff6b2b 0%,#2244cc 40%);}
+  50%{background:linear-gradient(90deg,#ff8844 0%,#4466dd 60%);}
+  100%{background:linear-gradient(90deg,#ff6b2b 0%,#2244cc 40%);}
+}
+.rod-label{
+  position:absolute;font-family:'Montserrat',sans-serif;font-weight:700;
+  font-size:0.8rem;letter-spacing:2px;color:rgba(255,255,255,0.8);z-index:2;
+}
+.arrow-row{display:flex;justify-content:center;align-items:center;gap:0.3rem;margin-top:0.5rem;}
+.heat-arrow{
+  font-size:2rem;color:#ff8844;
+  animation:arrowPop 1.2s ease-in-out infinite;
+}
+.heat-arrow:nth-child(2){animation-delay:0.2s;}
+.heat-arrow:nth-child(3){animation-delay:0.4s;}
+.heat-arrow:nth-child(4){animation-delay:0.6s;}
+@keyframes arrowPop{0%,100%{opacity:0.3;transform:scale(0.8);}50%{opacity:1;transform:scale(1.2);}}
+.material-examples{
+  display:flex;gap:1rem;margin-top:1rem;flex-wrap:wrap;justify-content:center;
+}
+.mat-chip{
+  padding:0.4rem 1rem;border-radius:50px;
+  font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.85rem;
+  letter-spacing:1px;
+}
+.mat-good{background:rgba(255,100,30,0.25);border:1.5px solid #ff6b2b;color:#ffaa66;}
+.mat-bad{background:rgba(80,120,255,0.15);border:1.5px solid #5588ff;color:#88aaff;}
+
+/* ────────────────────────────────
+   SLIDE 5 — CONVECTION
+──────────────────────────────── */
+#s5{background:linear-gradient(140deg,#000d20 0%,#001830 50%,#002015 100%);}
+#s5 .slide-h span{color:#00d4b4;}
+#s5 .slide-body{color:rgba(180,240,230,0.85);}
+
+.convection-viz{
+  width:min(42vw,380px);height:min(38vw,340px);
+  position:relative;
+  border:2px solid rgba(0,212,180,0.2);border-radius:16px;
+  background:rgba(0,212,180,0.04);
+  overflow:hidden;
+}
+.conv-bottom{
+  position:absolute;bottom:0;left:0;right:0;height:30px;
+  background:linear-gradient(180deg,transparent,rgba(255,80,0,0.4));
+}
+.conv-top{
+  position:absolute;top:0;left:0;right:0;height:30px;
+  background:linear-gradient(0deg,transparent,rgba(0,100,255,0.3));
+}
+.fluid-cell{
+  position:absolute;border-radius:50%;
+  animation:convLoop var(--dur) linear infinite var(--delay);
+  opacity:0.7;
+}
+@keyframes convLoop{
+  0%{transform:translate(0,0);}
+  25%{transform:translate(var(--mx),calc(var(--my)*-1px));}
+  50%{transform:translate(calc(var(--mx)*2),0);}
+  75%{transform:translate(var(--mx),var(--my));}
+  100%{transform:translate(0,0);}
+}
+.hot-label{
+  position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
+  font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.8rem;
+  color:rgba(255,130,50,0.8);letter-spacing:2px;
+}
+.cold-label{
+  position:absolute;top:8px;left:50%;transform:translateX(-50%);
+  font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.8rem;
+  color:rgba(80,150,255,0.8);letter-spacing:2px;
+}
+.up-arrow,.down-arrow{
+  position:absolute;font-size:1.5rem;
+  animation:fadeUpDown 1.5s ease-in-out infinite;
+}
+.up-arrow{color:#ff7733;left:30%;}
+.down-arrow{color:#4488ff;right:30%;animation-direction:reverse;}
+@keyframes fadeUpDown{0%,100%{opacity:0.3;}50%{opacity:1;}}
+
+/* ────────────────────────────────
+   SLIDE 6 — RADIATION
+──────────────────────────────── */
+#s6{background:radial-gradient(ellipse at 30% 50%,#1a0a00 0%,#0a0015 60%,#000 100%);}
+#s6 .slide-h span{color:#ffda00;}
+#s6 .slide-body{color:rgba(255,240,180,0.85);}
+
+.radiation-viz{
+  width:min(45vw,420px);height:min(40vw,360px);
+  position:relative;display:flex;align-items:center;justify-content:flex-start;
+  padding-left:30px;
+}
+.sun-body{
+  width:90px;height:90px;border-radius:50%;flex-shrink:0;
+  background:radial-gradient(circle,#fff8a0,#ffcc00 40%,#ff8800);
+  box-shadow:0 0 40px #ffcc00,0 0 100px #ff880055;
+  animation:sunPulse 2s ease-in-out infinite;z-index:2;
+}
+@keyframes sunPulse{0%,100%{box-shadow:0 0 40px #ffcc00,0 0 100px #ff880055;}50%{box-shadow:0 0 70px #ffee44,0 0 160px #ffcc0088;}}
+.wave{
+  position:absolute;left:105px;
+  height:3px;background:none;
+  border-top:3px solid rgba(255,200,0,0);
+  animation:waveTravel 2s ease-out infinite;
+  animation-delay:var(--wd);
+  transform-origin:left center;
+}
+@keyframes waveTravel{
+  0%{width:0;opacity:0;left:105px;}
+  20%{opacity:0.9;}
+  100%{width:280px;opacity:0;left:105px;}
+}
+.earth-body{
+  position:absolute;right:20px;
+  width:60px;height:60px;border-radius:50%;
+  background:radial-gradient(circle,#44aaff,#0044aa 60%,#002266);
+  box-shadow:0 0 20px #2266ff66;
+  animation:earthGlow 3s ease-in-out infinite;
+}
+@keyframes earthGlow{0%,100%{box-shadow:0 0 20px #2266ff66;}50%{box-shadow:0 0 35px #66aaff88;}}
+.no-medium{
+  position:absolute;bottom:15px;left:50%;transform:translateX(-50%);
+  font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.8rem;
+  color:rgba(255,200,60,0.65);letter-spacing:3px;text-align:center;
+}
+
+/* ────────────────────────────────
+   SLIDE 7 — SUMMARY
+──────────────────────────────── */
+#s7{background:linear-gradient(135deg,#05001a 0%,#12001a 50%,#1a0505 100%);}
+.summary-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1.2rem;width:90%;max-width:1200px;z-index:2;
+}
+.sum-card{
+  background:rgba(255,255,255,0.05);border-radius:16px;
+  border:1.5px solid rgba(255,255,255,0.12);
+  padding:1.4rem 1.2rem;
+  transition:transform 0.3s,border-color 0.3s;
+}
+.sum-card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,0.35);}
+.sum-icon{font-size:2rem;margin-bottom:0.6rem;}
+.sum-title{
+  font-family:'Bebas Neue',sans-serif;font-size:1.8rem;
+  letter-spacing:2px;margin-bottom:0.5rem;
+}
+.sum-desc{
+  font-family:'Nunito',sans-serif;font-size:0.95rem;
+  color:rgba(220,220,220,0.75);line-height:1.55;
+}
+.sum-card:nth-child(1){border-top:3px solid #4db8ff;} .sum-card:nth-child(1) .sum-title{color:#4db8ff;}
+.sum-card:nth-child(2){border-top:3px solid #a8e63d;} .sum-card:nth-child(2) .sum-title{color:#a8e63d;}
+.sum-card:nth-child(3){border-top:3px solid #ff6b2b;} .sum-card:nth-child(3) .sum-title{color:#ff6b2b;}
+.sum-card:nth-child(4){border-top:3px solid #00d4b4;} .sum-card:nth-child(4) .sum-title{color:#00d4b4;}
+.sum-card:nth-child(5){border-top:3px solid #ffda00;} .sum-card:nth-child(5) .sum-title{color:#ffda00;}
+.sum-header{
+  grid-column:1/-1;text-align:center;
+  font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,4vw,3.5rem);
+  color:#fff;letter-spacing:5px;
+  text-shadow:0 0 40px rgba(255,180,80,0.5);
+  margin-bottom:0.3rem;
+}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- ══════════════ SLIDE 1 — TITLE ══════════════ -->
+<div class="slide active" id="s1">
+  <div class="glow-orb"></div>
+  <div class="particles" id="particles"></div>
+  <div class="title-block">
+    <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:clamp(0.7rem,1.5vw,1rem);letter-spacing:10px;text-transform:uppercase;color:rgba(255,180,80,0.6);margin-bottom:1rem;">Science — Thermal Physics</div>
+    <h1>TEMPERATURE<br/><span>ENERGY</span><br/>&amp; HEAT</h1>
+    <p class="sub">A Visual Introduction</p>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 2 — TEMPERATURE ══════════════ -->
+<div class="slide" id="s2">
+  <div class="slide-inner">
+    <div class="text-col">
+      <div class="slide-tag">Concept 01</div>
+      <h2 class="slide-h">TEMPER<span>ATURE</span></h2>
+      <p class="slide-body">
+        Temperature is a measure of <strong>how fast the particles</strong> inside a substance are moving.<br/><br/>
+        The <strong>faster</strong> the particles vibrate and move → the <strong>higher</strong> the temperature.<br/><br/>
+        Temperature does <strong>not</strong> tell us how much energy there is — only how intense the particle motion is.
+      </p>
+    </div>
+    <div class="visual-col">
+      <div class="molecule-box" id="molBox">
+        <div class="mol-label">Faster = Hotter →</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE: TEMPERATURE UNITS ══════════════ -->
+<div class="slide" id="s_units">
+  <div style="z-index:2;text-align:center;margin-bottom:0.6rem;">
+    <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:0.8rem;letter-spacing:6px;text-transform:uppercase;color:rgba(255,255,255,0.4);">Concept 01 — continued</div>
+    <h2 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,5vw,4.5rem);letter-spacing:5px;color:#fff;text-shadow:0 0 50px rgba(150,100,255,0.6);line-height:1;">THE THREE <span style="color:#cc88ff;">TEMPERATURE SCALES</span></h2>
+  </div>
+  <div class="therm-section">
+    <!-- CELSIUS -->
+    <div class="therm-col">
+      <div class="therm-name" style="color:#4db8ff;">CELSIUS</div>
+      <div class="therm-symbol" style="color:#4db8ff;">°C</div>
+      <div class="therm-track" style="border-color:#4db8ff44;background:rgba(77,184,255,0.05);">
+        <div class="therm-fill" style="height:93%;background:linear-gradient(0deg,#1a66ff,#4db8ffaa);"></div>
+        <div class="therm-tick" style="bottom:100%;transform:translateY(50%);color:#ffaa44;">100°C <span style="font-size:0.7em;opacity:0.6;">Boiling</span></div>
+        <div class="therm-tick" style="bottom:72%;color:#ffdd88;">37°C <span style="font-size:0.7em;opacity:0.6;">Body</span></div>
+        <div class="therm-tick" style="bottom:58%;color:#aaddff;">20°C <span style="font-size:0.7em;opacity:0.6;">Room</span></div>
+        <div class="therm-tick" style="bottom:24%;color:#88ccff;">0°C <span style="font-size:0.7em;opacity:0.6;">Freezing</span></div>
+        <div class="therm-tick" style="bottom:0%;transform:translateY(50%);color:#ff6666;">−273°C <span style="font-size:0.7em;opacity:0.6;">Abs. Zero</span></div>
+      </div>
+      <div class="therm-bulb" style="background:radial-gradient(circle,#88ddff,#4db8ff);box-shadow:0 0 18px #4db8ff88;"></div>
+      <div class="therm-desc" style="color:#4db8ff;">Everyday use worldwide</div>
+    </div>
+    <!-- FAHRENHEIT -->
+    <div class="therm-col">
+      <div class="therm-name" style="color:#ff9944;">FAHRENHEIT</div>
+      <div class="therm-symbol" style="color:#ff9944;">°F</div>
+      <div class="therm-track" style="border-color:#ff994455;background:rgba(255,150,50,0.05);">
+        <div class="therm-fill" style="height:85%;background:linear-gradient(0deg,#cc3300,#ff9944aa);"></div>
+        <div class="therm-tick" style="bottom:100%;transform:translateY(50%);color:#ffaa44;">212°F <span style="font-size:0.7em;opacity:0.6;">Boiling</span></div>
+        <div class="therm-tick" style="bottom:64%;color:#ffdd88;">98.6°F <span style="font-size:0.7em;opacity:0.6;">Body</span></div>
+        <div class="therm-tick" style="bottom:53%;color:#ffccaa;">68°F <span style="font-size:0.7em;opacity:0.6;">Room</span></div>
+        <div class="therm-tick" style="bottom:25%;color:#88aaff;">32°F <span style="font-size:0.7em;opacity:0.6;">Freezing</span></div>
+        <div class="therm-tick" style="bottom:0%;transform:translateY(50%);color:#ff6666;">−459°F <span style="font-size:0.7em;opacity:0.6;">Abs. Zero</span></div>
+      </div>
+      <div class="therm-bulb" style="background:radial-gradient(circle,#ffcc88,#ff9944);box-shadow:0 0 18px #ff994488;"></div>
+      <div class="therm-desc" style="color:#ff9944;">Mainly used in the USA</div>
+    </div>
+    <!-- KELVIN -->
+    <div class="therm-col">
+      <div class="therm-name" style="color:#cc88ff;">KELVIN</div>
+      <div class="therm-symbol" style="color:#cc88ff;">K</div>
+      <div class="therm-track" style="border-color:#cc88ff44;background:rgba(180,100,255,0.05);">
+        <div class="therm-fill" style="height:100%;background:linear-gradient(0deg,#5500aa,#cc88ffaa);"></div>
+        <div class="therm-tick" style="bottom:100%;transform:translateY(50%);color:#ffaa44;">373 K <span style="font-size:0.7em;opacity:0.6;">Boiling</span></div>
+        <div class="therm-tick" style="bottom:76%;color:#ffdd88;">310 K <span style="font-size:0.7em;opacity:0.6;">Body</span></div>
+        <div class="therm-tick" style="bottom:62%;color:#ddbbff;">293 K <span style="font-size:0.7em;opacity:0.6;">Room</span></div>
+        <div class="therm-tick" style="bottom:26%;color:#aaccff;">273 K <span style="font-size:0.7em;opacity:0.6;">Freezing</span></div>
+        <div class="therm-tick" style="bottom:0%;transform:translateY(50%);color:#ff6666;">0 K <span style="font-size:0.7em;opacity:0.6;">Abs. Zero</span></div>
+      </div>
+      <div class="therm-bulb" style="background:radial-gradient(circle,#ddbbff,#cc88ff);box-shadow:0 0 18px #cc88ff88;"></div>
+      <div class="therm-desc" style="color:#cc88ff;">Science — starts at absolute zero</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE: CONVERSION FORMULAS ══════════════ -->
+<div class="slide" id="s_conv">
+  <div class="conv-layout">
+    <div style="text-align:center;">
+      <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:0.8rem;letter-spacing:6px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:0.4rem;">Concept 01 — continued</div>
+      <div class="conv-big-title">HOW TO <span style="color:#cc88ff;">CONVERT</span></div>
+    </div>
+    <div class="conv-grid">
+      <div class="conv-card card-cf">
+        <div class="conv-from">°C → °F</div>
+        <div class="conv-arrow-big" style="color:#ffaa44;">➔</div>
+        <div>
+          <div class="conv-formula">( °C × 9/5 ) + 32</div>
+          <div class="conv-step" style="color:rgba(255,200,120,0.65);">① Multiply by 9, divide by 5 &nbsp;→&nbsp; ② Then add 32</div>
+        </div>
+      </div>
+      <div class="conv-card card-fc">
+        <div class="conv-from">°F → °C</div>
+        <div class="conv-arrow-big" style="color:#66bbff;">➔</div>
+        <div>
+          <div class="conv-formula">( °F − 32 ) × 5/9</div>
+          <div class="conv-step" style="color:rgba(120,180,255,0.65);">① Subtract 32 &nbsp;→&nbsp; ② Multiply by 5, divide by 9</div>
+        </div>
+      </div>
+      <div class="conv-card card-ck">
+        <div class="conv-from">°C → K</div>
+        <div class="conv-arrow-big" style="color:#cc88ff;">➔</div>
+        <div>
+          <div class="conv-formula">°C + 273</div>
+          <div class="conv-step" style="color:rgba(200,150,255,0.65);">Simply add 273 — Kelvin counts from absolute zero</div>
+        </div>
+      </div>
+      <div class="conv-card card-kc">
+        <div class="conv-from">K → °C</div>
+        <div class="conv-arrow-big" style="color:#00ddaa;">➔</div>
+        <div>
+          <div class="conv-formula">K − 273</div>
+          <div class="conv-step" style="color:rgba(0,200,160,0.65);">Simply subtract 273 — go back to Celsius</div>
+        </div>
+      </div>
+    </div>
+    <div style="font-family:'Nunito',sans-serif;font-size:clamp(0.85rem,1.2vw,1rem);color:rgba(255,255,255,0.35);text-align:center;letter-spacing:1px;border-top:1px solid rgba(255,255,255,0.1);padding-top:0.8rem;width:100%;">
+      💡 &nbsp; The Celsius ↔ Kelvin conversion is the simplest — just shift by 273!
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE: WORKED EXAMPLES ══════════════ -->
+<div class="slide" id="s_ex">
+  <div class="ex-layout">
+    <div style="text-align:center;">
+      <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:0.8rem;letter-spacing:6px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:0.3rem;">Concept 01 — continued</div>
+      <div class="ex-big-title">WORKED <span style="color:#a8e63d;">EXAMPLES</span></div>
+    </div>
+    <div class="ex-grid">
+      <div class="ex-card">
+        <div class="ex-label" style="color:#4db8ff;">Example 1 — Room Temperature</div>
+        <div class="ex-scenario">A comfortable room at 20°C</div>
+        <div class="ex-steps">
+          <div class="ex-val ex-val-c" style="--pd:0.1s;">20 °C</div>
+          <div class="ex-eq">=</div>
+          <div class="ex-val ex-val-f" style="--pd:0.4s;">68 °F</div>
+          <div class="ex-eq">=</div>
+          <div class="ex-val ex-val-k" style="--pd:0.7s;">293 K</div>
+        </div>
+        <div class="ex-calc">°F: (20 × 9/5) + 32 = 36 + 32 = <strong style="color:#ff9944;">68</strong> &nbsp;|&nbsp; K: 20 + 273 = <strong style="color:#cc88ff;">293</strong></div>
+      </div>
+      <div class="ex-card">
+        <div class="ex-label" style="color:#ff8844;">Example 2 — Human Body</div>
+        <div class="ex-scenario">Normal body temperature: 37°C</div>
+        <div class="ex-steps">
+          <div class="ex-val ex-val-c" style="--pd:0.15s;">37 °C</div>
+          <div class="ex-eq">=</div>
+          <div class="ex-val ex-val-f" style="--pd:0.45s;">98.6 °F</div>
+          <div class="ex-eq">=</div>
+          <div class="ex-val ex-val-k" style="--pd:0.75s;">310 K</div>
+        </div>
+        <div class="ex-calc">°F: (37 × 9/5) + 32 = 66.6 + 32 = <strong style="color:#ff9944;">98.6</strong> &nbsp;|&nbsp; K: 37 + 273 = <strong style="color:#cc88ff;">310</strong></div>
+      </div>
+      <div class="ex-card">
+        <div class="ex-label" style="color:#cc88ff;">Example 3 — Boiling Water</div>
+        <div class="ex-scenario">Water boils at 100°C</div>
+        <div class="ex-steps">
+          <div class="ex-val ex-val-c" style="--pd:0.1s;">100 °C</div>
+          <div class="ex-eq">=</div>
+          <div class="ex-val ex-val-f" style="--pd:0.4s;">212 °F</div>
+          <div class="ex-eq">=</div>
+          <div class="ex-val ex-val-k" style="--pd:0.7s;">373 K</div>
+        </div>
+        <div class="ex-calc">°F: (100 × 9/5) + 32 = 180 + 32 = <strong style="color:#ff9944;">212</strong> &nbsp;|&nbsp; K: 100 + 273 = <strong style="color:#cc88ff;">373</strong></div>
+      </div>
+      <div class="ex-card">
+        <div class="ex-label" style="color:#a8e63d;">Example 4 — Absolute Zero</div>
+        <div class="ex-scenario">The coldest possible temperature</div>
+        <div class="ex-steps">
+          <div class="ex-val ex-val-c" style="--pd:0.15s;">−273 °C</div>
+          <div class="ex-eq">=</div>
+          <div class="ex-val ex-val-f" style="--pd:0.45s;">−459 °F</div>
+          <div class="ex-eq">=</div>
+          <div class="ex-val ex-val-k" style="--pd:0.75s;">0 K</div>
+        </div>
+        <div class="ex-calc">°F: (−273 × 9/5) + 32 = −491 + 32 = <strong style="color:#ff9944;">−459</strong> &nbsp;|&nbsp; K: −273 + 273 = <strong style="color:#cc88ff;">0</strong></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 3 — THERMAL ENERGY ══════════════ -->
+<div class="slide" id="s3">
+  <div class="slide-inner">
+    <div class="visual-col">
+      <div class="energy-viz" id="atomViz"></div>
+    </div>
+    <div class="text-col">
+      <div class="slide-tag">Concept 02</div>
+      <h2 class="slide-h">THERMAL<br/><span>ENERGY</span></h2>
+      <p class="slide-body">
+        Thermal energy is the <strong>total energy</strong> of all the moving particles inside a substance.<br/><br/>
+        A large cold object can have <strong>more thermal energy</strong> than a small hot one — because it has far more particles.<br/><br/>
+        It lives inside every atom, in the form of <strong>kinetic energy</strong> — the energy of movement.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 4 — CONDUCTION ══════════════ -->
+<div class="slide" id="s4">
+  <div class="slide-inner">
+    <div class="text-col">
+      <div class="slide-tag">Heat Transfer 01</div>
+      <h2 class="slide-h">CON<span>DUCTION</span></h2>
+      <p class="slide-body">
+        Conduction is heat transfer <strong>through direct contact</strong>.<br/><br/>
+        Hot, fast-moving particles <strong>bump into</strong> cooler, slower neighbours — passing on their energy like a chain reaction.<br/><br/>
+        It happens mainly in <strong>solids</strong>, especially metals.
+      </p>
+      <div class="material-examples" style="margin-top:1.5rem;">
+        <div class="mat-chip mat-good">🔥 Metal spoon</div>
+        <div class="mat-chip mat-good">🔥 Copper wire</div>
+        <div class="mat-chip mat-bad">❄ Rubber</div>
+        <div class="mat-chip mat-bad">❄ Wood</div>
+      </div>
+    </div>
+    <div class="visual-col">
+      <div class="conduction-viz">
+        <div style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.8rem;letter-spacing:3px;color:rgba(255,180,80,0.6);margin-bottom:0.8rem;text-align:center;">HEAT FLOWING THROUGH A SOLID</div>
+        <div class="rods">
+          <div class="rod rod-hot"><span class="rod-label" style="color:rgba(255,255,255,0.9);">HOT</span></div>
+          <div class="rod rod-cold"><span class="rod-label" style="color:rgba(255,255,255,0.9);">COLD</span></div>
+        </div>
+        <div class="arrow-row">
+          <div class="heat-arrow">→</div>
+          <div class="heat-arrow">→</div>
+          <div class="heat-arrow">→</div>
+          <div class="heat-arrow">→</div>
+        </div>
+        <div style="font-family:'Nunito',sans-serif;font-size:0.9rem;color:rgba(255,180,100,0.65);margin-top:0.8rem;text-align:center;">Energy passes from particle to particle</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 5 — CONVECTION ══════════════ -->
+<div class="slide" id="s5">
+  <div class="slide-inner">
+    <div class="visual-col">
+      <div class="convection-viz" id="convViz">
+        <div class="conv-bottom"></div>
+        <div class="conv-top"></div>
+        <div class="hot-label">🔥 HEAT SOURCE</div>
+        <div class="cold-label">❄ COOLER ZONE</div>
+      </div>
+    </div>
+    <div class="text-col">
+      <div class="slide-tag">Heat Transfer 02</div>
+      <h2 class="slide-h">CON<span>VECTION</span></h2>
+      <p class="slide-body">
+        Convection is heat transfer through the <strong>movement of fluids</strong> (liquids or gases).<br/><br/>
+        Hot fluid <strong>rises</strong> (it's less dense) while cool fluid <strong>sinks</strong> — creating a continuous <strong>convection current</strong>.<br/><br/>
+        This is how your radiator heats a room, and how ocean currents flow!
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 6 — RADIATION ══════════════ -->
+<div class="slide" id="s6">
+  <div class="slide-inner">
+    <div class="text-col">
+      <div class="slide-tag">Heat Transfer 03</div>
+      <h2 class="slide-h">RADI<span>ATION</span></h2>
+      <p class="slide-body">
+        Radiation is heat transfer through <strong>electromagnetic waves</strong> — it needs <strong>no medium</strong> at all.<br/><br/>
+        This is how the Sun's heat crosses <strong>150 million km</strong> of empty space to reach Earth.<br/><br/>
+        All objects emit thermal radiation. Hotter objects emit <strong>more</strong> — and that's why you feel warmth from a fire without touching it.
+      </p>
+    </div>
+    <div class="visual-col">
+      <div class="radiation-viz" id="radViz">
+        <div class="sun-body"></div>
+        <div class="earth-body"></div>
+        <div class="no-medium">NO MATTER REQUIRED</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SLIDE 7 — SUMMARY ══════════════ -->
+<div class="slide" id="s7">
+  <div class="summary-grid">
+    <div class="sum-header">QUICK RECAP</div>
+    <div class="sum-card">
+      <div class="sum-icon">🌡️</div>
+      <div class="sum-title">Temperature</div>
+      <div class="sum-desc">How fast the particles are moving. A measure of intensity — not total energy.</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-icon">⚡</div>
+      <div class="sum-title">Thermal Energy</div>
+      <div class="sum-desc">The total kinetic energy of all particles in a substance. Depends on mass AND temperature.</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-icon">🔗</div>
+      <div class="sum-title">Conduction</div>
+      <div class="sum-desc">Heat through direct contact. Particle-to-particle energy passing. Best in solids.</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-icon">🌀</div>
+      <div class="sum-title">Convection</div>
+      <div class="sum-desc">Heat through moving fluids. Hot rises, cold sinks — forming currents.</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-icon">☀️</div>
+      <div class="sum-title">Radiation</div>
+      <div class="sum-desc">Heat through electromagnetic waves. No medium needed — crosses empty space.</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .deck -->
+
+<!-- NAV -->
+<div class="nav">
+  <button onclick="go(-1)">◀ BACK</button>
+  <div class="dots" id="dots"></div>
+  <button onclick="go(1)">NEXT ▶</button>
+</div>
+
+<script>
+const slides=document.querySelectorAll('.slide');
+const dotsEl=document.getElementById('dots');
+let cur=0;
+const total=slides.length;
+
+/* build dots */
+slides.forEach((_,i)=>{
+  const d=document.createElement('div');
+  d.className='dot'+(i===0?' active':'');
+  d.onclick=()=>goTo(i);
+  dotsEl.appendChild(d);
+});
+
+function goTo(n){
+  slides[cur].classList.remove('active');
+  dotsEl.children[cur].classList.remove('active');
+  cur=(n+total)%total;
+  slides[cur].classList.add('active');
+  dotsEl.children[cur].classList.add('active');
+}
+function go(d){goTo(cur+d);}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' ')go(1);
+  if(e.key==='ArrowLeft')go(-1);
+});
+
+/* ── Slide 1: rising particles ── */
+const pContainer=document.getElementById('particles');
+for(let i=0;i<35;i++){
+  const p=document.createElement('div');
+  const sz=4+Math.random()*16;
+  p.className='p';
+  p.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;
+    animation-duration:${3+Math.random()*6}s;
+    animation-delay:-${Math.random()*6}s;
+    opacity:${0.3+Math.random()*0.7};`;
+  pContainer.appendChild(p);
+}
+
+/* ── Slide 2: molecules ── */
+const molBox=document.getElementById('molBox');
+const colors=['#4db8ff','#88ddff','#2299dd','#66ccff'];
+for(let i=0;i<18;i++){
+  const m=document.createElement('div');
+  const sz=12+Math.random()*22;
+  const x=5+Math.random()*80;
+  const y=5+Math.random()*75;
+  const rx=(Math.random()-0.5)*60;
+  const ry=(Math.random()-0.5)*60;
+  const dur=0.3+Math.random()*0.8;
+  const delay=-Math.random()*2;
+  const col=colors[Math.floor(Math.random()*colors.length)];
+  m.className='mol fast';
+  m.style.cssText=`width:${sz}px;height:${sz}px;left:${x}%;top:${y}%;
+    --rx:${rx};--ry:${ry};
+    background:radial-gradient(circle,${col},${col}88);
+    box-shadow:0 0 8px ${col}88;
+    animation-duration:${dur}s;animation-delay:${delay}s;`;
+  molBox.appendChild(m);
+}
+
+/* ── Slide 3: atom ── */
+const atomViz=document.getElementById('atomViz');
+const core=document.createElement('div');
+core.className='atom-core';
+atomViz.appendChild(core);
+const orbitData=[
+  {r:100,speed:'1.8s',color:'#a8e63d'},
+  {r:145,speed:'2.8s',color:'#78be20'},
+  {r:185,speed:'4s',color:'#c8ff40'}
+];
+orbitData.forEach(o=>{
+  const ring=document.createElement('div');
+  ring.className='orbit';
+  ring.style.cssText=`width:${o.r*2}px;height:${o.r*2}px;border-color:rgba(168,230,61,0.2);`;
+  const el=document.createElement('div');
+  el.className='electron';
+  el.style.cssText=`--r:${o.r}px;--speed:${o.speed};background:radial-gradient(circle,${o.color},#5a9900);box-shadow:0 0 10px ${o.color};`;
+  ring.appendChild(el);
+  atomViz.appendChild(ring);
+});
+
+/* ── Slide 5: convection cells ── */
+const convViz=document.getElementById('convViz');
+const convData=[
+  {x:'15%',y:'55%',w:28,h:28,col:'#ff7733',dur:'2s',del:'0s',mx:40,my:60},
+  {x:'40%',y:'58%',w:22,h:22,col:'#ff9955',dur:'2.5s',del:'-0.5s',mx:35,my:55},
+  {x:'65%',y:'53%',w:32,h:32,col:'#ffaa33',dur:'1.8s',del:'-1s',mx:45,my:65},
+  {x:'20%',y:'25%',w:20,h:20,col:'#4488ff',dur:'3s',del:'-0.8s',mx:-30,my:40},
+  {x:'50%',y:'22%',w:26,h:26,col:'#6699ff',dur:'2.2s',del:'-1.5s',mx:-40,my:35},
+  {x:'75%',y:'28%',w:18,h:18,col:'#88aaff',dur:'2.8s',del:'-0.3s',mx:-25,my:45},
+];
+convData.forEach(d=>{
+  const fc=document.createElement('div');
+  fc.className='fluid-cell';
+  fc.style.cssText=`width:${d.w}px;height:${d.h}px;left:${d.x};top:${d.y};
+    background:radial-gradient(circle,${d.col},${d.col}55);
+    box-shadow:0 0 12px ${d.col}66;
+    --dur:${d.dur};--delay:${d.del};--mx:${d.mx}px;--my:${d.my}px;`;
+  convViz.appendChild(fc);
+});
+const up=document.createElement('div');up.className='up-arrow';
+up.style.cssText='left:28%;top:30%;font-size:1.8rem;color:#ff8844;';
+up.innerHTML='↑<br/>↑';convViz.appendChild(up);
+const dn=document.createElement('div');dn.className='down-arrow';
+dn.style.cssText='right:22%;top:30%;font-size:1.8rem;color:#5588ff;';
+dn.innerHTML='↓<br/>↓';convViz.appendChild(dn);
+
+/* ── Slide 6: radiation waves ── */
+const radViz=document.getElementById('radViz');
+const waveAngles=[-30,-15,0,15,30,-45,45];
+waveAngles.forEach((angle,i)=>{
+  const w=document.createElement('div');
+  w.className='wave';
+  w.style.cssText=`
+    top:50%;transform-origin:left center;
+    transform:translateY(-50%) rotate(${angle}deg);
+    border-top:3px solid rgba(255,200,0,0.8);
+    --wd:${i*0.28}s;
+  `;
+  radViz.appendChild(w);
+});
+</script>
+</body>
+</html>
