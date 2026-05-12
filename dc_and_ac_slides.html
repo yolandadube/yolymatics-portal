@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DC and AC — Direct & Alternating Current</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;700;900&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;}
+.deck{width:100%;height:100vh;position:relative;}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.7s ease;overflow:hidden;}
+.slide.active{opacity:1;pointer-events:all;}
+
+/* GRID BACKGROUND */
+.grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;}
+
+/* NAV */
+.nav{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:1rem;z-index:9999;}
+.nav button{background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.22);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;padding:0.42rem 1.6rem;border-radius:50px;cursor:pointer;backdrop-filter:blur(8px);transition:all 0.2s;}
+.nav button:hover{background:rgba(255,255,255,0.22);}
+.dots{display:flex;gap:0.35rem;}
+.dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.22);cursor:pointer;transition:all 0.3s;}
+.dot.active{background:#f59e0b;transform:scale(1.45);}
+.s-num{font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.72rem;letter-spacing:3px;color:rgba(255,255,255,0.32);}
+
+/* SHARED */
+.inner{display:flex;align-items:center;justify-content:center;gap:4vw;width:90%;max-width:1300px;z-index:2;}
+.tc{flex:1;}
+.vc{flex:0 0 auto;display:flex;align-items:center;justify-content:center;}
+.tag{font-family:'Montserrat',sans-serif;font-weight:900;font-size:clamp(0.6rem,1vw,0.78rem);letter-spacing:6px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:0.6rem;}
+.sh{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.8rem,5.8vw,6rem);line-height:0.9;color:#fff;margin-bottom:1rem;letter-spacing:2px;}
+.sb{font-family:'Nunito',sans-serif;font-size:clamp(0.88rem,1.5vw,1.22rem);color:rgba(220,220,235,0.85);line-height:1.72;max-width:520px;}
+.sb strong{color:#fff;}
+.ao{color:#f59e0b;} .ab{color:#3b82f6;} .ag{color:#10b981;} .ar{color:#ef4444;} .ap{color:#a855f7;} .ac{color:#06b6d4;}
+
+/* bullet helper */
+.blist{display:flex;flex-direction:column;gap:0.45rem;margin-top:0.8rem;max-width:510px;}
+.bi{display:flex;align-items:flex-start;gap:0.55rem;font-family:'Nunito',sans-serif;font-size:clamp(0.82rem,1.4vw,1.05rem);color:rgba(215,215,230,0.82);line-height:1.5;}
+.bd{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:0.35rem;}
+
+/* info box */
+.ibox{border-radius:11px;padding:0.7rem 1rem;font-family:'Nunito',sans-serif;font-size:0.85rem;line-height:1.55;margin-top:0.8rem;max-width:510px;}
+
+/* ══════════════ S1 TITLE ══════════════ */
+#s1{background:radial-gradient(ellipse at 50% 50%,#0f0800 0%,#060510 60%,#000 100%);}
+.s1-circuit{position:absolute;inset:0;overflow:hidden;}
+.wire{position:absolute;background:rgba(245,158,11,0.12);animation:wireFlow linear infinite;}
+@keyframes wireFlow{0%{opacity:0;}20%{opacity:1;}80%{opacity:0.6;}100%{opacity:0;}}
+.s1-glow{position:absolute;border-radius:50%;pointer-events:none;}
+.s1-wrap{position:relative;z-index:2;text-align:center;}
+.s1-chip{font-family:'Montserrat',sans-serif;font-weight:900;font-size:clamp(0.65rem,1.2vw,0.9rem);letter-spacing:9px;text-transform:uppercase;color:rgba(245,158,11,0.55);margin-bottom:0.9rem;}
+.s1-h{font-family:'Bebas Neue',sans-serif;font-size:clamp(4rem,11vw,11.5rem);line-height:0.83;letter-spacing:4px;color:#fff;text-shadow:0 0 80px rgba(245,158,11,0.8),0 0 200px rgba(220,100,0,0.3);}
+.s1-h .dc{color:#3b82f6;} .s1-h .ac{color:#f59e0b;}
+.s1-rule{width:160px;height:2px;background:linear-gradient(90deg,transparent,#f59e0b,#3b82f6,transparent);margin:1rem auto;}
+.s1-sub{font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(0.8rem,1.5vw,1.1rem);letter-spacing:5px;color:rgba(220,200,160,0.6);text-transform:uppercase;}
+.s1-by{margin-top:1.6rem;display:inline-flex;align-items:center;gap:0.5rem;padding:0.52rem 2rem;border:1.5px solid rgba(245,158,11,0.32);border-radius:50px;background:rgba(245,158,11,0.07);backdrop-filter:blur(8px);}
+.s1-by span{font-family:'Montserrat',sans-serif;letter-spacing:3px;text-transform:uppercase;}
+
+/* electron pulse */
+.epulse{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(245,158,11,0.9),transparent);animation:ePulse ease-out infinite;}
+@keyframes ePulse{0%{opacity:1;transform:scale(0);}100%{opacity:0;transform:scale(3);}}
+
+/* ══════════════ S2 WHAT IS DC ══════════════ */
+#s2{background:linear-gradient(145deg,#020814 0%,#03061a 55%,#060210 100%);}
+.dc-viz{width:min(44vw,400px);display:flex;flex-direction:column;align-items:center;gap:1rem;}
+.circuit-dc{width:100%;height:180px;position:relative;}
+.flow-dot{position:absolute;width:10px;height:10px;border-radius:50%;background:radial-gradient(circle,#93c5fd,#2563eb);box-shadow:0 0 8px #3b82f688;animation:flowDC linear infinite;}
+@keyframes flowDC{0%{offset-distance:0%;}100%{offset-distance:100%;}}
+.dc-wave-box{width:100%;background:rgba(59,130,246,0.06);border:1.5px solid rgba(59,130,246,0.28);border-radius:12px;padding:0.8rem 0.9rem;}
+.dc-wave-title{font-family:'Bebas Neue',sans-serif;font-size:0.9rem;letter-spacing:3px;color:rgba(59,130,246,0.7);margin-bottom:0.4rem;text-align:center;}
+.battery-card{background:rgba(59,130,246,0.08);border:2px solid rgba(59,130,246,0.3);border-radius:14px;padding:0.9rem 1.1rem;width:100%;display:flex;align-items:center;gap:0.8rem;}
+.bat-icon{font-size:2.8rem;flex-shrink:0;}
+.bat-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:2px;color:#60a5fa;margin-bottom:0.2rem;}
+.bat-desc{font-family:'Nunito',sans-serif;font-size:0.8rem;color:rgba(180,215,255,0.7);line-height:1.4;}
+
+/* ══════════════ S3 WHAT IS AC ══════════════ */
+#s3{background:linear-gradient(145deg,#0d0500 0%,#160800 55%,#060310 100%);}
+.ac-viz{width:min(44vw,400px);display:flex;flex-direction:column;align-items:center;gap:1rem;}
+.ac-wave-box{width:100%;background:rgba(245,158,11,0.06);border:1.5px solid rgba(245,158,11,0.28);border-radius:12px;padding:0.8rem 0.9rem;}
+.generator-card{background:rgba(245,158,11,0.08);border:2px solid rgba(245,158,11,0.3);border-radius:14px;padding:0.9rem 1.1rem;width:100%;display:flex;align-items:center;gap:0.8rem;}
+.gen-icon{font-size:2.8rem;flex-shrink:0;animation:genSpin 4s linear infinite;}
+@keyframes genSpin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+.gen-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:2px;color:#fbbf24;margin-bottom:0.2rem;}
+.gen-desc{font-family:'Nunito',sans-serif;font-size:0.8rem;color:rgba(255,230,160,0.7);line-height:1.4;}
+
+/* ══════════════ S4 GRAPHS ══════════════ */
+#s4{background:linear-gradient(145deg,#030810 0%,#060516 55%,#050208 100%);}
+.graphs-layout{width:90%;max-width:1200px;z-index:2;display:flex;flex-direction:column;gap:0.9rem;}
+.graphs-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,5vw,4.5rem);letter-spacing:5px;color:#fff;text-align:center;text-shadow:0 0 50px rgba(245,158,11,0.4);}
+.graphs-row{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+.graph-card{border-radius:16px;padding:1.1rem 1.2rem;display:flex;flex-direction:column;gap:0.7rem;}
+.gc-dc{background:rgba(59,130,246,0.07);border:2px solid rgba(59,130,246,0.3);}
+.gc-ac{background:rgba(245,158,11,0.07);border:2px solid rgba(245,158,11,0.3);}
+.gc-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:3px;text-align:center;}
+.gc-dc .gc-title{color:#60a5fa;} .gc-ac .gc-title{color:#fbbf24;}
+.gc-desc{font-family:'Nunito',sans-serif;font-size:0.82rem;color:rgba(210,210,230,0.7);line-height:1.5;}
+.graph-facts{display:flex;gap:0.6rem;flex-wrap:wrap;margin-top:0.3rem;}
+.gf{padding:0.25rem 0.7rem;border-radius:20px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.72rem;letter-spacing:1px;}
+.gf-dc{background:rgba(59,130,246,0.15);color:#93c5fd;border:1px solid rgba(59,130,246,0.3);}
+.gf-ac{background:rgba(245,158,11,0.15);color:#fcd34d;border:1px solid rgba(245,158,11,0.3);}
+
+/* ══════════════ S5 COMPARISON ══════════════ */
+#s5{background:linear-gradient(145deg,#040210 0%,#060415 55%,#030810 100%);}
+.compare-layout{width:90%;max-width:1200px;z-index:2;display:flex;flex-direction:column;gap:0.9rem;}
+.compare-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.2rem,4.5vw,4rem);letter-spacing:5px;color:#fff;text-shadow:0 0 50px rgba(167,139,250,0.4);text-align:center;}
+.compare-table{width:100%;border-collapse:collapse;border-radius:14px;overflow:hidden;}
+.ct-h{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:3px;padding:0.7rem 1rem;text-align:center;}
+.ct-h-prop{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.5);}
+.ct-h-dc{background:rgba(59,130,246,0.15);color:#60a5fa;}
+.ct-h-ac{background:rgba(245,158,11,0.15);color:#fbbf24;}
+.ct-r td{padding:0.6rem 0.9rem;border-bottom:1px solid rgba(255,255,255,0.05);font-family:'Nunito',sans-serif;font-size:0.88rem;line-height:1.4;}
+.ct-r:last-child td{border-bottom:none;}
+.ct-r td:first-child{background:rgba(255,255,255,0.03);color:rgba(255,255,255,0.5);font-weight:700;font-family:'Montserrat',sans-serif;font-size:0.78rem;letter-spacing:2px;text-transform:uppercase;text-align:center;}
+.ct-r td:nth-child(2){background:rgba(59,130,246,0.06);color:rgba(180,215,255,0.85);}
+.ct-r td:nth-child(3){background:rgba(245,158,11,0.06);color:rgba(255,230,160,0.85);}
+.ct-r:hover td{background:rgba(255,255,255,0.06)!important;}
+
+/* ══════════════ S6 ADVANTAGES AC ══════════════ */
+#s6{background:linear-gradient(150deg,#060200 0%,#0d0500 55%,#020810 100%);}
+.adv-viz{width:min(44vw,410px);display:flex;flex-direction:column;gap:0.8rem;}
+.adv-card{border-radius:13px;padding:0.95rem 1.1rem;display:flex;align-items:flex-start;gap:0.8rem;border:1.5px solid;}
+.adv-card:nth-child(1){background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.3);}
+.adv-card:nth-child(2){background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.3);}
+.adv-card:nth-child(3){background:rgba(59,130,246,0.08);border-color:rgba(59,130,246,0.3);}
+.adv-card:nth-child(4){background:rgba(168,85,247,0.08);border-color:rgba(168,85,247,0.3);}
+.adv-card:nth-child(5){background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.3);}
+.adv-num{font-family:'Bebas Neue',sans-serif;font-size:2rem;line-height:1;flex-shrink:0;min-width:32px;}
+.adv-card:nth-child(1) .adv-num{color:#f59e0b;} .adv-card:nth-child(2) .adv-num{color:#10b981;}
+.adv-card:nth-child(3) .adv-num{color:#3b82f6;} .adv-card:nth-child(4) .adv-num{color:#a855f7;}
+.adv-card:nth-child(5) .adv-num{color:#ef4444;}
+.adv-ttl{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;margin-bottom:0.2rem;}
+.adv-card:nth-child(1) .adv-ttl{color:#fcd34d;} .adv-card:nth-child(2) .adv-ttl{color:#34d399;}
+.adv-card:nth-child(3) .adv-ttl{color:#93c5fd;} .adv-card:nth-child(4) .adv-ttl{color:#c084fc;}
+.adv-card:nth-child(5) .adv-ttl{color:#fca5a5;}
+.adv-desc{font-family:'Nunito',sans-serif;font-size:0.8rem;color:rgba(215,210,225,0.72);line-height:1.4;}
+
+/* ══════════════ S7 APPLICATION DC ══════════════ */
+#s7{background:linear-gradient(145deg,#020810 0%,#030615 55%,#060210 100%);}
+.app-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.8rem;width:min(46vw,440px);}
+.app-card{border-radius:12px;padding:0.8rem 0.7rem;text-align:center;display:flex;flex-direction:column;align-items:center;gap:0.4rem;transition:transform 0.3s;}
+.app-card:hover{transform:translateY(-4px);}
+.app-icon{font-size:2.2rem;}
+.app-name{font-family:'Bebas Neue',sans-serif;font-size:0.9rem;letter-spacing:2px;line-height:1.2;}
+.app-card-dc{background:rgba(59,130,246,0.08);border:1.5px solid rgba(59,130,246,0.25);}
+.app-card-dc .app-name{color:#93c5fd;}
+
+/* ══════════════ S8 APPLICATION AC ══════════════ */
+#s8{background:linear-gradient(145deg,#080400 0%,#100600 55%,#030610 100%);}
+.app-card-ac{background:rgba(245,158,11,0.08);border:1.5px solid rgba(245,158,11,0.25);}
+.app-card-ac .app-name{color:#fcd34d;}
+
+/* ══════════════ S9 ELECTRICITY GENERATION ══════════════ */
+#s9{background:linear-gradient(145deg,#030a05 0%,#050a18 55%,#080310 100%);}
+.gen-layout{width:90%;max-width:1200px;z-index:2;display:flex;flex-direction:column;gap:0.9rem;}
+.gen-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.3rem,5vw,4.3rem);letter-spacing:5px;color:#fff;text-shadow:0 0 50px rgba(16,185,129,0.4);text-align:center;}
+.gen-steps{display:grid;grid-template-columns:repeat(5,1fr);gap:0;align-items:stretch;width:100%;}
+.gen-step{display:flex;flex-direction:column;align-items:center;gap:0.5rem;text-align:center;padding:0 0.3rem;}
+.gen-step-circle{width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;border:2px solid;flex-shrink:0;}
+.gs1{background:rgba(245,158,11,0.12);border-color:rgba(245,158,11,0.4);}
+.gs2{background:rgba(16,185,129,0.12);border-color:rgba(16,185,129,0.4);}
+.gs3{background:rgba(59,130,246,0.12);border-color:rgba(59,130,246,0.4);}
+.gs4{background:rgba(168,85,247,0.12);border-color:rgba(168,85,247,0.4);}
+.gs5{background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.4);}
+.gen-step-name{font-family:'Bebas Neue',sans-serif;font-size:0.9rem;letter-spacing:2px;line-height:1.2;}
+.gs1 + * .gen-step-name,.gen-step:nth-child(1) .gen-step-name{color:#fcd34d;}
+.gen-step:nth-child(1) .gen-step-name{color:#fcd34d;}
+.gen-step:nth-child(2) .gen-step-name{color:#34d399;}
+.gen-step:nth-child(3) .gen-step-name{color:#93c5fd;}
+.gen-step:nth-child(4) .gen-step-name{color:#c084fc;}
+.gen-step:nth-child(5) .gen-step-name{color:#fca5a5;}
+.gen-step-desc{font-family:'Nunito',sans-serif;font-size:0.72rem;color:rgba(200,210,220,0.62);line-height:1.4;}
+.gen-arrow{font-size:1.5rem;color:rgba(255,255,255,0.2);align-self:center;padding-top:1.2rem;}
+.gen-types{display:grid;grid-template-columns:repeat(3,1fr);gap:0.8rem;width:100%;}
+.gen-type-card{border-radius:12px;padding:0.9rem 1rem;display:flex;flex-direction:column;gap:0.4rem;}
+.gtc-fossil{background:rgba(245,158,11,0.07);border:1.5px solid rgba(245,158,11,0.25);}
+.gtc-nuclear{background:rgba(239,68,68,0.07);border:1.5px solid rgba(239,68,68,0.25);}
+.gtc-renew{background:rgba(16,185,129,0.07);border:1.5px solid rgba(16,185,129,0.25);}
+.gt-title{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;}
+.gtc-fossil .gt-title{color:#fcd34d;} .gtc-nuclear .gt-title{color:#fca5a5;} .gtc-renew .gt-title{color:#34d399;}
+.gt-desc{font-family:'Nunito',sans-serif;font-size:0.78rem;color:rgba(210,210,225,0.65);line-height:1.45;}
+.gen-note{background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.2);border-radius:10px;padding:0.6rem 1rem;font-family:'Nunito',sans-serif;font-size:0.82rem;color:rgba(180,240,210,0.7);line-height:1.5;text-align:center;}
+
+/* ══════════════ S10 GENERATOR DETAIL ══════════════ */
+#s10{background:linear-gradient(145deg,#040810 0%,#060514 55%,#030a08 100%);}
+.gendet-viz{width:min(46vw,430px);display:flex;flex-direction:column;align-items:center;gap:1rem;}
+.coil-diagram{width:260px;height:200px;position:relative;display:flex;align-items:center;justify-content:center;}
+.coil-rect{width:110px;height:80px;border:3px solid rgba(245,158,11,0.6);border-radius:6px;position:relative;display:flex;align-items:center;justify-content:center;animation:coilRotate 4s linear infinite;}
+@keyframes coilRotate{from{transform:rotateY(0deg);}to{transform:rotateY(360deg);}}
+.coil-lines{position:absolute;top:50%;left:0;right:0;height:2px;background:rgba(245,158,11,0.4);}
+.magnet-n{position:absolute;left:-30px;width:25px;height:80px;background:linear-gradient(180deg,#ef4444,#991b1b);border-radius:5px 0 0 5px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;color:#fff;font-size:1.2rem;}
+.magnet-s{position:absolute;right:-30px;width:25px;height:80px;background:linear-gradient(180deg,#3b82f6,#1e3a8a);border-radius:0 5px 5px 0;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;color:#fff;font-size:1.2rem;}
+.field-lines{position:absolute;inset:0;}
+.ac-output-label{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:3px;color:rgba(245,158,11,0.7);margin-top:0.5rem;text-align:center;}
+.faraday-box{width:100%;background:rgba(245,158,11,0.07);border:2px solid rgba(245,158,11,0.28);border-radius:12px;padding:0.85rem 1.1rem;}
+.fb-law{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:3px;color:#fbbf24;margin-bottom:0.3rem;}
+.fb-desc{font-family:'Nunito',sans-serif;font-size:0.82rem;color:rgba(255,230,160,0.7);line-height:1.5;}
+.gen-steps-list{width:100%;display:flex;flex-direction:column;gap:0.4rem;}
+.gsl{display:flex;align-items:flex-start;gap:0.55rem;padding:0.5rem 0.7rem;border-radius:8px;background:rgba(255,255,255,0.03);font-family:'Nunito',sans-serif;font-size:0.82rem;color:rgba(215,215,230,0.78);line-height:1.4;}
+.gsl-n{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:1px;flex-shrink:0;color:#f59e0b;}
+
+/* ══════════════ S11 TRANSFORMER ══════════════ */
+#s11{background:linear-gradient(145deg,#040510 0%,#08051a 55%,#050408 100%);}
+.transf-viz{width:min(46vw,430px);display:flex;flex-direction:column;align-items:center;gap:1rem;}
+.transformer-diagram{width:100%;position:relative;padding:0.5rem;}
+.trv-inner{display:flex;align-items:center;justify-content:center;gap:0;width:100%;}
+.coil-block{display:flex;flex-direction:column;align-items:center;gap:0.3rem;}
+.coil-svg-wrap{position:relative;}
+.iron-core{width:30px;background:linear-gradient(180deg,#6b7280,#374151);height:90px;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.ic-label{font-family:'Bebas Neue',sans-serif;font-size:0.7rem;letter-spacing:1px;color:rgba(255,255,255,0.4);writing-mode:vertical-rl;text-orientation:mixed;}
+.coil-label{font-family:'Bebas Neue',sans-serif;font-size:0.85rem;letter-spacing:2px;text-align:center;}
+.cl-pri{color:#60a5fa;} .cl-sec{color:#fbbf24;}
+.coil-turns{font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.7rem;letter-spacing:1px;opacity:0.55;}
+.voltage-arrow{display:flex;align-items:center;gap:0.3rem;padding:0.3rem 0.6rem;border-radius:6px;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;margin-top:0.2rem;}
+.va-in{background:rgba(59,130,246,0.12);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);}
+.va-out{background:rgba(245,158,11,0.12);color:#fbbf24;border:1px solid rgba(245,158,11,0.3);}
+.ratio-formula{background:rgba(167,139,250,0.08);border:2px solid rgba(167,139,250,0.28);border-radius:12px;padding:0.8rem 1.1rem;text-align:center;width:100%;}
+.rf-main{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:3px;color:#c084fc;}
+.rf-desc{font-family:'Nunito',sans-serif;font-size:0.78rem;color:rgba(205,190,255,0.65);margin-top:0.3rem;line-height:1.5;}
+.transf-types{display:flex;gap:0.8rem;width:100%;}
+.tt-card{flex:1;border-radius:11px;padding:0.8rem 0.9rem;text-align:center;}
+.tt-step-up{background:rgba(245,158,11,0.08);border:1.5px solid rgba(245,158,11,0.28);}
+.tt-step-down{background:rgba(59,130,246,0.08);border:1.5px solid rgba(59,130,246,0.28);}
+.tt-title{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;margin-bottom:0.3rem;}
+.tt-step-up .tt-title{color:#fcd34d;} .tt-step-down .tt-title{color:#93c5fd;}
+.tt-desc{font-family:'Nunito',sans-serif;font-size:0.78rem;color:rgba(210,210,225,0.68);line-height:1.4;}
+
+/* ══════════════ S12 SUMMARY ══════════════ */
+#s12{background:linear-gradient(135deg,#020510 0%,#050818 50%,#060310 100%);}
+.sum-layout{width:88%;max-width:1200px;z-index:2;display:flex;flex-direction:column;gap:0.8rem;}
+.sum-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,5vw,4.2rem);letter-spacing:5px;color:#fff;text-shadow:0 0 50px rgba(245,158,11,0.4);text-align:center;}
+.sum-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.85rem;}
+.sum-card{background:rgba(255,255,255,0.04);border-radius:13px;border:1.5px solid rgba(255,255,255,0.09);padding:1rem;transition:transform 0.3s,border-color 0.3s;}
+.sum-card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,0.28);}
+.sum-icon{font-size:1.8rem;margin-bottom:0.4rem;}
+.sum-ttl{font-family:'Bebas Neue',sans-serif;font-size:1.45rem;letter-spacing:2px;margin-bottom:0.35rem;}
+.sum-desc{font-family:'Nunito',sans-serif;font-size:0.8rem;color:rgba(210,210,230,0.68);line-height:1.5;}
+.sum-card:nth-child(1){border-top:3px solid #3b82f6;} .sum-card:nth-child(1) .sum-ttl{color:#60a5fa;}
+.sum-card:nth-child(2){border-top:3px solid #f59e0b;} .sum-card:nth-child(2) .sum-ttl{color:#fbbf24;}
+.sum-card:nth-child(3){border-top:3px solid #10b981;} .sum-card:nth-child(3) .sum-ttl{color:#34d399;}
+.sum-card:nth-child(4){border-top:3px solid #a855f7;} .sum-card:nth-child(4) .sum-ttl{color:#c084fc;}
+.sum-card:nth-child(5){border-top:3px solid #ef4444;} .sum-card:nth-child(5) .sum-ttl{color:#fca5a5;}
+.sum-card:nth-child(6){border-top:3px solid #06b6d4;} .sum-card:nth-child(6) .sum-ttl{color:#67e8f9;}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- ════════════════ S1 TITLE ════════════════ -->
+<div class="slide active" id="s1">
+  <div class="grid-bg" style="opacity:0.4;"></div>
+  <div class="s1-circuit" id="circuitBg"></div>
+  <div class="s1-glow" style="width:600px;height:600px;background:radial-gradient(circle,rgba(245,158,11,0.12),transparent 70%);top:30%;left:20%;position:absolute;animation:none;"></div>
+  <div class="s1-glow" style="width:500px;height:500px;background:radial-gradient(circle,rgba(59,130,246,0.1),transparent 70%);top:40%;right:15%;position:absolute;animation:none;"></div>
+  <div class="s1-wrap">
+    <div class="s1-chip">Electricity · Physics Fundamentals</div>
+    <h1 class="s1-h"><span class="dc">DC</span> &amp; <span class="ac">AC</span></h1>
+    <div class="s1-rule"></div>
+    <p class="s1-sub">Direct Current &nbsp;·&nbsp; Alternating Current &nbsp;·&nbsp; Generation</p>
+    <div class="s1-by">
+      <span style="font-size:1rem;color:rgba(245,158,11,0.6);">✦</span>
+      <span style="font-weight:400;font-size:clamp(0.7rem,1.1vw,0.85rem);letter-spacing:3px;color:rgba(220,200,160,0.5);">Prepared by &nbsp;</span>
+      <span style="font-weight:900;font-size:clamp(0.75rem,1.2vw,0.9rem);letter-spacing:4px;color:#fff;">Yolanda Dube</span>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ S2 WHAT IS DC ════════════════ -->
+<div class="slide" id="s2">
+  <div class="grid-bg"></div>
+  <div class="inner">
+    <div class="tc">
+      <div class="tag">Concept 01</div>
+      <h2 class="sh">DIRECT<br/><span class="ab">CURRENT (DC)</span></h2>
+      <p class="sb">
+        <strong>Direct Current (DC)</strong> is an electric current that flows in <span class="ab"><strong>one direction only</strong></span> — always from the negative terminal to the positive terminal of a source.<br/><br/>
+        The flow of electrons is <span class="ag"><strong>steady and constant</strong></span> — it does not change direction and does not reverse.<br/><br/>
+        DC is produced by sources such as <span class="ao"><strong>batteries, solar cells, and fuel cells.</strong></span> It was championed by Thomas Edison in the 1880s during the famous "War of Currents."
+      </p>
+      <div class="blist">
+        <div class="bi"><div class="bd" style="background:#3b82f6;"></div><span>Current flows in one fixed direction</span></div>
+        <div class="bi"><div class="bd" style="background:#3b82f6;"></div><span>Electrons flow from <strong style="color:#fff;">negative (−) to positive (+)</strong> terminal</span></div>
+        <div class="bi"><div class="bd" style="background:#3b82f6;"></div><span>Voltage remains <strong style="color:#fff;">constant over time</strong></span></div>
+        <div class="bi"><div class="bd" style="background:#3b82f6;"></div><span>Produced by: <strong style="color:#fff;">batteries, solar panels, rectifiers</strong></span></div>
+        <div class="bi"><div class="bd" style="background:#3b82f6;"></div><span>Used in: electronics, phones, cars, computers</span></div>
+      </div>
+    </div>
+    <div class="vc">
+      <div class="dc-viz">
+        <!-- SVG Circuit DC -->
+        <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:0.7rem;letter-spacing:4px;color:rgba(59,130,246,0.5);margin-bottom:0.3rem;text-align:center;">DC CIRCUIT — ONE-WAY FLOW</div>
+        <canvas id="dcCircuit" width="340" height="190" style="border-radius:8px;"></canvas>
+        <div class="battery-card">
+          <div class="bat-icon">🔋</div>
+          <div>
+            <div class="bat-title">BATTERY — DC SOURCE</div>
+            <div class="bat-desc">A battery converts chemical energy into electrical energy. It always pushes current in the same direction — from its negative terminal around the circuit to the positive.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ S3 WHAT IS AC ════════════════ -->
+<div class="slide" id="s3">
+  <div class="grid-bg"></div>
+  <div class="inner">
+    <div class="vc">
+      <div class="ac-viz">
+        <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:0.7rem;letter-spacing:4px;color:rgba(245,158,11,0.5);margin-bottom:0.3rem;text-align:center;">AC CIRCUIT — REVERSING FLOW</div>
+        <canvas id="acCircuit" width="340" height="190" style="border-radius:8px;"></canvas>
+        <div class="generator-card">
+          <div class="gen-icon">⚙️</div>
+          <div>
+            <div class="gen-title">GENERATOR — AC SOURCE</div>
+            <div class="gen-desc">A rotating generator (alternator) produces AC by spinning a coil in a magnetic field. As the coil rotates, current flows first one way, then reverses — producing the characteristic sine wave.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tc">
+      <div class="tag">Concept 02</div>
+      <h2 class="sh">ALTERNATING<br/><span class="ao">CURRENT (AC)</span></h2>
+      <p class="sb">
+        <strong>Alternating Current (AC)</strong> is an electric current that <span class="ao"><strong>periodically reverses direction</strong></span> — electrons flow forward, stop, then flow backward in a repeating cycle.<br/><br/>
+        The number of complete cycles per second is the <span class="ag"><strong>frequency</strong></span>, measured in Hertz (Hz). Most countries use <strong>50 Hz or 60 Hz.</strong> South Africa uses <span class="ao"><strong>50 Hz.</strong></span><br/><br/>
+        AC is produced by <span class="ac"><strong>electrical generators</strong></span> at power stations and is the type of electricity supplied to homes and businesses through the power grid.
+      </p>
+      <div class="blist">
+        <div class="bi"><div class="bd" style="background:#f59e0b;"></div><span>Current reverses direction <strong style="color:#fff;">periodically</strong></span></div>
+        <div class="bi"><div class="bd" style="background:#f59e0b;"></div><span>Forms a <strong style="color:#fff;">sine wave</strong> pattern over time</span></div>
+        <div class="bi"><div class="bd" style="background:#f59e0b;"></div><span>Frequency: <strong style="color:#fff;">50 Hz</strong> (SA) or 60 Hz (USA)</span></div>
+        <div class="bi"><div class="bd" style="background:#f59e0b;"></div><span>Produced by: <strong style="color:#fff;">alternators / generators</strong></span></div>
+        <div class="bi"><div class="bd" style="background:#f59e0b;"></div><span>Used in: home power supply, industry, motors</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ S4 GRAPHS ════════════════ -->
+<div class="slide" id="s4">
+  <div class="grid-bg"></div>
+  <div class="graphs-layout">
+    <div class="graphs-title">CURRENT vs <span style="color:#f59e0b;">TIME GRAPHS</span></div>
+    <div style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.75rem;letter-spacing:5px;color:rgba(255,255,255,0.28);text-align:center;text-transform:uppercase;margin-top:-0.4rem;">How each current type looks plotted on a graph</div>
+    <div class="graphs-row">
+      <!-- DC GRAPH -->
+      <div class="graph-card gc-dc">
+        <div class="gc-title">⚡ DIRECT CURRENT (DC)</div>
+        <svg width="100%" height="160" viewBox="0 0 420 160">
+          <!-- Axes -->
+          <line x1="40" y1="130" x2="400" y2="130" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+          <line x1="40" y1="10" x2="40" y2="135" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+          <!-- Axis labels -->
+          <text x="220" y="150" font-family="Bebas Neue" font-size="12" fill="rgba(255,255,255,0.4)" text-anchor="middle" letter-spacing="2">TIME (s)</text>
+          <text x="12" y="80" font-family="Bebas Neue" font-size="11" fill="rgba(255,255,255,0.4)" text-anchor="middle" letter-spacing="1" transform="rotate(-90 12 80)">CURRENT (A)</text>
+          <!-- Zero line -->
+          <line x1="40" y1="130" x2="400" y2="130" stroke="rgba(255,255,255,0.1)" stroke-width="1" stroke-dasharray="4,4"/>
+          <!-- DC flat line -->
+          <line x1="50" y1="55" x2="390" y2="55" stroke="#60a5fa" stroke-width="3.5" stroke-linecap="round"/>
+          <!-- Glow effect -->
+          <line x1="50" y1="55" x2="390" y2="55" stroke="#3b82f6" stroke-width="8" opacity="0.2" stroke-linecap="round"/>
+          <!-- Labels -->
+          <text x="400" y="50" font-family="Bebas Neue" font-size="11" fill="#60a5fa" letter-spacing="1">I (constant)</text>
+          <text x="42" y="50" font-family="Bebas Neue" font-size="12" fill="#93c5fd">+I</text>
+          <text x="42" y="132" font-family="Bebas Neue" font-size="12" fill="rgba(255,255,255,0.3)">0</text>
+          <!-- Animated dot on line -->
+          <circle r="6" fill="#60a5fa" opacity="0.9">
+            <animate attributeName="cx" from="50" to="390" dur="3s" repeatCount="indefinite"/>
+            <animate attributeName="cy" values="55" dur="3s" repeatCount="indefinite"/>
+          </circle>
+        </svg>
+        <div class="gc-desc">The DC graph is a <strong style="color:#fff;">flat horizontal line</strong> above the zero axis — current is always positive and constant. The voltage never reverses or drops to zero.</div>
+        <div class="graph-facts">
+          <div class="gf gf-dc">Always Positive</div>
+          <div class="gf gf-dc">Constant Magnitude</div>
+          <div class="gf gf-dc">No Frequency</div>
+          <div class="gf gf-dc">Flat Line</div>
+        </div>
+      </div>
+      <!-- AC GRAPH -->
+      <div class="graph-card gc-ac">
+        <div class="gc-title">〜 ALTERNATING CURRENT (AC)</div>
+        <svg width="100%" height="160" viewBox="0 0 420 160">
+          <!-- Axes -->
+          <line x1="40" y1="80" x2="400" y2="80" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+          <line x1="40" y1="10" x2="40" y2="150" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+          <!-- Axis labels -->
+          <text x="220" y="158" font-family="Bebas Neue" font-size="12" fill="rgba(255,255,255,0.4)" text-anchor="middle" letter-spacing="2">TIME (s)</text>
+          <text x="12" y="80" font-family="Bebas Neue" font-size="11" fill="rgba(255,255,255,0.4)" text-anchor="middle" letter-spacing="1" transform="rotate(-90 12 80)">CURRENT (A)</text>
+          <!-- Labels -->
+          <text x="42" y="24" font-family="Bebas Neue" font-size="12" fill="#fcd34d">+I_max</text>
+          <text x="42" y="144" font-family="Bebas Neue" font-size="12" fill="#fca5a5">−I_max</text>
+          <text x="42" y="83" font-family="Bebas Neue" font-size="11" fill="rgba(255,255,255,0.3)">0</text>
+          <!-- Period markers -->
+          <line x1="130" y1="75" x2="130" y2="85" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+          <line x1="220" y1="75" x2="220" y2="85" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+          <line x1="310" y1="75" x2="310" y2="85" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+          <text x="175" y="97" font-family="Bebas Neue" font-size="10" fill="rgba(245,158,11,0.5)" text-anchor="middle" letter-spacing="1">T (Period)</text>
+          <line x1="130" y1="90" x2="220" y2="90" stroke="rgba(245,158,11,0.3)" stroke-width="1" marker-end="url(#arr)"/>
+          <!-- Sine wave - glow -->
+          <path d="M50,80 Q85,15 130,80 Q175,145 220,80 Q265,15 310,80 Q355,145 390,80"
+                fill="none" stroke="#f59e0b" stroke-width="8" opacity="0.15" stroke-linecap="round"/>
+          <!-- Sine wave -->
+          <path d="M50,80 Q85,15 130,80 Q175,145 220,80 Q265,15 310,80 Q355,145 390,80"
+                fill="none" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/>
+          <!-- Amplitude labels -->
+          <line x1="130" y1="15" x2="130" y2="80" stroke="rgba(245,158,11,0.25)" stroke-width="1" stroke-dasharray="3,3"/>
+          <text x="135" y="48" font-family="Bebas Neue" font-size="10" fill="rgba(245,158,11,0.6)" letter-spacing="1">amplitude</text>
+          <!-- Animated dot -->
+          <circle r="6" fill="#fbbf24" opacity="0.9">
+            <animateMotion dur="2s" repeatCount="indefinite" path="M50,80 Q85,15 130,80 Q175,145 220,80 Q265,15 310,80 Q355,145 390,80"/>
+          </circle>
+        </svg>
+        <div class="gc-desc">The AC graph is a <strong style="color:#fff;">sine wave</strong> — current rises to a positive peak, returns to zero, drops to a negative peak, then repeats. One complete cycle takes time <strong style="color:#fff;">T = 1/f</strong> seconds.</div>
+        <div class="graph-facts">
+          <div class="gf gf-ac">Sine Wave Shape</div>
+          <div class="gf gf-ac">Positive &amp; Negative</div>
+          <div class="gf gf-ac">50 Hz (SA)</div>
+          <div class="gf gf-ac">Peak Amplitude</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:1rem;">
+      <div style="flex:1;background:rgba(59,130,246,0.07);border:1px solid rgba(59,130,246,0.2);border-radius:9px;padding:0.55rem 0.9rem;font-family:'Nunito',sans-serif;font-size:0.8rem;color:rgba(180,215,255,0.7);line-height:1.5;">
+        💡 <strong style="color:#93c5fd;">DC Key Values:</strong> Voltage and current are constant. No period or frequency. e.g., a 9V battery always outputs 9V.
+      </div>
+      <div style="flex:1;background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.2);border-radius:9px;padding:0.55rem 0.9rem;font-family:'Nunito',sans-serif;font-size:0.8rem;color:rgba(255,230,160,0.7);line-height:1.5;">
+        💡 <strong style="color:#fcd34d;">AC Key Values:</strong> Peak voltage (V_max), RMS voltage (V_rms = V_max/√2), Period T = 1/f. SA mains: 230V rms, 50Hz.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ S5 DC vs AC COMPARISON ════════════════ -->
+<div class="slide" id="s5">
+  <div class="grid-bg"></div>
+  <div class="compare-layout">
+    <div class="compare-title">DC <span style="color:#a855f7;">vs</span> AC — SIDE BY SIDE</div>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th class="ct-h ct-h-prop">Property</th>
+          <th class="ct-h ct-h-dc">⚡ Direct Current (DC)</th>
+          <th class="ct-h ct-h-ac">〜 Alternating Current (AC)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="ct-r"><td>Direction</td><td>Flows in <strong style="color:#93c5fd;">one direction only</strong></td><td>Periodically <strong style="color:#fcd34d;">reverses direction</strong></td></tr>
+        <tr class="ct-r"><td>Waveform</td><td>Flat horizontal line</td><td>Sine wave shape</td></tr>
+        <tr class="ct-r"><td>Frequency</td><td>Zero (no frequency)</td><td>50 Hz (SA) / 60 Hz (USA)</td></tr>
+        <tr class="ct-r"><td>Voltage</td><td>Constant magnitude</td><td>Varies between +peak and −peak</td></tr>
+        <tr class="ct-r"><td>Source</td><td>Batteries, solar cells, rectifiers</td><td>Generators / alternators</td></tr>
+        <tr class="ct-r"><td>Transmission</td><td>Difficult over long distances (large losses)</td><td>Easy over long distances via transformers</td></tr>
+        <tr class="ct-r"><td>Safety</td><td>Safer at low voltages</td><td>More dangerous at household voltages</td></tr>
+        <tr class="ct-r"><td>Applications</td><td>Electronics, phones, EVs, LEDs</td><td>Homes, industry, motors, appliances</td></tr>
+        <tr class="ct-r"><td>Storage</td><td>Can be stored in batteries</td><td>Cannot be stored directly</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ════════════════ S6 ADVANTAGES OF AC ════════════════ -->
+<div class="slide" id="s6">
+  <div class="grid-bg"></div>
+  <div class="inner">
+    <div class="tc">
+      <div class="tag">Concept 03</div>
+      <h2 class="sh">ADVANTAGES<br/>OF <span class="ao">AC</span> OVER <span class="ab">DC</span></h2>
+      <p class="sb">
+        Nikola Tesla championed AC in the 1880s, ultimately winning the "War of Currents" against Edison's DC. Here is why AC became the global standard for power transmission and distribution:<br/><br/>
+        The single greatest advantage is the ability to use <span class="ao"><strong>transformers</strong></span> — devices that work <em>only</em> with AC and allow voltage to be stepped up or down easily. This makes long-distance power transmission <span class="ag"><strong>far more efficient.</strong></span>
+      </p>
+      <div class="ibox" style="background:rgba(245,158,11,0.07);border:1.5px solid rgba(245,158,11,0.25);">
+        ⚡ <strong style="color:#fbbf24;">Historical note:</strong> Nikola Tesla (AC) vs Thomas Edison (DC) — the "War of Currents" (1880s–1890s). Tesla and Westinghouse's AC system won because of its ability to transmit power over long distances with low losses.
+      </div>
+    </div>
+    <div class="vc">
+      <div class="adv-viz">
+        <div class="adv-card">
+          <div class="adv-num">01</div>
+          <div><div class="adv-ttl">TRANSFORMER COMPATIBLE</div><div class="adv-desc">AC voltage can be <strong style="color:#fff;">stepped up or down</strong> using transformers. DC cannot use transformers. This is AC's single biggest advantage.</div></div>
+        </div>
+        <div class="adv-card">
+          <div class="adv-num">02</div>
+          <div><div class="adv-ttl">EFFICIENT LONG-DISTANCE TRANSMISSION</div><div class="adv-desc">High-voltage AC transmission (e.g. 400 kV) means very <strong style="color:#fff;">low current and minimal power loss</strong> (P_loss = I²R) over hundreds of kilometres.</div></div>
+        </div>
+        <div class="adv-card">
+          <div class="adv-num">03</div>
+          <div><div class="adv-ttl">CHEAPER TO GENERATE</div><div class="adv-desc">AC generators (alternators) are <strong style="color:#fff;">simpler and less expensive</strong> to build and maintain than DC generators. No need for commutators.</div></div>
+        </div>
+        <div class="adv-card">
+          <div class="adv-num">04</div>
+          <div><div class="adv-ttl">POWERS AC MOTORS DIRECTLY</div><div class="adv-desc">Most industrial and household motors run directly on AC. <strong style="color:#fff;">No conversion is needed</strong> — fans, pumps, washing machines all use AC motors.</div></div>
+        </div>
+        <div class="adv-card">
+          <div class="adv-num">05</div>
+          <div><div class="adv-ttl">EASY VOLTAGE REGULATION</div><div class="adv-desc">Voltage can be regulated easily at <strong style="color:#fff;">multiple stages</strong> — from the power station to your home socket — with transformer substations along the route.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ S7 APPLICATIONS — DC ════════════════ -->
+<div class="slide" id="s7">
+  <div class="grid-bg"></div>
+  <div class="inner">
+    <div class="tc">
+      <div class="tag">Applications 01</div>
+      <h2 class="sh">WHERE IS<br/><span class="ab">DC USED?</span></h2>
+      <p class="sb">
+        DC is essential wherever a <strong>steady, reliable voltage</strong> is needed — especially in electronic devices and portable equipment.<br/><br/>
+        Most devices that run on AC power actually <span class="ab"><strong>convert it to DC internally</strong></span> using a rectifier circuit — this is what your phone charger does.<br/><br/>
+        Modern developments like <span class="ag"><strong>HVDC (High Voltage DC)</strong></span> transmission are now challenging AC over very long distances, and electric vehicles have made DC more prominent than ever.
+      </p>
+      <div class="ibox" style="background:rgba(59,130,246,0.07);border:1.5px solid rgba(59,130,246,0.25);">
+        🔋 <strong style="color:#93c5fd;">Key fact:</strong> The USB standard delivers DC at 5V (or up to 20V for fast charging). Your laptop, phone, tablet, and earbuds all run on DC internally.
+      </div>
+    </div>
+    <div class="vc">
+      <div style="display:flex;flex-direction:column;gap:0.6rem;width:min(44vw,420px);">
+        <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:0.7rem;letter-spacing:4px;color:rgba(59,130,246,0.5);text-align:center;">DC APPLICATIONS</div>
+        <div class="app-grid">
+          <div class="app-card app-card-dc"><div class="app-icon">📱</div><div class="app-name">Smartphones &amp; Tablets</div></div>
+          <div class="app-card app-card-dc"><div class="app-icon">💻</div><div class="app-name">Computers &amp; Laptops</div></div>
+          <div class="app-card app-card-dc"><div class="app-icon">🔋</div><div class="app-name">Batteries &amp; UPS</div></div>
+          <div class="app-card app-card-dc"><div class="app-icon">🚗</div><div class="app-name">Electric Vehicles</div></div>
+          <div class="app-card app-card-dc"><div class="app-icon">☀️</div><div class="app-name">Solar Panels</div></div>
+          <div class="app-card app-card-dc"><div class="app-icon">💡</div><div class="app-name">LED Lights</div></div>
+          <div class="app-card app-card-dc"><div class="app-icon">🎮</div><div class="app-name">Consoles &amp; Gaming</div></div>
+          <div class="app-card app-card-dc"><div class="app-icon">🚂</div><div class="app-name">Electric Railways</div></div>
+          <div class="app-card app-card-dc"><div class="app-icon">📡</div><div class="app-name">Telecommunications</div></div>
+        </div>
+        <div style="padding:0.55rem 0.9rem;background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.18);border-radius:8px;font-family:'Nunito',sans-serif;font-size:0.78rem;color:rgba(180,215,255,0.65);line-height:1.4;text-align:center;">
+          🔄 When you plug your phone charger into a wall socket, <strong style="color:#fff;">AC is converted to DC</strong> inside the adapter before reaching your device.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ S8 APPLICATIONS — AC ════════════════ -->
+<div class="slide" id="s8">
+  <div class="grid-bg"></div>
+  <div class="inner">
+    <div class="vc">
+      <div style="display:flex;flex-direction:column;gap:0.6rem;width:min(44vw,420px);">
+        <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:0.7rem;letter-spacing:4px;color:rgba(245,158,11,0.5);text-align:center;">AC APPLICATIONS</div>
+        <div class="app-grid">
+          <div class="app-card app-card-ac"><div class="app-icon">🏠</div><div class="app-name">Home Power Supply</div></div>
+          <div class="app-card app-card-ac"><div class="app-icon">🏭</div><div class="app-name">Industrial Machinery</div></div>
+          <div class="app-card app-card-ac"><div class="app-icon">🌀</div><div class="app-name">Electric Motors</div></div>
+          <div class="app-card app-card-ac"><div class="app-icon">🧺</div><div class="app-name">Washing Machines</div></div>
+          <div class="app-card app-card-ac"><div class="app-icon">❄️</div><div class="app-name">Air Conditioners</div></div>
+          <div class="app-card app-card-ac"><div class="app-icon">🍳</div><div class="app-name">Ovens &amp; Stoves</div></div>
+          <div class="app-card app-card-ac"><div class="app-icon">💡</div><div class="app-name">Fluorescent Lights</div></div>
+          <div class="app-card app-card-ac"><div class="app-icon">🔌</div><div class="app-name">Power Grid Network</div></div>
+          <div class="app-card app-card-ac"><div class="app-icon">🏥</div><div class="app-name">Hospitals &amp; Clinics</div></div>
+        </div>
+        <div style="padding:0.55rem 0.9rem;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.18);border-radius:8px;font-family:'Nunito',sans-serif;font-size:0.78rem;color:rgba(255,230,160,0.65);line-height:1.4;text-align:center;">
+          🇿🇦 <strong style="color:#fff;">South Africa:</strong> Mains supply is 230V AC at 50 Hz. Wall sockets deliver AC to all household appliances.
+        </div>
+      </div>
+    </div>
+    <div class="tc">
+      <div class="tag">Applications 02</div>
+      <h2 class="sh">WHERE IS<br/><span class="ao">AC USED?</span></h2>
+      <p class="sb">
+        AC is the standard for <strong>power distribution worldwide</strong> — from the power station right to the socket in your home. Everything plugged into a wall socket runs on AC.<br/><br/>
+        <span class="ao"><strong>Electric motors</strong></span> that power fans, air conditioners, washing machines, and industrial equipment are designed specifically for AC because AC naturally creates a <strong>rotating magnetic field</strong>.<br/><br/>
+        South Africa's national grid (Eskom) generates and distributes <span class="ag"><strong>230V / 50 Hz AC</strong></span> to all homes and businesses across the country.
+      </p>
+      <div class="ibox" style="background:rgba(245,158,11,0.07);border:1.5px solid rgba(245,158,11,0.25);">
+        🌍 <strong style="color:#fbbf24;">Global standard:</strong> Virtually every country in the world uses AC for its national electricity grid. Only the voltage and frequency differ (50 Hz vs 60 Hz, 110V vs 230V).
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ S9 HOW IS ELECTRICITY GENERATED ════════════════ -->
+<div class="slide" id="s9">
+  <div class="grid-bg"></div>
+  <div class="gen-layout">
+    <div class="gen-title">HOW IS <span style="color:#10b981;">ELECTRICITY GENERATED?</span></div>
+    <div style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.74rem;letter-spacing:5px;color:rgba(255,255,255,0.27);text-align:center;text-transform:uppercase;margin-top:-0.4rem;">The journey from fuel to your home</div>
+    <!-- Steps row -->
+    <div class="gen-steps">
+      <div class="gen-step">
+        <div class="gen-step-circle gs1">🔥</div>
+        <div class="gen-step-name">FUEL &amp;<br/>HEAT</div>
+        <div class="gen-step-desc">Burning fuel (coal, gas, uranium) or harnessing renewable energy produces heat or kinetic energy</div>
+      </div>
+      <div class="gen-arrow">→</div>
+      <div class="gen-step">
+        <div class="gen-step-circle gs2">💨</div>
+        <div class="gen-step-name">STEAM &amp;<br/>TURBINE</div>
+        <div class="gen-step-desc">Heat boils water into high-pressure steam that spins a turbine at high speed</div>
+      </div>
+      <div class="gen-arrow">→</div>
+      <div class="gen-step">
+        <div class="gen-step-circle gs3">⚙️</div>
+        <div class="gen-step-name">GENERATOR<br/>(ALTERNATOR)</div>
+        <div class="gen-step-desc">Turbine spins a coil in a magnetic field — electromagnetic induction produces AC electricity</div>
+      </div>
+      <div class="gen-arrow">→</div>
+      <div class="gen-step">
+        <div class="gen-step-circle gs4">🔆</div>
+        <div class="gen-step-name">STEP-UP<br/>TRANSFORMER</div>
+        <div class="gen-step-desc">Voltage stepped up to very high levels (e.g. 400 kV) for efficient long-distance transmission</div>
+      </div>
+      <div class="gen-arrow">→</div>
+      <div class="gen-step">
+        <div class="gen-step-circle gs5">🏠</div>
+        <div class="gen-step-name">STEP-DOWN &amp;<br/>YOUR HOME</div>
+        <div class="gen-step-desc">Substations step voltage down to 230V for safe delivery to homes and businesses</div>
+      </div>
+    </div>
+    <!-- Generation types -->
+    <div class="gen-types">
+      <div class="gen-type-card gtc-fossil">
+        <div style="font-size:1.5rem;">⛏️</div>
+        <div class="gt-title">FOSSIL FUELS</div>
+        <div class="gt-desc">Coal, natural gas, and oil are burned to create steam. <strong style="color:#fff;">Cheap but polluting.</strong> Eskom uses mainly coal-fired power stations in SA.</div>
+      </div>
+      <div class="gen-type-card gtc-nuclear">
+        <div style="font-size:1.5rem;">☢️</div>
+        <div class="gt-title">NUCLEAR POWER</div>
+        <div class="gt-desc">Nuclear fission heats water to drive turbines. <strong style="color:#fff;">No CO₂ emissions.</strong> Koeberg nuclear power station in Cape Town generates 1.8 GW for SA.</div>
+      </div>
+      <div class="gen-type-card gtc-renew">
+        <div style="font-size:1.5rem;">🌿</div>
+        <div class="gt-title">RENEWABLES</div>
+        <div class="gt-desc">Wind turbines, solar panels (convert to AC via inverters), hydroelectric dams. <strong style="color:#fff;">Clean and sustainable.</strong> Growing rapidly in South Africa.</div>
+      </div>
+    </div>
+    <div class="gen-note">⚡ All large-scale power stations ultimately produce <strong style="color:#fff;">AC electricity</strong> — regardless of the energy source used to spin the generator.</div>
+  </div>
+</div>
+
+<!-- ════════════════ S10 ELECTROMAGNETIC INDUCTION ════════════════ -->
+<div class="slide" id="s10">
+  <div class="grid-bg"></div>
+  <div class="inner">
+    <div class="vc">
+      <div class="gendet-viz">
+        <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:0.7rem;letter-spacing:4px;color:rgba(245,158,11,0.45);margin-bottom:0.3rem;text-align:center;">INSIDE THE GENERATOR</div>
+        <!-- Generator diagram SVG -->
+        <canvas id="genCanvas" width="300" height="210" style="border-radius:8px;"></canvas>
+        <div class="ac-output-label">Rotating coil → AC sine wave output</div>
+        <div class="faraday-box">
+          <div class="fb-law">FARADAY'S LAW</div>
+          <div class="fb-desc">A changing magnetic flux through a coil <strong style="color:#fff;">induces an EMF (voltage)</strong>. As the coil rotates in the magnetic field, the flux changes sinusoidally — producing a sine-wave AC output.</div>
+        </div>
+      </div>
+    </div>
+    <div class="tc">
+      <div class="tag">Concept 04</div>
+      <h2 class="sh">ELECTRO<span class="ao">MAGNETIC</span><br/>INDUCTION</h2>
+      <p class="sb">
+        Electricity is generated using <span class="ao"><strong>Faraday's Law of Electromagnetic Induction</strong></span> — discovered by Michael Faraday in 1831.<br/><br/>
+        When a <strong>coil of wire rotates inside a magnetic field</strong>, the magnetic flux through the coil continuously changes. This changing flux <span class="ag"><strong>induces a voltage</strong></span> (EMF) in the coil.<br/><br/>
+        As the coil completes each rotation, the induced voltage alternates between positive and negative — producing the characteristic <span class="ao"><strong>AC sine wave.</strong></span>
+      </p>
+      <div class="gen-steps-list" style="margin-top:0.8rem;">
+        <div class="gsl"><div class="gsl-n">1</div><span>Turbine spins the shaft of the generator</span></div>
+        <div class="gsl"><div class="gsl-n">2</div><span>Shaft rotates a coil inside a strong magnetic field</span></div>
+        <div class="gsl"><div class="gsl-n">3</div><span>Changing magnetic flux induces EMF in the coil (Faraday's Law)</span></div>
+        <div class="gsl"><div class="gsl-n">4</div><span>As the coil rotates 360°, the EMF traces one complete sine wave cycle</span></div>
+        <div class="gsl"><div class="gsl-n">5</div><span>AC electricity exits via slip rings and enters the power grid</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ S11 TRANSFORMERS ════════════════ -->
+<div class="slide" id="s11">
+  <div class="grid-bg"></div>
+  <div class="inner">
+    <div class="tc">
+      <div class="tag">Concept 05</div>
+      <h2 class="sh">TRANS<span class="ap">FORMERS</span></h2>
+      <p class="sb">
+        A <strong>transformer</strong> is a device that changes the voltage of AC electricity using <strong>electromagnetic induction.</strong><br/><br/>
+        It works <span class="ar"><strong>ONLY with AC</strong></span> — DC cannot be transformed because DC produces no changing magnetic flux.<br/><br/>
+        Two coils (primary and secondary) are wound around an <span class="ag"><strong>iron core</strong></span>. AC in the primary creates a changing magnetic field, which induces a voltage in the secondary.<br/><br/>
+        The voltage ratio equals the <span class="ap"><strong>turns ratio:</strong></span>
+      </p>
+      <div style="margin:0.8rem 0;padding:0.85rem 1.1rem;background:rgba(168,85,247,0.08);border:2px solid rgba(168,85,247,0.28);border-radius:12px;max-width:460px;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:3px;color:#c084fc;text-align:center;">Vp / Vs = Np / Ns</div>
+        <div style="font-family:'Nunito',sans-serif;font-size:0.78rem;color:rgba(200,180,255,0.65);margin-top:0.3rem;text-align:center;line-height:1.5;">Vp = primary voltage &nbsp;·&nbsp; Vs = secondary voltage<br/>Np = primary turns &nbsp;·&nbsp; Ns = secondary turns</div>
+      </div>
+      <div class="blist" style="margin-top:0.5rem;">
+        <div class="bi"><div class="bd" style="background:#a855f7;"></div><span><strong style="color:#c084fc;">Step-up transformer:</strong> Ns &gt; Np → voltage increases (used at power stations)</span></div>
+        <div class="bi"><div class="bd" style="background:#a855f7;"></div><span><strong style="color:#c084fc;">Step-down transformer:</strong> Ns &lt; Np → voltage decreases (used at substations)</span></div>
+        <div class="bi"><div class="bd" style="background:#a855f7;"></div><span>Power is conserved: <strong style="color:#fff;">Vp × Ip = Vs × Is</strong> (ideal transformer)</span></div>
+      </div>
+    </div>
+    <div class="vc">
+      <div class="transf-viz">
+        <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:0.7rem;letter-spacing:4px;color:rgba(168,85,247,0.5);margin-bottom:0.4rem;text-align:center;">STEP-UP TRANSFORMER</div>
+        <!-- Transformer SVG -->
+        <svg width="360" height="180" viewBox="0 0 360 180">
+          <!-- Iron core -->
+          <rect x="155" y="25" width="50" height="130" rx="5" fill="rgba(107,114,128,0.3)" stroke="rgba(150,160,170,0.4)" stroke-width="1.5"/>
+          <text x="180" y="95" font-family="Bebas Neue" font-size="10" fill="rgba(200,210,220,0.45)" text-anchor="middle" letter-spacing="1">IRON<br/>CORE</text>
+          <!-- Primary coil (left) -->
+          <path d="M80,50 Q95,38 110,50 Q125,62 140,50 Q155,38 155,60" fill="none" stroke="#60a5fa" stroke-width="3"/>
+          <path d="M80,75 Q95,63 110,75 Q125,87 140,75 Q155,63 155,85" fill="none" stroke="#60a5fa" stroke-width="3"/>
+          <path d="M80,100 Q95,88 110,100 Q125,112 140,100 Q155,88 155,110" fill="none" stroke="#60a5fa" stroke-width="3"/>
+          <text x="110" y="148" font-family="Bebas Neue" font-size="12" fill="#60a5fa" text-anchor="middle" letter-spacing="1">PRIMARY</text>
+          <text x="110" y="162" font-family="Nunito" font-weight="700" font-size="10" fill="rgba(96,165,250,0.55)" text-anchor="middle">3 turns</text>
+          <!-- Secondary coil (right) -->
+          <path d="M205,50 Q215,38 225,50 Q235,62 245,50 Q255,38 265,50 Q275,62 280,55" fill="none" stroke="#fbbf24" stroke-width="3"/>
+          <path d="M205,70 Q215,58 225,70 Q235,82 245,70 Q255,58 265,70 Q275,82 280,75" fill="none" stroke="#fbbf24" stroke-width="3"/>
+          <path d="M205,90 Q215,78 225,90 Q235,102 245,90 Q255,78 265,90 Q275,102 280,95" fill="none" stroke="#fbbf24" stroke-width="3"/>
+          <path d="M205,110 Q215,98 225,110 Q235,122 245,110 Q255,98 265,110 Q275,122 280,115" fill="none" stroke="#fbbf24" stroke-width="3"/>
+          <path d="M205,130 Q215,118 225,130 Q235,142 245,130 Q255,118 265,130 Q275,142 280,135" fill="none" stroke="#fbbf24" stroke-width="3"/>
+          <text x="245" y="148" font-family="Bebas Neue" font-size="12" fill="#fbbf24" text-anchor="middle" letter-spacing="1">SECONDARY</text>
+          <text x="245" y="162" font-family="Nunito" font-weight="700" font-size="10" fill="rgba(251,191,36,0.55)" text-anchor="middle">5 turns</text>
+          <!-- Input AC -->
+          <line x1="10" y1="70" x2="80" y2="70" stroke="rgba(96,165,250,0.6)" stroke-width="2"/>
+          <line x1="10" y1="110" x2="80" y2="110" stroke="rgba(96,165,250,0.6)" stroke-width="2"/>
+          <text x="10" y="65" font-family="Bebas Neue" font-size="10" fill="#60a5fa" letter-spacing="1">Vp</text>
+          <text x="10" y="125" font-family="Bebas Neue" font-size="9" fill="rgba(96,165,250,0.5)" letter-spacing="1">AC IN</text>
+          <!-- Output AC -->
+          <line x1="280" y1="70" x2="350" y2="70" stroke="rgba(251,191,36,0.6)" stroke-width="2"/>
+          <line x1="280" y1="110" x2="350" y2="110" stroke="rgba(251,191,36,0.6)" stroke-width="2"/>
+          <text x="305" y="65" font-family="Bebas Neue" font-size="10" fill="#fbbf24" letter-spacing="1">Vs</text>
+          <text x="298" y="125" font-family="Bebas Neue" font-size="9" fill="rgba(251,191,36,0.5)" letter-spacing="1">AC OUT</text>
+          <!-- Flux arrow in core -->
+          <path d="M180,45 L180,135" fill="none" stroke="rgba(200,200,200,0.2)" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#fluxArr)"/>
+        </svg>
+        <div class="ratio-formula">
+          <div class="rf-main">V_out / V_in = N_s / N_p</div>
+          <div class="rf-desc">Example: If N_p = 100 turns, N_s = 1000 turns → voltage increases 10× &nbsp;(Step-Up)<br/>If N_s = 10 turns → voltage decreases 10× &nbsp;(Step-Down)</div>
+        </div>
+        <div class="transf-types">
+          <div class="tt-card tt-step-up">
+            <div class="tt-title">⬆ STEP-UP</div>
+            <div class="tt-desc">N_s &gt; N_p → Voltage rises. Used at power stations to boost voltage for transmission. Current drops.</div>
+          </div>
+          <div class="tt-card tt-step-down">
+            <div class="tt-title">⬇ STEP-DOWN</div>
+            <div class="tt-desc">N_s &lt; N_p → Voltage falls. Used at substations to reduce to safe household levels. Current rises.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ S12 SUMMARY ════════════════ -->
+<div class="slide" id="s12">
+  <div class="grid-bg"></div>
+  <div class="sum-layout">
+    <div class="sum-title">LESSON <span style="color:#f59e0b;">RECAP</span></div>
+    <div class="sum-grid">
+      <div class="sum-card">
+        <div class="sum-icon">⚡</div>
+        <div class="sum-ttl">Direct Current (DC)</div>
+        <div class="sum-desc">Flows in one direction only. Constant voltage. Sources: batteries, solar cells. Graph = flat line. Used in electronics, phones, EVs.</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-icon">〜</div>
+        <div class="sum-ttl">Alternating Current (AC)</div>
+        <div class="sum-desc">Reverses direction periodically. Sine wave shape. 50 Hz in SA (230V). Sources: generators. Used in homes, industry, motors.</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-icon">📊</div>
+        <div class="sum-ttl">Graphs</div>
+        <div class="sum-desc">DC = flat horizontal line. AC = sine wave with +peak, zero, −peak, repeating every period T = 1/f seconds.</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-icon">✅</div>
+        <div class="sum-ttl">Advantages of AC</div>
+        <div class="sum-desc">Works with transformers · Efficient long-distance transmission · Cheaper generators · Powers AC motors directly · Easy voltage regulation.</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-icon">⚙️</div>
+        <div class="sum-ttl">How Electricity is Generated</div>
+        <div class="sum-desc">Fuel → heat → steam → turbine → generator (rotating coil in magnetic field) → AC via Faraday's Law → step-up transformer → grid → your home.</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-icon">🔆</div>
+        <div class="sum-ttl">Transformers</div>
+        <div class="sum-desc">Work ONLY with AC. Vp/Vs = Np/Ns. Step-up: Ns &gt; Np (power stations). Step-down: Ns &lt; Np (substations). Power is conserved.</div>
+      </div>
+    </div>
+    <div style="background:rgba(245,158,11,0.07);border:1.5px solid rgba(245,158,11,0.2);border-radius:11px;padding:0.65rem 1.2rem;font-family:'Nunito',sans-serif;font-size:0.85rem;color:rgba(255,230,160,0.7);line-height:1.55;text-align:center;">
+      🇿🇦 <strong style="color:#fff;">SA Power Grid Facts:</strong> Mains supply = <strong style="color:#fbbf24;">230V AC @ 50 Hz</strong> &nbsp;·&nbsp; Eskom generates ~220 TWh/year &nbsp;·&nbsp; Koeberg Nuclear: 1.8 GW &nbsp;·&nbsp; Transmission lines: up to 765 kV
+    </div>
+  </div>
+</div>
+
+</div><!-- end deck -->
+
+<!-- NAV -->
+<div class="nav">
+  <button onclick="go(-1)">◀ BACK</button>
+  <div class="dots" id="dots"></div>
+  <span class="s-num" id="snum">1 / 12</span>
+  <button onclick="go(1)">NEXT ▶</button>
+</div>
+
+<script>
+/* ── Navigation ── */
+const slides=document.querySelectorAll('.slide');
+const dotsEl=document.getElementById('dots');
+const snum=document.getElementById('snum');
+let cur=0;const total=slides.length;
+slides.forEach((_,i)=>{
+  const d=document.createElement('div');
+  d.className='dot'+(i===0?' active':'');
+  d.onclick=()=>goTo(i);
+  dotsEl.appendChild(d);
+});
+function goTo(n){
+  slides[cur].classList.remove('active');
+  dotsEl.children[cur].classList.remove('active');
+  cur=(n+total)%total;
+  slides[cur].classList.add('active');
+  dotsEl.children[cur].classList.add('active');
+  snum.textContent=(cur+1)+' / '+total;
+}
+function go(d){goTo(cur+d);}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' ')go(1);
+  if(e.key==='ArrowLeft')go(-1);
+});
+
+/* ── S1 circuit decorations ── */
+const cbg=document.getElementById('circuitBg');
+if(cbg){
+  [{x:5,y:10,w:200,v:false},{x:5,y:25,w:200,v:true},{x:60,y:60,w:300,v:false},
+   {x:80,y:40,w:3,v:true},{x:70,y:80,w:4,v:true},{x:85,y:70,w:250,v:false},
+   {x:5,y:90,w:150,v:false},{x:90,y:5,w:3,v:true}].forEach((p,i)=>{
+    const w=document.createElement('div');
+    w.className='wire';
+    w.style.cssText=`left:${p.x}%;top:${p.y}%;width:${p.v?4:p.w}px;height:${p.v?p.w:4}px;
+      animation-duration:${3+i*0.7}s;animation-delay:-${i*1.2}s;border-radius:2px;`;
+    cbg.appendChild(w);
+  });
+  for(let i=0;i<8;i++){
+    const ep=document.createElement('div'); ep.className='epulse';
+    const sz=30+Math.random()*50;
+    ep.style.cssText=`width:${sz}px;height:${sz}px;left:${10+Math.random()*80}%;top:${10+Math.random()*80}%;
+      position:absolute;animation-duration:${2+Math.random()*3}s;animation-delay:-${Math.random()*4}s;`;
+    cbg.appendChild(ep);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   DC CIRCUIT CANVAS ANIMATION
+   Electrons flow counter-clockwise (electron
+   flow direction: from − terminal, around the
+   circuit, back to + terminal).
+   Conventional current arrows shown clockwise.
+═══════════════════════════════════════════ */
+(function(){
+  const canvas = document.getElementById('dcCircuit');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W=340, H=190;
+
+  /* Circuit waypoints — electron path counter-clockwise:
+     battery−  →  bottom-left  →  bottom-right  →
+     top-right  →  right-of-load  →  left-of-load  →
+     top-left  →  battery+  →  [inside battery]  →  battery−  */
+  const wp=[
+    {x:52,y:132},  // 0 battery − terminal
+    {x:52,y:162},  // 1 bottom-left corner
+    {x:292,y:162}, // 2 bottom-right corner
+    {x:292,y:38},  // 3 top-right corner
+    {x:210,y:38},  // 4 right of load
+    {x:148,y:38},  // 5 left of load
+    {x:52,y:38},   // 6 top-left corner
+    {x:52,y:85},   // 7 battery + terminal
+    {x:52,y:132},  // 8 back to battery − (internal)
+  ];
+
+  // Build cumulative distances along path
+  const dists=[0];
+  for(let i=1;i<wp.length;i++){
+    const dx=wp[i].x-wp[i-1].x, dy=wp[i].y-wp[i-1].y;
+    dists.push(dists[i-1]+Math.sqrt(dx*dx+dy*dy));
+  }
+  const totalLen=dists[dists.length-1];
+
+  function getPt(d){
+    d=((d%totalLen)+totalLen)%totalLen;
+    for(let i=1;i<wp.length;i++){
+      if(d<=dists[i]){
+        const t=(d-dists[i-1])/(dists[i]-dists[i-1]);
+        return{x:wp[i-1].x+t*(wp[i].x-wp[i-1].x), y:wp[i-1].y+t*(wp[i].y-wp[i-1].y), seg:i};
+      }
+    }
+    return wp[0];
+  }
+
+  const speed=60; // px per second (constant = DC)
+  const nE=5;
+  let offset=0, last=null;
+
+  function drawDC(ts){
+    if(!last) last=ts;
+    const dt=Math.min((ts-last)/1000,0.05); last=ts;
+    offset=(offset+speed*dt)%totalLen;
+    ctx.clearRect(0,0,W,H);
+
+    /* ── Wires ── */
+    ctx.strokeStyle='rgba(59,130,246,0.45)'; ctx.lineWidth=2.5;
+    ctx.lineCap='round'; ctx.lineJoin='round';
+    [
+      [52,38,148,38],   // top-left to load start
+      [210,38,292,38],  // load end to top-right
+      [292,38,292,162], // right wire (top to bottom)
+      [292,162,52,162], // bottom wire (right to left)
+      [52,162,52,132],  // left wire: BL corner to bat−
+      [52,85,52,38],    // left wire: bat+ to TL corner
+    ].forEach(([x1,y1,x2,y2])=>{
+      ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+    });
+
+    /* ── Battery symbol (2 cells, vertical at x=52, y=85→132) ── */
+    /* Long plate = + (higher voltage), Short plate = − */
+    ctx.lineCap='round';
+    [[3.5,89,37,67],[2,100,42,62],[3.5,111,37,67],[2,122,42,62]].forEach(([lw,y,x1o,x2o])=>{
+      ctx.strokeStyle='#60a5fa'; ctx.lineWidth=lw;
+      ctx.beginPath(); ctx.moveTo(52-x1o/2,y); ctx.lineTo(52+x1o/2,y); ctx.stroke();
+    });
+    // + and − labels
+    ctx.fillStyle='#60a5fa'; ctx.font='bold 13px sans-serif'; ctx.textAlign='left'; ctx.textBaseline='middle';
+    ctx.fillText('+',70,92);
+    ctx.fillStyle='#93c5fd'; ctx.fillText('−',70,121);
+    // Battery label
+    ctx.fillStyle='rgba(96,165,250,0.45)'; ctx.font='bold 8px Montserrat,sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+    ctx.fillText('BATTERY',52,148);
+
+    /* ── Load / Resistor (zigzag on top wire x=148→210, y=38) ── */
+    const steps=7, sw=(210-148)/steps;
+    ctx.strokeStyle='rgba(147,197,253,0.75)'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(148,38);
+    for(let i=0;i<=steps;i++) ctx.lineTo(148+i*sw, 38+(i%2===0?-12:12));
+    ctx.lineTo(210,38); ctx.stroke();
+    ctx.fillStyle='rgba(147,197,253,0.7)'; ctx.font='bold 10px Bebas Neue,sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+    ctx.fillText('LOAD',179,23);
+
+    /* ── Conventional current direction arrows (clockwise) ── */
+    ctx.fillStyle='rgba(245,158,11,0.65)';
+    ctx.font='15px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('→',115,26); ctx.fillText('→',258,26); // top wire: left→right
+    ctx.fillText('↓',306,100);                           // right wire: top→bottom
+    ctx.fillText('←',172,175);                           // bottom wire: right→left
+    ctx.fillText('↑',36,62);                             // left wire: bottom→top
+    // Label
+    ctx.fillStyle='rgba(245,158,11,0.4)'; ctx.font='bold 8px Montserrat,sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+    ctx.fillText('CONVENTIONAL CURRENT  (CLOCKWISE)',172,186);
+
+    /* ── Electrons flowing counter-clockwise at CONSTANT speed ── */
+    for(let i=0;i<nE;i++){
+      const d=(offset+i*totalLen/nE)%totalLen;
+      // Skip the internal battery segment (seg 8 = index 7→8)
+      if(d>dists[7]-1 && d<dists[8]) continue;
+      const p=getPt(d);
+      // Glow halo
+      const g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,9);
+      g.addColorStop(0,'rgba(147,197,253,0.9)'); g.addColorStop(1,'rgba(59,130,246,0)');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(p.x,p.y,9,0,Math.PI*2); ctx.fill();
+      // Electron dot
+      ctx.fillStyle='#93c5fd'; ctx.beginPath(); ctx.arc(p.x,p.y,4,0,Math.PI*2); ctx.fill();
+    }
+    requestAnimationFrame(drawDC);
+  }
+  requestAnimationFrame(drawDC);
+})();
+
+/* ═══════════════════════════════════════════
+   AC CIRCUIT CANVAS ANIMATION
+   All electrons oscillate together (sinusoidal)
+   — they move forward then reverse, forward
+   then reverse, tracing the AC sine wave.
+   Direction arrows flip every half-cycle.
+═══════════════════════════════════════════ */
+(function(){
+  const canvas=document.getElementById('acCircuit');
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const W=340, H=190;
+
+  /* Same rectangular circuit; AC source on left side */
+  const wp=[
+    {x:52,y:85},   // 0 source top terminal
+    {x:52,y:38},   // 1 top-left corner
+    {x:148,y:38},  // 2 left of load
+    {x:210,y:38},  // 3 right of load
+    {x:292,y:38},  // 4 top-right corner
+    {x:292,y:162}, // 5 bottom-right corner
+    {x:52,y:162},  // 6 bottom-left corner
+    {x:52,y:130},  // 7 source bottom terminal
+  ];
+
+  const dists=[0];
+  for(let i=1;i<wp.length;i++){
+    const dx=wp[i].x-wp[i-1].x, dy=wp[i].y-wp[i-1].y;
+    dists.push(dists[i-1]+Math.sqrt(dx*dx+dy*dy));
+  }
+  const pathLen=dists[dists.length-1];
+
+  function getPt(d){
+    d=Math.max(0,Math.min(pathLen-1,d));
+    for(let i=1;i<wp.length;i++){
+      if(d<=dists[i]){
+        const t=(d-dists[i-1])/(dists[i]-dists[i-1]);
+        return{x:wp[i-1].x+t*(wp[i].x-wp[i-1].x), y:wp[i-1].y+t*(wp[i].y-wp[i-1].y)};
+      }
+    }
+    return wp[wp.length-1];
+  }
+
+  const nE=8;
+  // Base positions evenly spread along path (avoid endpoints near source)
+  const basePos=[];
+  for(let i=0;i<nE;i++) basePos.push(8+i*(pathLen-16)/nE);
+
+  const freq=0.7; // visual cycles per second
+  const amp=30;   // oscillation amplitude in path-px
+  let time=0, last=null;
+
+  function drawAC(ts){
+    if(!last) last=ts;
+    const dt=Math.min((ts-last)/1000,0.05); last=ts;
+    time+=dt;
+    const sv=Math.sin(2*Math.PI*freq*time); // sine value −1 → +1
+
+    ctx.clearRect(0,0,W,H);
+
+    /* ── Wires ── */
+    ctx.strokeStyle='rgba(245,158,11,0.45)'; ctx.lineWidth=2.5;
+    ctx.lineCap='round'; ctx.lineJoin='round';
+    [
+      [52,38,148,38],[210,38,292,38],
+      [292,38,292,162],[292,162,52,162],
+      [52,162,52,130],[52,85,52,38],
+    ].forEach(([x1,y1,x2,y2])=>{
+      ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+    });
+
+    /* ── AC Source symbol (circle with sine wave) at x=52, y=85→130 ── */
+    const scx=52, scy=107, sr=22;
+    ctx.beginPath(); ctx.arc(scx,scy,sr,0,Math.PI*2);
+    ctx.strokeStyle='rgba(245,158,11,0.5)'; ctx.fillStyle='rgba(245,158,11,0.08)';
+    ctx.lineWidth=2; ctx.fill(); ctx.stroke();
+    // Animated sine wave inside source circle
+    ctx.strokeStyle='#fbbf24'; ctx.lineWidth=1.8;
+    ctx.beginPath();
+    for(let x=-13;x<=13;x++){
+      const y=-8*Math.sin((x/13)*Math.PI + time*3);
+      x===-13 ? ctx.moveTo(scx+x,scy+y) : ctx.lineTo(scx+x,scy+y);
+    }
+    ctx.stroke();
+    ctx.fillStyle='rgba(245,158,11,0.45)'; ctx.font='bold 8px Montserrat,sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+    ctx.fillText('AC SOURCE',scx,149);
+
+    /* ── Load zigzag ── */
+    const steps=7, sw=(210-148)/steps;
+    ctx.strokeStyle='rgba(252,211,77,0.75)'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(148,38);
+    for(let i=0;i<=steps;i++) ctx.lineTo(148+i*sw,38+(i%2===0?-12:12));
+    ctx.lineTo(210,38); ctx.stroke();
+    ctx.fillStyle='rgba(252,211,77,0.7)'; ctx.font='bold 10px Bebas Neue,sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+    ctx.fillText('LOAD',179,23);
+
+    /* ── Reversing direction arrows ── */
+    const ao=Math.abs(sv);
+    const fwd=sv>0;
+    ctx.font='14px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    if(Math.abs(sv)>0.08){
+      ctx.fillStyle=`rgba(245,158,11,${0.3+ao*0.65})`;
+      ctx.fillText(fwd?'→':'←',115,26); ctx.fillText(fwd?'→':'←',258,26);
+      ctx.fillText(fwd?'↓':'↑',307,100);
+      ctx.fillText(fwd?'←':'→',172,175);
+      ctx.fillText(fwd?'↑':'↓',36,62);
+    }
+    // Phase label
+    ctx.fillStyle='rgba(245,158,11,0.45)'; ctx.font='bold 8px Montserrat,sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+    const lab=Math.abs(sv)<0.08?'CURRENT = ZERO (reversing)':fwd?'CURRENT → FORWARD HALF-CYCLE':'CURRENT ← REVERSE HALF-CYCLE';
+    ctx.fillText(lab,172,186);
+
+    /* ── Electrons oscillating — ALL move together (collective oscillation) ── */
+    for(let i=0;i<nE;i++){
+      const d=Math.max(2,Math.min(pathLen-2, basePos[i]+amp*sv));
+      const p=getPt(d);
+      // Intensity fades near zero-crossing
+      const bright=0.25+ao*0.75;
+      const g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,9);
+      g.addColorStop(0,`rgba(252,211,77,${bright})`); g.addColorStop(1,'rgba(245,158,11,0)');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(p.x,p.y,9,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle=`rgba(251,191,36,${bright})`; ctx.beginPath(); ctx.arc(p.x,p.y,4,0,Math.PI*2); ctx.fill();
+    }
+    requestAnimationFrame(drawAC);
+  }
+  requestAnimationFrame(drawAC);
+})();
+
+/* ═══════════════════════════════════════════
+   GENERATOR CANVAS ANIMATION
+   View: looking at the FRONT face of the magnets.
+   N magnet = LEFT (red), S magnet = RIGHT (blue).
+   B field = horizontal, pointing LEFT → RIGHT.
+   Coil rotates about a VERTICAL axis (perpendicular to B).
+
+   Physics:
+   • θ=0° : coil edge-on to viewer, face-on to B → max flux, zero EMF
+   • θ=90°: coil face-on to viewer, edge-on to B → zero flux, MAX EMF
+   Apparent half-width seen by viewer = halfW × |sin(θ)|
+   Current arrows reverse every half-turn (when sin(θ) changes sign).
+═══════════════════════════════════════════ */
+(function(){
+  const canvas=document.getElementById('genCanvas');
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const W=300, H=210;
+  const cx=W/2, cy=90;   // coil centre
+  const coilHH=52;        // coil half-height (vertical extent)
+  const coilHW=62;        // coil half-width (actual, before foreshortening)
+  const magW=44, magH=122;
+
+  let angle=0, last=null;
+  const omega=1.4; // rad/s rotation speed
+
+  function drawCurrentCircle(x,y,isUp,opacity){
+    const r=9;
+    ctx.strokeStyle=`rgba(16,185,129,${opacity*0.85})`;
+    ctx.fillStyle=`rgba(16,185,129,${opacity*0.12})`;
+    ctx.lineWidth=1.8;
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill(); ctx.stroke();
+    ctx.strokeStyle=`rgba(16,185,129,${opacity*0.9})`;
+    ctx.fillStyle=`rgba(16,185,129,${opacity*0.9})`;
+    if(isUp){
+      // Dot = conventional current coming upward toward viewer
+      ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2); ctx.fill();
+    } else {
+      // Cross = conventional current going downward away from viewer
+      ctx.lineWidth=2;
+      ctx.beginPath();
+      ctx.moveTo(x-5,y-5); ctx.lineTo(x+5,y+5);
+      ctx.moveTo(x+5,y-5); ctx.lineTo(x-5,y+5);
+      ctx.stroke();
+    }
+  }
+
+  function drawGen(ts){
+    if(!last) last=ts;
+    const dt=Math.min((ts-last)/1000,0.05); last=ts;
+    angle+=omega*dt;
+
+    ctx.clearRect(0,0,W,H);
+
+    /* ── N Magnet (left) ── */
+    ctx.fillStyle='rgba(239,68,68,0.32)';
+    ctx.strokeStyle='#ef4444'; ctx.lineWidth=2;
+    roundRect(ctx, 8, cy-magH/2, magW, magH, 6);
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle='#fca5a5'; ctx.font='bold 28px Bebas Neue,sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('N', 8+magW/2, cy);
+
+    /* ── S Magnet (right) ── */
+    ctx.fillStyle='rgba(59,130,246,0.32)';
+    ctx.strokeStyle='#3b82f6'; ctx.lineWidth=2;
+    roundRect(ctx, W-8-magW, cy-magH/2, magW, magH, 6);
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle='#93c5fd'; ctx.font='bold 28px Bebas Neue,sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('S', W-8-magW/2, cy);
+
+    /* ── B field lines (horizontal, N→S, left to right) ── */
+    const x1f=8+magW+4, x2f=W-8-magW-4;
+    [-36,-18,0,18,36].forEach(dy=>{
+      const ly=cy+dy;
+      ctx.strokeStyle='rgba(100,150,255,0.2)'; ctx.lineWidth=1;
+      ctx.setLineDash([5,4]);
+      ctx.beginPath(); ctx.moveTo(x1f,ly); ctx.lineTo(x2f,ly); ctx.stroke();
+      ctx.setLineDash([]);
+      // Arrow tip at right end
+      ctx.fillStyle='rgba(100,160,255,0.32)';
+      ctx.beginPath();
+      ctx.moveTo(x2f+3,ly);
+      ctx.lineTo(x2f-6,ly-4.5); ctx.lineTo(x2f-6,ly+4.5);
+      ctx.closePath(); ctx.fill();
+    });
+    ctx.fillStyle='rgba(100,160,255,0.4)';
+    ctx.font='8px Montserrat,sans-serif'; ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+    ctx.fillText('B  →  (magnetic field, N to S)',cx,cy-magH/2-6);
+
+    /* ── Rotating coil ──
+       Apparent half-width = coilHW × |sin(angle)|
+       At angle=0° (sin=0): edge-on → single vertical line, zero EMF
+       At angle=90° (sin=1): face-on → full rectangle, max EMF        */
+    const sinA=Math.sin(angle);
+    const appHW=coilHW*Math.abs(sinA);   // apparent half-width (foreshortening)
+    const lx=cx-appHW, rx=cx+appHW;
+    const ty=cy-coilHH, by=cy+coilHH;
+
+    // Coil fill
+    if(appHW>2){
+      ctx.fillStyle=`rgba(245,158,11,${Math.abs(sinA)*0.13})`;
+      ctx.fillRect(lx,ty,appHW*2,coilHH*2);
+    }
+
+    // Coil frame
+    ctx.strokeStyle='#fbbf24'; ctx.lineWidth=2.8;
+    ctx.lineCap='round'; ctx.lineJoin='round';
+    if(appHW>3){
+      // Full rectangle visible
+      ctx.beginPath();
+      ctx.moveTo(lx,ty); ctx.lineTo(rx,ty);
+      ctx.lineTo(rx,by); ctx.lineTo(lx,by);
+      ctx.closePath(); ctx.stroke();
+    } else {
+      // Edge-on: single thick vertical line at centre
+      ctx.lineWidth=3.5;
+      ctx.beginPath(); ctx.moveTo(cx,ty); ctx.lineTo(cx,by); ctx.stroke();
+    }
+
+    /* ── Current direction indicators on the two vertical wires ──
+       Derived from F = q(v × B):
+       Left wire: UP   when sinA < 0 ; DOWN when sinA > 0
+       Right wire: DOWN when sinA < 0 ; UP   when sinA > 0   */
+    if(appHW>10){
+      const ao=Math.min(1,Math.abs(sinA)*1.8);
+      const rightDown = sinA>0;   // right wire goes DOWN, left wire goes UP
+      drawCurrentCircle(lx,cy, !rightDown, ao);
+      drawCurrentCircle(rx,cy,  rightDown, ao);
+      // Small wire arrows
+      ctx.font=`bold ${13+ao*4}px Arial`;
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillStyle=`rgba(16,185,129,${ao*0.85})`;
+      ctx.fillText(!rightDown?'↑':'↓', lx, cy);
+      ctx.fillText( rightDown?'↓':'↑', rx, cy);
+    }
+
+    /* ── Rotation axis (dashed vertical line through coil centre) ── */
+    ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.lineWidth=1.5;
+    ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(cx,ty-16); ctx.lineTo(cx,by+22); ctx.stroke();
+    ctx.setLineDash([]);
+
+    /* ── Shaft endpoints (top and bottom of rotation axis) ── */
+    ctx.strokeStyle='rgba(245,158,11,0.5)'; ctx.lineWidth=3; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(cx,ty); ctx.lineTo(cx,ty-16); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx,by); ctx.lineTo(cx,by+16); ctx.stroke();
+
+    /* ── Slip rings ── */
+    [cx-14,cx+14].forEach(sx=>{
+      ctx.beginPath(); ctx.arc(sx,by+16,5,0,Math.PI*2);
+      ctx.strokeStyle='rgba(245,158,11,0.55)'; ctx.lineWidth=2; ctx.stroke();
+      ctx.fillStyle='rgba(245,158,11,0.15)'; ctx.fill();
+    });
+
+    /* ── Output wires from slip rings ── */
+    ctx.strokeStyle='rgba(245,158,11,0.4)'; ctx.lineWidth=2;
+    ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(cx-14,by+21); ctx.lineTo(cx-14,H-10); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx+14,by+21); ctx.lineTo(cx+14,H-10); ctx.stroke();
+    ctx.setLineDash([]);
+
+    /* ── EMF bar indicator (right side) ── */
+    const emf=Math.sin(angle); // EMF ∝ sin(θ): zero when edge-on, max when face-on
+    const barX=W-60, barY=25, barW2=42, barH=80;
+    ctx.fillStyle='rgba(255,255,255,0.04)';
+    ctx.strokeStyle='rgba(255,255,255,0.1)'; ctx.lineWidth=1;
+    ctx.beginPath(); roundRect(ctx,barX,barY,barW2,barH,4); ctx.fill(); ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,0.35)'; ctx.font='bold 8px Montserrat,sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+    ctx.fillText('EMF',barX+barW2/2,barY+11);
+    // Zero line
+    ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.lineWidth=1;
+    ctx.setLineDash([2,2]);
+    ctx.beginPath(); ctx.moveTo(barX+4,barY+14+barH/2-14); ctx.lineTo(barX+barW2-4,barY+14+barH/2-14); ctx.stroke();
+    ctx.setLineDash([]);
+    // Bar fill
+    const barInnerH=(barH/2-14)*Math.abs(emf);
+    const barColour=emf>=0?'#10b981':'#ef4444';
+    ctx.fillStyle=barColour;
+    const midY=barY+14+(barH/2-14);
+    if(emf>=0) ctx.fillRect(barX+6, midY-barInnerH, barW2-12, barInnerH);
+    else        ctx.fillRect(barX+6, midY,           barW2-12, barInnerH);
+    ctx.strokeStyle=barColour; ctx.lineWidth=1;
+    ctx.strokeRect(barX+6,barY+14,barW2-12,(barH/2-14)*2);
+    // Value label
+    ctx.fillStyle=barColour; ctx.font='bold 8px Montserrat,sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+    const pct=Math.round(Math.abs(emf*100));
+    ctx.fillText((emf>=0?'+':'-')+pct+'%',barX+barW2/2,barY+barH+4);
+
+    /* ── AC output label ── */
+    ctx.fillStyle='rgba(245,158,11,0.5)';
+    ctx.font='bold 9px Montserrat,sans-serif'; ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+    ctx.fillText('~ AC OUTPUT ~',cx,H-1);
+
+    requestAnimationFrame(drawGen);
+  }
+  requestAnimationFrame(drawGen);
+})();
+
+/* Helper: roundRect for older browsers */
+function roundRect(ctx,x,y,w,h,r){
+  if(ctx.roundRect){ctx.roundRect(x,y,w,h,r);return;}
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y);
+  ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);
+  ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);
+  ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+}
+</script>
+</body>
+</html>
