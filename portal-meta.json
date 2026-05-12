@@ -1,5 +1,16 @@
 [
   {
+    "id": "pg_1778599823396_sg5",
+    "platform": "is",
+    "subject": "Physics",
+    "topic": "Electricity and Magnetism",
+    "title": "DC and AC Direct & Alternating Current",
+    "desc": "AC and DC",
+    "accent": "#2dd4bf",
+    "date": "2026-05-12",
+    "filename": "dc_and_ac_slides.html"
+  },
+  {
     "id": "pg_1778598305142_0el",
     "platform": "is",
     "subject": "Science",
